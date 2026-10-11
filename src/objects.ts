@@ -55,8 +55,14 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     const cone = mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.08, 12), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -1.38, 3.55, sz);
     cone.rotation.z = Math.PI / 2;
     desk.add(cone);
+    const midRing = mesh(new THREE.TorusGeometry(0.255, 0.028, 8, 20), new THREE.MeshStandardMaterial({ color: "#1c1c20", roughness: 0.5, metalness: 0.3 }), -1.425, 3.55, sz);
+    midRing.rotation.y = Math.PI / 2;
+    desk.add(midRing);
     const tweeter = mesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -1.38, 3.05, sz);
     desk.add(tweeter);
+    const twRing = mesh(new THREE.TorusGeometry(0.125, 0.02, 8, 16), new THREE.MeshStandardMaterial({ color: "#1c1c20", roughness: 0.5, metalness: 0.3 }), -1.425, 3.05, sz);
+    twRing.rotation.y = Math.PI / 2;
+    desk.add(twRing);
   }
   // subwoofer under the desk, next to a little plant
   desk.add(mesh(new THREE.BoxGeometry(1.15, 1.35, 1.15), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.6 }), 0.35, 0.68, -3.1));
@@ -121,7 +127,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   backPad.rotation.z = 0.1;
   chair.add(backPad);
   const lumbar = new THREE.Mesh(new RoundedBoxGeometry(0.3, 0.85, 1.5, 4, 0.1), leather);
-  lumbar.position.set(-0.32, 3.75, 0);
+  lumbar.position.set(-0.52, 3.75, 0);
   chair.add(lumbar);
   // headrest — rectangular, extended out on two black poles
   for (const z of [-0.55, 0.55]) {
@@ -131,6 +137,10 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   headrest.position.set(-0.88, 6.72, 0);
   headrest.rotation.z = 0.14;
   chair.add(headrest);
+  // black metal spine — connects the backrest to the base
+  const spine = mesh(new THREE.BoxGeometry(0.17, 2.0, 0.32), blackTrim, -0.68, 2.15, 0);
+  spine.rotation.z = 0.34;
+  chair.add(spine);
   for (const z of [-1.05, 1.05]) {
     const armPad = mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.95, 10), blackTrim, 0.12, 3.2, z);
     armPad.rotation.z = Math.PI / 2;
@@ -150,7 +160,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   scene.add(tag(chair, "air", "the chair — leather, tall, facing the work"));
 
   // ============ INDOOR PLANTS — slot 6, right of + below the projection ============
-  for (const [px, pz, s] of [[-8.7, -7.5, 1.15], [-8.7, -1.1, 0.95], [-8.7, -2.6, 0.72]] as Array<[number, number, number]>) {
+  for (const [px, pz, s] of [[-8.7, -7.3, 1.15], [-8.7, -1.6, 0.95], [-8.7, -0.5, 0.72]] as Array<[number, number, number]>) {
     const pot = new THREE.Group();
     pot.add(mesh(new THREE.CylinderGeometry(0.62 * s, 0.48 * s, 0.85 * s, 12), new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.85 }), 0, 0.42 * s, 0));
     for (let i = 0; i < 7; i++) {
@@ -163,13 +173,49 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
 
   // ============ WALL SHELVES above the couch (empty for now) ============
-  for (const [wy, wz] of [[5.6, 1.2], [7.0, 2.9]]) {
+  for (const [wy, wz] of [[4.75, 1.2], [6.15, 2.9]]) {
     const plank = mesh(new THREE.BoxGeometry(0.42, 0.12, 2.8), wood, 10.05, wy, wz);
     scene.add(tag(plank, "space", "a wall shelf — waiting"));
     for (const bz of [wz - 1.25, wz + 1.25]) {
       scene.add(mesh(new THREE.BoxGeometry(0.42, 0.35, 0.1), metal, 10.05, wy - 0.22, bz));
     }
   }
+
+  // ============ A PAINTING on the right wall (a warm dusk) ============
+  const paintCanvas = document.createElement("canvas");
+  paintCanvas.width = 256;
+  paintCanvas.height = 192;
+  const pctx = paintCanvas.getContext("2d") as CanvasRenderingContext2D;
+  const psky = pctx.createLinearGradient(0, 0, 0, 192);
+  psky.addColorStop(0, "#f2c98a");
+  psky.addColorStop(0.55, "#e8a06a");
+  psky.addColorStop(1, "#7a4a52");
+  pctx.fillStyle = psky;
+  pctx.fillRect(0, 0, 256, 192);
+  pctx.fillStyle = "#ffd9a0";
+  pctx.beginPath();
+  pctx.arc(172, 74, 26, 0, Math.PI * 2);
+  pctx.fill();
+  pctx.fillStyle = "#5a3a4a";
+  pctx.beginPath();
+  pctx.moveTo(0, 192);
+  for (let x = 0; x <= 256; x += 16) {
+    pctx.lineTo(x, 126 + Math.sin(x * 0.028) * 18 + (x % 64 === 0 ? 12 : 0));
+  }
+  pctx.lineTo(256, 192);
+  pctx.closePath();
+  pctx.fill();
+  pctx.fillStyle = "#3a2a3a";
+  pctx.fillRect(0, 160, 256, 32);
+  const paintingTex = new THREE.CanvasTexture(paintCanvas);
+  paintingTex.colorSpace = THREE.SRGBColorSpace;
+  const painting = new THREE.Group();
+  painting.add(mesh(new THREE.BoxGeometry(0.12, 2.9, 3.8), new THREE.MeshStandardMaterial({ color: "#6e4a2c", roughness: 0.7 }), 0, 0, 0));
+  const canvasPlane = mesh(new THREE.PlaneGeometry(3.5, 2.6), new THREE.MeshStandardMaterial({ map: paintingTex, roughness: 0.8 }), -0.08, 0, 0);
+  canvasPlane.rotation.y = -Math.PI / 2;
+  painting.add(canvasPlane);
+  painting.position.set(10.22, 6.15, -1.7);
+  scene.add(tag(painting, "space", "the painting — a warm dusk held on cloth"));
 
   // ============ BOOKSHELF — right wall, between the glass and the couch ============
   const shelf = new THREE.Group();
@@ -228,7 +274,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   dome.scale.y = 0.75;
   gudi.add(dome);
   gudi.add(mesh(new THREE.ConeGeometry(0.09, 0.32, 8), brassSoft, 0, 1.32, 0));
-  gudi.position.set(0.05, 5.25, 1.35);
+  gudi.position.set(0.05, 5.2, 1.35);
+  gudi.scale.setScalar(0.85);
   shelf.add(tag(gudi, "space", "the gudi — consecrated, quietly alive"));
 
   // a small standing diya flame beside the gudi
@@ -340,13 +387,13 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       couch.add(pillow);
     }
   };
-  seat(7.35, 2.5, 1.6, 4.2);   // the 1,4 side — clear of the right wall
-  back(8.35, 2.5, 0.5, 4.2);
+  seat(7.45, 1.75, 1.35, 5.7); // 1,4 side — 3 segments toward the bookshelf,
+  back(8.3, 1.75, 0.45, 5.7);  // seats shallow (not behind the back, not at the table)
   seat(3.75, 5.5, 7.7, 1.9);   // the 1,2 side — the extended legroom lives here
   back(3.75, 6.65, 7.7, 0.55);
   // the corner — the two backrests meet; a corner cushion fills the nook
-  const cornerBackA = new THREE.Mesh(new RoundedBoxGeometry(0.5, 1.25, 1.9, 4, 0.12), fluffy);
-  cornerBackA.position.set(8.35, 1.62, 5.5);
+  const cornerBackA = new THREE.Mesh(new RoundedBoxGeometry(0.45, 1.25, 1.9, 4, 0.12), fluffy);
+  cornerBackA.position.set(8.3, 1.62, 5.5);
   cornerBackA.castShadow = true; cornerBackA.receiveShadow = true;
   couch.add(cornerBackA);
   const cornerBackB = new THREE.Mesh(new RoundedBoxGeometry(1.6, 1.25, 0.5, 4, 0.12), fluffy);
@@ -369,7 +416,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     couch.add(mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.56, 8), new THREE.MeshStandardMaterial({ color: "#5d3b20", roughness: 0.7 }), lx, 0.28, lz));
   }
   // proper armrests at the two outer ends
-  couch.add(mesh(new THREE.BoxGeometry(1.65, 1.25, 0.7), fluffy, 7.35, 1.45, 0.1));
+  couch.add(mesh(new THREE.BoxGeometry(1.4, 1.25, 0.7), fluffy, 7.45, 1.45, -1.45)); // arm at the new far end
   couch.add(mesh(new THREE.BoxGeometry(0.7, 1.25, 1.95), fluffy, 0.05, 1.45, 5.5));
   // throw cushions — RELAXED on the seat, leaning into the backrest
   for (const [cx, cz, cc, side] of [[7.95, 1.1, "#c98f6b", "x"], [7.95, 3.4, "#8fa8b8", "x"], [5.2, 6.15, "#c98f6b", "z"], [2.4, 6.15, "#a8b894", "z"]] as Array<[number, number, string, string]>) {
@@ -421,20 +468,13 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // ============ PROJECTOR + SCREEN — the "TV", his preference ============
   // ULTRA SHORT THROW — sits on the floor under the projection
   const ust = new THREE.Group();
-  ust.add(mesh(new THREE.BoxGeometry(1.05, 0.5, 3.3), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.5, metalness: 0.35 }), 0, 0, 0));
-  ust.add(mesh(new THREE.BoxGeometry(0.95, 0.1, 3.1), new THREE.MeshStandardMaterial({ color: "#3c3c44", roughness: 0.4, metalness: 0.4 }), 0, 0.28, 0));
-  const lensGlow = mesh(new THREE.BoxGeometry(0.08, 0.05, 2.6), new THREE.MeshStandardMaterial({ color: "#eaf4ff", emissive: "#bfe3ff", emissiveIntensity: 2.2 }), 0.45, 0.32, 0);
+  ust.add(mesh(new THREE.BoxGeometry(1.15, 0.48, 1.55), new THREE.MeshStandardMaterial({ color: "#f2efe8", roughness: 0.5 }), 0, 0, 0)); // white, square
+  ust.add(mesh(new THREE.BoxGeometry(1.02, 0.08, 1.42), new THREE.MeshStandardMaterial({ color: "#e8e2d5", roughness: 0.4 }), 0, 0.27, 0));
+  const lensGlow = mesh(new THREE.BoxGeometry(0.07, 0.04, 1.15), new THREE.MeshStandardMaterial({ color: "#eaf4ff", emissive: "#bfe3ff", emissiveIntensity: 2.2 }), 0.52, 0.3, 0);
   ust.add(lensGlow);
-  ust.position.set(-9.85, 0.42, -3.8);
+  ust.position.set(-9.35, 0.42, -3.8); // sits AWAY from the wall — there's a gap
   scene.add(tag(ust, "space", "the ultra short throw projector — click to turn it on or off"));
   ust.traverse((c) => (c.userData.action = "toggle-projector"));
-  // the soundbar, just below the screen
-  const soundbar = new THREE.Group();
-  soundbar.add(mesh(new THREE.BoxGeometry(0.24, 0.42, 4.8), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.55, metalness: 0.3 }), 0, 0, 0));
-  soundbar.add(mesh(new THREE.BoxGeometry(0.08, 0.3, 4.5), new THREE.MeshStandardMaterial({ color: "#44444c", roughness: 0.7 }), -0.13, 0, 0));
-  soundbar.position.set(-10.28, 1.75, -3.8);
-  scene.add(tag(soundbar, "space", "the soundbar — where the room listens"));
-  soundbar.traverse((c) => (c.userData.action = "toggle-projector"));
   // a faint light ray toward the wall — clearest at night
   const lightRay = new THREE.Mesh(
     new THREE.ConeGeometry(1.75, 3.9, 4, 1, true),
@@ -500,13 +540,15 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   for (const [vx, vz] of ventSpecs) {
     const airColor = "#ff6a4a"; // live mode color, recolored in the animation loop
     const vent = new THREE.Group();
-    vent.add(mesh(new THREE.BoxGeometry(2.1, 0.12, 1.35), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.6, metalness: 0.5 }), 0, 0.06, 0));
-    for (let i = 0; i < 7; i++) {
-      vent.add(mesh(new THREE.BoxGeometry(0.11, 0.05, 1.15), metal, -0.9 + i * 0.3, 0.13, 0));
+    vent.add(mesh(new THREE.BoxGeometry(2.2, 0.1, 1.15), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.6, metalness: 0.5 }), 0, 0.05, 0));
+    // GILLS — fins standing out of the ground, leaning like fish gills
+    for (let i = 0; i < 6; i++) {
+      const fin = mesh(new THREE.BoxGeometry(0.12, 1.15, 0.62), new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.5, metalness: 0.55 }), -0.85 + i * 0.34, 0.52, 0);
+      fin.rotation.x = -0.5;
+      vent.add(fin);
     }
     vent.position.set(vx, 0, vz);
-    vent.rotation.y = Math.PI / 4; // diagonal grilles
-    scene.add(tag(vent, "air", "the floor vent — warm air or cool air, as the switch says"));
+    scene.add(tag(vent, "air", "the vent gills — steam rises when the air breathes"));
 
     for (let w = 0; w < 3; w++) {
       const wisp = new THREE.Mesh(
@@ -638,22 +680,32 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // fluctuates like two veils merging and parting
   const portalVeils: THREE.Mesh[] = [];
   const portal = new THREE.Group();
+  // a MINI BLACK HOLE — a dark oval body, veils hugging it, clear of the bay walls
+  const hole = new THREE.Mesh(
+    new THREE.SphereGeometry(0.95, 24, 18),
+    new THREE.MeshStandardMaterial({ color: "#0a0714", emissive: "#241542", emissiveIntensity: 0.5, roughness: 0.35 })
+  );
+  hole.scale.set(0.82, 1.22, 0.82);
+  portal.add(hole);
   const veilC = new THREE.Mesh(
-    new THREE.CircleGeometry(1.38, 32),
+    new THREE.CircleGeometry(1.02, 32),
     new THREE.MeshBasicMaterial({ color: "#120b22", transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide })
   );
+  veilC.scale.set(0.85, 1.25, 1);
   portal.add(veilC);
   const veilA = new THREE.Mesh(
-    new THREE.CircleGeometry(1.18, 32),
+    new THREE.CircleGeometry(0.88, 32),
     new THREE.MeshBasicMaterial({ color: "#1a1030", transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide })
   );
-  veilA.position.z = 0.02;
+  veilA.position.z = 0.06;
+  veilA.scale.set(0.85, 1.25, 1);
   portal.add(veilA);
   const veilB = new THREE.Mesh(
-    new THREE.CircleGeometry(0.92, 28),
+    new THREE.CircleGeometry(0.68, 28),
     new THREE.MeshBasicMaterial({ color: "#241542", transparent: true, opacity: 0.26, depthWrite: false, side: THREE.DoubleSide })
   );
-  veilB.position.z = 0.04;
+  veilB.position.z = 0.12;
+  veilB.scale.set(0.85, 1.25, 1);
   portal.add(veilB);
   portal.position.set(9.55, 3.1, -5.885); // inside the shelf's open bay
   portal.rotation.y = -Math.PI / 2; // faces the room

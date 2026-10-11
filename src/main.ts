@@ -64,7 +64,7 @@ let hovered: THREE.Object3D | null = null;
 // 0 = closed; click pane 4 (slot 7) -> it tucks into pane 3;
 // click pane 3 -> 3+4 stack into panes 1+2; click pane 1 or 2 -> everything returns
 let glassState = 2; // the scene opens with the glass stacked left — balcony breathing
-let projectorOn = true;
+let projectorOn = false; // starts off — click the unit
 let ventMode = 1; // 0 = still, 1 = warm (red), 2 = cool (blue) — cycled by the switch
 
 const elementNote: Record<ElementName, string> = {

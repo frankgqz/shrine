@@ -222,20 +222,7 @@ export function buildRoom(scene: THREE.Scene): void {
 
   // ---- Zone 9: granite boulders ON THE GROUND with a shallow channel
   // running between them (waterfall parked 2026-10-12 — water runs here later).
-  // the channel bed — granite, low in the ground (no wooden tray)
-  const graniteMat = new THREE.MeshStandardMaterial({ color: "#8a8279", roughness: 0.95 });
-  const channelBed = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.16, 8.2), graniteMat);
-  channelBed.position.set(-7.4, 0.09, -12.6);
-  channelBed.rotation.x = 0.045;
-  channelBed.receiveShadow = true;
-  scene.add(channelBed);
-
-  // the water — a ribbon down the channel
-  const waterMat = new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.12, transparent: true, opacity: 0.72, emissive: "#2f7fa0", emissiveIntensity: 0.22 });
-  const ribbon = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.06, 8.0), waterMat);
-  ribbon.position.set(-7.4, 0.19, -12.55);
-  ribbon.rotation.x = 0.045;
-  scene.add(ribbon);
+  // (the water tray/ribbon is OUT — flowing water will come later)
 
   // TWO ROCKS STACKED at the head of the channel — the water follows the rock
   const stackLow = rock(1.3, "#8a8279");
@@ -248,13 +235,9 @@ export function buildRoom(scene: THREE.Scene): void {
   stackHigh.rotation.set(0.42, 1.6, 0.18);
   stackHigh.castShadow = true;
   scene.add(stackHigh);
-  // the water sheeting down the stacked rock into the channel
-  const film = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 2.5), waterMat);
-  film.position.set(-7.1, 1.35, -9.38);
-  film.rotation.x = -0.34;
-  scene.add(film);
 
-  // boulders in a NATURAL cluster around the channel (water pours into them)
+
+  // boulders in a NATURAL cluster (water will pour into them later)
   for (let i = 0; i < 18; i++) {
     const t = Math.random();
     const side = Math.random() < 0.5 ? -1 : 1;
@@ -265,6 +248,42 @@ export function buildRoom(scene: THREE.Scene): void {
     r.castShadow = true;
     r.receiveShadow = true;
     scene.add(r);
+  }
+  // rocks sitting ON rocks — real height in the cluster
+  for (const [ox, oy, oz, os] of [[-5.6, 1.8, -10.7, 0.85], [-8.9, 2.0, -13.6, 0.75], [-6.6, 2.25, -15.3, 0.65], [-4.9, 1.65, -13.9, 0.8]] as Array<[number, number, number, number]>) {
+    const r = rock(os, "#8a8279");
+    r.position.set(ox, oy, oz);
+    r.rotation.set(Math.random() * 0.6, Math.random() * Math.PI, Math.random() * 0.6);
+    r.castShadow = true;
+    r.receiveShadow = true;
+    scene.add(r);
+  }
+
+  // a paved PATH of deck tiles: glass doors -> fire -> rocks (IKEA-tile style)
+  const pathTile = (x: number, z: number, rot: number) => {
+    const tile = new THREE.Group();
+    const tileBase = new THREE.Mesh(new THREE.BoxGeometry(1.42, 0.07, 1.42), new THREE.MeshStandardMaterial({ color: "#7a5c3e", roughness: 0.9 }));
+    tileBase.position.y = 0.035;
+    tile.add(tileBase);
+    for (let s = 0; s < 5; s++) {
+      const slat = new THREE.Mesh(new THREE.BoxGeometry(1.26, 0.055, 0.19), new THREE.MeshStandardMaterial({ color: "#c9a06a", roughness: 0.8 }));
+      slat.position.set(0, 0.1, -0.52 + s * 0.26);
+      tile.add(slat);
+    }
+    tile.position.set(x, 0, z);
+    tile.rotation.y = rot;
+    tile.traverse((c) => {
+      const m = c as THREE.Mesh;
+      if (m.isMesh) m.receiveShadow = true;
+    });
+    scene.add(tile);
+  };
+  const pathPts: Array<[number, number]> = [[0, -9.1], [-0.8, -10.3], [-1.7, -11.4], [-3.1, -11.9], [-4.6, -12.2], [-6.1, -12.6], [-7.3, -13.2]];
+  for (let i = 0; i < pathPts.length; i++) {
+    const [px, pz] = pathPts[i];
+    const nxt = pathPts[Math.min(i + 1, pathPts.length - 1)];
+    const rot = Math.atan2(nxt[0] - px, nxt[1] - pz) + (Math.random() - 0.5) * 0.12;
+    pathTile(px, pz, rot);
   }
 
   // rocks and shrubs around the water
