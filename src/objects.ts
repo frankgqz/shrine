@@ -36,6 +36,8 @@ export interface SceneObjects {
   glassPanels: THREE.Mesh[];
   floorLights: THREE.PointLight[];
   wisps: THREE.Mesh[];
+  screenCloth: THREE.Mesh;
+  lensGlow: THREE.Mesh;
 }
 
 export function buildObjects(scene: THREE.Scene): SceneObjects {
@@ -142,9 +144,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
 
   // ============ COFFEE TABLE (bottom-5) ============
   const coffee = new THREE.Group();
-  coffee.add(mesh(new THREE.BoxGeometry(3.3, 0.12, 2.0), wood, 0, 0.92, 0));
-  coffee.add(mesh(new THREE.BoxGeometry(2.95, 0.08, 1.7), wood, 0, 0.5, 0));
-  for (const [x, z] of [[-1.45, -0.82], [1.45, -0.82], [-1.45, 0.82], [1.45, 0.82]]) {
+  coffee.add(mesh(new THREE.BoxGeometry(3.7, 0.12, 3.7), wood, 0, 0.92, 0));
+  coffee.add(mesh(new THREE.BoxGeometry(3.3, 0.08, 3.3), wood, 0, 0.5, 0));
+  for (const [x, z] of [[-1.65, -1.65], [1.65, -1.65], [-1.65, 1.65], [1.65, 1.65]]) {
     coffee.add(mesh(new THREE.BoxGeometry(0.11, 0.92, 0.11), wood, x, 0.46, z));
   }
   // the flowing-rock water feature, on the table for now
@@ -167,14 +169,15 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   projector.add(lensGlow);
   projector.position.set(5.5, 8.35, -4.6);
   projector.rotation.y = -Math.PI / 2 - 0.2;
-  scene.add(tag(projector, "space", "the projector — cinema under the ceiling"));
+  scene.add(tag(projector, "space", "the projector — click to turn it on or off"));
+  projector.traverse((c) => (c.userData.action = "toggle-projector"));
 
   const screenRig = new THREE.Group();
-  screenRig.add(mesh(new THREE.BoxGeometry(0.16, 0.34, 5.6), new THREE.MeshStandardMaterial({ color: "#d9d2c4", roughness: 0.6 }), -10.28, 8.6, -4.6)); // housing
+  screenRig.add(mesh(new THREE.BoxGeometry(0.16, 0.38, 7.6), new THREE.MeshStandardMaterial({ color: "#d9d2c4", roughness: 0.6 }), -10.28, 8.95, -3.8)); // housing
   const screenCloth = mesh(
-    new THREE.PlaneGeometry(5.3, 3.05),
+    new THREE.PlaneGeometry(7.3, 4.3),
     new THREE.MeshStandardMaterial({ color: "#e8eef2", emissive: "#9fc6e8", emissiveIntensity: 0.32, side: THREE.DoubleSide }),
-    -10.22, 6.75, -4.6
+    -10.22, 6.6, -3.8
   );
   screenCloth.rotation.y = Math.PI / 2;
   screenRig.add(screenCloth);
@@ -189,10 +192,13 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const glassWall = new THREE.Group();
   for (let i = 0; i < 4; i++) {
     const panel = mesh(new THREE.BoxGeometry(5.2, 9, 0.1), glassMat, -7.8 + i * 5.2, 4.7, 0);
-    panel.userData.action = "toggle-glass";
-    // vertical black bars (mullions) ride with the panel
-    for (const bx of [-2.52, 0, 2.52]) {
+    panel.userData.action = "glass-panel";
+    panel.userData.panelIndex = i;
+    // vertical black bars on the edges only — 4 clean panes
+    for (const bx of [-2.52, 2.52]) {
       const bar = mesh(new THREE.BoxGeometry(0.11, 9, 0.16), new THREE.MeshStandardMaterial({ color: "#1c1c20", roughness: 0.55, metalness: 0.5 }), bx, 0, 0);
+      bar.userData.action = "glass-panel";
+      bar.userData.panelIndex = i;
       panel.add(bar);
     }
     glassPanels.push(panel);
@@ -203,7 +209,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   glassWall.position.set(0, 0, -8.4);
   glassWall.userData = { element: "air", label: "the sliding glass — click to open to the balcony" };
   glassWall.traverse((c) => {
-    if (!c.userData?.action) c.userData = { ...c.userData, element: "air", label: "the sliding glass — click to open to the balcony" };
+    c.userData = { ...c.userData, element: "air", label: "the sliding glass — click a pane to open" };
   });
   scene.add(glassWall);
 
@@ -342,5 +348,5 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   );
   scene.add(tag(yogaMat, "space", "the yoga mat — silence, sun, breath"));
 
-  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps };
+  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow };
 }

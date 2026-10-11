@@ -60,6 +60,20 @@ export function buildRoom(scene: THREE.Scene): void {
 
   const soilMat = new THREE.MeshStandardMaterial({ color: "#7a5c3e", roughness: 1 });
 
+  // ---- Very light wooden floorboards INSIDE the glass line ----
+  const boardMat = new THREE.MeshStandardMaterial({ color: "#e8d5b5", roughness: 0.8 });
+  const boardSeam = new THREE.MeshStandardMaterial({ color: "#d4bd97", roughness: 0.85 });
+  const indoorFloor = new THREE.Mesh(new THREE.PlaneGeometry(21, 16.9), boardMat);
+  indoorFloor.rotation.x = -Math.PI / 2;
+  indoorFloor.position.set(0, 0.035, -0.05);
+  indoorFloor.receiveShadow = true;
+  scene.add(indoorFloor);
+  for (let i = 0; i < 12; i++) {
+    const seam = new THREE.Mesh(new THREE.BoxGeometry(21, 0.012, 0.07), boardSeam);
+    seam.position.set(0, 0.045, -8.2 + i * 1.42);
+    scene.add(seam);
+  }
+
   // ---- Earth ground: stops at the walls. The left-back balcony section ends
   // early at z=-13 — that edge is the waterfall cliff (slot 9). ----
   const mainGround = new THREE.Mesh(new THREE.PlaneGeometry(21, 26.9), soilMat);
@@ -82,13 +96,14 @@ export function buildRoom(scene: THREE.Scene): void {
   scene.add(cliff);
 
   // scatter stones + moss only within the ground footprint
-  for (let i = 0; i < 30; i++) {
+  // loose rocks live OUTSIDE — the balcony's 7-8 area and around the fall
+  for (let i = 0; i < 26; i++) {
     const r = rock(0.12 + Math.random() * 0.3);
-    const left = Math.random() < 0.45;
+    const nearFall = Math.random() < 0.4;
     r.position.set(
-      left ? -10 + Math.random() * 6.5 : -3 + Math.random() * 13,
+      nearFall ? -9.5 + Math.random() * 5 : -2 + Math.random() * 12,
       0.06,
-      left ? -12.4 + Math.random() * 20 : -18 + Math.random() * 25.5
+      nearFall ? -12.6 + Math.random() * 3.8 : -17.5 + Math.random() * 8.4
     );
     r.rotation.y = Math.random() * Math.PI;
     r.castShadow = true;

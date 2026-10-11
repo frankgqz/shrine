@@ -60,7 +60,11 @@ window.addEventListener("keydown", (e) => {
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 let hovered: THREE.Object3D | null = null;
-let glassOpen = false;
+// the sliding glass is a little state machine (Frank 2026-10-12):
+// 0 = closed; click pane 4 (slot 7) -> it tucks into pane 3;
+// click pane 3 -> 3+4 stack into panes 1+2; click pane 1 or 2 -> everything returns
+let glassState = 0;
+let projectorOn = true;
 
 const elementNote: Record<ElementName, string> = {
   earth: "earth — soil, stone, what grows",
@@ -91,9 +95,23 @@ canvas.addEventListener("pointermove", (e) => {
 canvas.addEventListener("click", () => {
   const target = pick();
   if (!target) return;
-  if (target.userData?.action === "toggle-glass") {
-    glassOpen = !glassOpen;
-    labelEl.textContent = glassOpen ? "the glass slides open — the balcony breathes" : "the glass closes — the room turns inward";
+  const act = target.userData?.action;
+  if (act === "glass-panel") {
+    const i = target.userData.panelIndex as number;
+    if (i === 3) glassState = 1;
+    else if (i === 2) glassState = 2;
+    else glassState = 0;
+    labelEl.textContent =
+      glassState === 0 ? "the glass returns — the room turns inward"
+      : glassState === 1 ? "one pane tucks away — a breath of outside"
+      : "the glass stacks left — the balcony opens";
+    labelEl.style.opacity = "1";
+    window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
+    return;
+  }
+  if (act === "toggle-projector") {
+    projectorOn = !projectorOn;
+    labelEl.textContent = projectorOn ? "the projector hums to life" : "the projector sleeps";
     labelEl.style.opacity = "1";
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
     return;
@@ -148,10 +166,18 @@ function animate(): void {
   // the sliding glass: panels 0/1 drift left, 2/3 drift right (stacked open)
   objects.glassPanels.forEach((panel, i) => {
     const home = -7.8 + i * 5.2;
-    // open = the right two slide INTO the left two, leaving the right side clear
-    const goal = glassOpen ? (i === 2 ? -2.92 : i === 3 ? -7.52 : home) : home;
+    let goal = home;
+    if (glassState === 1 && i === 3) goal = 2.28;          // pane 4 into pane 3
+    if (glassState === 2 && i === 2) goal = -2.92;         // pane 3 into pane 2
+    if (glassState === 2 && i === 3) goal = -7.52;         // pane 4 into pane 1
     panel.position.x += (goal - panel.position.x) * 0.055;
   });
+
+  // projector on/off glow
+  const cloth = objects.screenCloth.material as THREE.MeshStandardMaterial;
+  cloth.emissiveIntensity += ((projectorOn ? 0.32 : 0.02) - cloth.emissiveIntensity) * 0.08;
+  const lens = objects.lensGlow.material as THREE.MeshStandardMaterial;
+  lens.emissiveIntensity += ((projectorOn ? 2.2 : 0.05) - lens.emissiveIntensity) * 0.08;
 
   const flicker = 0.82 + Math.sin(t * 9.3) * 0.09 + Math.sin(t * 23.7) * 0.06;
   objects.fire.intensity = 22 * flicker * warmth;
