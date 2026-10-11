@@ -111,7 +111,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     const r = rock(0.12 + Math.random() * 0.3);
     const nearFall = Math.random() < 0.4;
     r.position.set(
-      nearFall ? -9.5 + Math.random() * 5 : -2 + Math.random() * 12,
+      nearFall ? -9.5 + Math.random() * 4 : 3.8 + Math.random() * 6.4,
       0.06,
       nearFall ? -12.6 + Math.random() * 3.8 : -16.6 + Math.random() * 7.2
     );
@@ -196,7 +196,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   const addRail = (from: THREE.Vector3, to: THREE.Vector3) => {
     const len = from.distanceTo(to);
     const mid = from.clone().lerp(to, 0.5);
-    const top = new THREE.Mesh(new THREE.BoxGeometry(len, 0.22, 0.22), beamMat);
+    const top = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.22, len), beamMat);
     top.position.copy(mid).setY(railY);
     top.castShadow = true;
     top.lookAt(to.clone().setY(railY));
@@ -255,6 +255,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     let bx = -7.4 + side * spread;
     let bz = -9.2 - t * 7.2 + (Math.random() - 0.5) * 1.6;
     if (Math.hypot(bx + 1.6, bz + 11.6) < 3.6) bx = -5.6 - Math.random() * 1.8; // clear of the fire
+    if (bz > -14.6) bx = Math.min(bx, -5.7); // off the wooden deck
     bz = Math.min(bz, -9.1 - 1.15 * rsize); // NEVER through the window
     r.position.set(bx, 0.35 + Math.random() * 0.35, bz);
     r.rotation.set(Math.random() * 0.5, Math.random() * Math.PI, Math.random() * 0.5);
@@ -372,7 +373,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   // rocks and shrubs around the water
   for (let i = 0; i < 9; i++) {
     const r = rock(0.35 + Math.random() * 0.75, i % 2 ? "#8a8279" : "#948c82");
-    r.position.set(-9.4 + Math.random() * 4.8, 0.3 + Math.random() * 0.35, -13.8 + Math.random() * 2.6);
+    r.position.set(-9.4 + Math.random() * 3.5, 0.3 + Math.random() * 0.35, -13.8 + Math.random() * 2.6);
     r.castShadow = true;
     scene.add(r);
   }

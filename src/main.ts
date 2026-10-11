@@ -323,7 +323,7 @@ function animate(): void {
   objects.steamBeams.forEach((s) => {
     const m = s.material as THREE.MeshBasicMaterial;
     m.color.set(ventColor);
-    m.opacity = ventOn ? 0.1 + Math.sin(t * 1.8 + (s.userData.phase as number)) * 0.045 : 0;
+    m.opacity = ventOn ? 0.15 + Math.sin(t * 1.8 + (s.userData.phase as number)) * 0.055 : 0;
   });
 
   // the water sheet flows down the rocks; the little wheel turns
@@ -390,9 +390,11 @@ function animate(): void {
 
   const flicker = 0.82 + Math.sin(t * 9.3) * 0.09 + Math.sin(t * 23.7) * 0.06;
   objects.fire.intensity = 22 * flicker * warmth;
-  objects.fireCone.scale.setScalar(0.94 + Math.sin(t * 11) * 0.07);
+  objects.fireCone.scale.setScalar(0.92 + Math.sin(t * 11) * 0.07 + Math.sin(t * 6.3) * 0.05);
+  objects.fireCone.rotation.y = t * 0.4;
   objects.water.position.y = 1.18 + Math.sin(t * 1.6) * 0.012;
-  objects.lamp.intensity = (14 + Math.sin(t * 2.2) * 0.5) * warmth;
+  objects.lamp.intensity = (5 + Math.sin(t * 2.2) * 0.35 + Math.sin(t * 7.1) * 0.25) * warmth;
+  objects.lampFlame.scale.setScalar(0.92 + Math.sin(t * 13) * 0.09 + Math.sin(t * 7.3) * 0.05);
 
   const target = pick();
   if (target !== hovered) {

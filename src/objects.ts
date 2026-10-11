@@ -46,6 +46,7 @@ export interface SceneObjects {
   monScreens: THREE.Mesh[];
   steamBeams: THREE.Mesh[];
   waterWheel: THREE.Group;
+  lampFlame: THREE.Mesh;
 }
 
 export function buildObjects(scene: THREE.Scene): SceneObjects {
@@ -180,10 +181,19 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   for (const [px, pz, s, prot] of [[-7.2, -0.35, 0.8, 0.6], [-8.85, -0.35, 1.0, -0.5], [-9.75, -7.4, 0.95, -1.3]] as Array<[number, number, number, number]>) {
     const pot = new THREE.Group();
     pot.add(mesh(new THREE.CylinderGeometry(0.62 * s, 0.48 * s, 0.85 * s, 12), new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.85 }), 0, 0.42 * s, 0));
-    for (let i = 0; i < 7; i++) {
-      const leaf = mesh(new THREE.SphereGeometry(0.5 * s, 8, 6), new THREE.MeshStandardMaterial({ color: i % 2 ? "#4d7038" : "#5d7a3a", roughness: 1 }), (Math.random() - 0.5) * 1.35 * s, 1.25 * s + Math.random() * 1.5 * s, (Math.random() - 0.5) * 1.35 * s);
-      leaf.scale.set(0.65, 1.45, 0.65);
-      pot.add(leaf);
+    // soil visible at the top of the pot
+    pot.add(mesh(new THREE.CylinderGeometry(0.55 * s, 0.55 * s, 0.1, 12), new THREE.MeshStandardMaterial({ color: "#4a3526", roughness: 1 }), 0, 0.86 * s, 0));
+    // leaves grow in CLUSTERS — 3 clumps, each a tight family of leaves
+    for (let cl = 0; cl < 3; cl++) {
+      const ca = (cl / 3) * Math.PI * 2 + 0.7;
+      const clx = Math.cos(ca) * 0.4 * s;
+      const clz = Math.sin(ca) * 0.4 * s;
+      const cly = 1.15 * s + cl * 0.5 * s;
+      for (let l = 0; l < 4; l++) {
+        const leaf = mesh(new THREE.SphereGeometry(0.34 * s, 8, 6), new THREE.MeshStandardMaterial({ color: (cl + l) % 2 ? "#4d7038" : "#5d7a3a", roughness: 1 }), clx + (Math.random() - 0.5) * 0.5 * s, cly + (Math.random() - 0.5) * 0.42 * s, clz + (Math.random() - 0.5) * 0.5 * s);
+        leaf.scale.set(0.72, 1.35, 0.72);
+        pot.add(leaf);
+      }
     }
     // a few wooden bits standing in the soil
     for (let st2 = 0; st2 < 3; st2++) {
@@ -382,11 +392,11 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const gheeLamp = new THREE.Group();
   gheeLamp.add(mesh(new THREE.CylinderGeometry(0.34, 0.46, 0.22, 14), brass, 0, 0.11, 0));
   gheeLamp.add(mesh(new THREE.CylinderGeometry(0.26, 0.3, 0.12, 12), new THREE.MeshStandardMaterial({ color: "#f2e0b8", roughness: 0.4 }), 0, 0.24, 0));
-  const wickFlame = mesh(new THREE.ConeGeometry(0.1, 0.34, 7), new THREE.MeshStandardMaterial({ color: "#ffb03a", emissive: "#ff9420", emissiveIntensity: 2.6 }), 0, 0.52, 0);
+  const wickFlame = mesh(new THREE.ConeGeometry(0.1, 0.34, 7), new THREE.MeshStandardMaterial({ color: "#ffb03a", emissive: "#ff9420", emissiveIntensity: 1.7 }), 0, 0.52, 0);
   gheeLamp.add(wickFlame);
   gheeLamp.position.set(-8.1, 2.8, 1.2);
   scene.add(tag(gheeLamp, "fire", "the ghee lamp — a steady little flame"));
-  const lampLight = new THREE.PointLight("#ffd489", 6, 9, 2);
+  const lampLight = new THREE.PointLight("#ffd489", 3.5, 8, 2);
   lampLight.position.set(-8.1, 3.3, 1.2);
   scene.add(lampLight);
 
@@ -513,7 +523,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     paddle.rotation.z = wa + Math.PI / 2;
     waterWheel.add(paddle);
   }
-  waterWheel.position.set(-0.55, 1.5, -0.78); // tucked BEHIND the rocks — less obvious
+  waterWheel.position.set(-0.38, 1.55, -0.58); // hugging the rock — the water reaches it
   waterWheel.rotation.y = 0.5;
   rockFeature.add(tag(waterWheel, "water", "the water wheel — turning in the little fall"));
   coffee.add(rockFeature);
@@ -644,7 +654,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     for (let b = 0; b < 3; b++) {
       const beam = new THREE.Mesh(
         new THREE.CylinderGeometry(0.16, 0.45, 3.2, 8, 1, true),
-        new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
+        new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0.17, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
       );
       beam.position.set(vx + (b - 1) * 0.55, 1.75, vz + (b % 2 ? 0.2 : -0.2));
       beam.userData.phase = b * 1.3 + vz + vx;
@@ -701,7 +711,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
 
   const glass = new THREE.Group();
   glass.add(mesh(new THREE.CylinderGeometry(0.32, 0.26, 0.85, 14), new THREE.MeshPhysicalMaterial({ color: "#dff2f7", transparent: true, opacity: 0.35, roughness: 0.05, transmission: 0.6 }), 0, 0.43, 0));
-  glass.add(mesh(new THREE.CylinderGeometry(0.28, 0.24, 0.72, 14), new THREE.MeshStandardMaterial({ color: "#8fd2e8", transparent: true, opacity: 0.65 }), 0, 0.38, 0));
+  glass.add(mesh(new THREE.CylinderGeometry(0.28, 0.24, 0.42, 14), new THREE.MeshStandardMaterial({ color: "#8fd2e8", transparent: true, opacity: 0.65 }), 0, 0.21, 0));
   glass.position.set(-8.1, 2.8, 6.6);
   scene.add(tag(glass, "water", "a glass of water — small and complete"));
 
@@ -772,6 +782,17 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   for (const [tx, tz, ts] of [[9.2, -10.1, 1.15], [7.5, -11.8, 0.95], [9.8, -13.2, 0.8]] as Array<[number, number, number]>) {
     const tree = new THREE.Group();
     tree.add(mesh(new THREE.CylinderGeometry(0.32 * ts, 0.5 * ts, 3.4 * ts, 8), darkWood, 0, 1.7 * ts, 0));
+    // branches reaching into the canopy
+    for (let br = 0; br < 3; br++) {
+      const ba = br * 2.1 + ts * 3;
+      const branch = mesh(new THREE.CylinderGeometry(0.09 * ts, 0.17 * ts, 1.9 * ts, 6), darkWood, Math.cos(ba) * 0.6 * ts, (2.9 + br * 0.55) * ts, Math.sin(ba) * 0.6 * ts);
+      branch.rotation.set(Math.cos(ba) * 0.9, 0, -Math.sin(ba) * 0.9);
+      tree.add(branch);
+    }
+    // a little soil mound at the base
+    const treeSoil = mesh(new THREE.SphereGeometry(1.15 * ts, 10, 8), new THREE.MeshStandardMaterial({ color: "#7a5c3e", roughness: 1 }), 0, 0.12, 0);
+    treeSoil.scale.y = 0.22;
+    tree.add(treeSoil);
     for (let i = 0; i < 5; i++) {
       const leaf = mesh(new THREE.SphereGeometry((1.5 - i * 0.16) * ts, 9, 7), new THREE.MeshStandardMaterial({ color: "#4d7038", roughness: 1 }), (Math.random() - 0.5) * 1.6 * ts, (3.6 + i * 0.75) * ts, (Math.random() - 0.5) * 1.6 * ts);
       leaf.scale.y = 0.72;
@@ -829,5 +850,5 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   );
   scene.add(tag(yogaMat, "space", "the yoga mat — silence, sun, breath"));
 
-  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams, waterWheel };
+  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams, waterWheel, lampFlame: wickFlame };
 }
