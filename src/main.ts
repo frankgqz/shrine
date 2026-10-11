@@ -28,7 +28,7 @@ controls.target.set(0, 2.6, -6);
 controls.enableDamping = true;
 controls.dampingFactor = 0.06;
 controls.minDistance = 8;
-controls.maxDistance = 45;
+controls.maxDistance = 80;
 controls.maxPolarAngle = Math.PI / 2.04;
 controls.autoRotate = false;
 controls.update();
