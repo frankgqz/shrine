@@ -149,7 +149,7 @@ function animate(): void {
   objects.glassPanels.forEach((panel, i) => {
     const home = -7.8 + i * 5.2;
     // open = the right two slide INTO the left two, leaving the right side clear
-    const goal = glassOpen ? (i === 2 ? -2.92 : i === 3 ? -8.12 : home) : home;
+    const goal = glassOpen ? (i === 2 ? -2.92 : i === 3 ? -7.52 : home) : home;
     panel.position.x += (goal - panel.position.x) * 0.055;
   });
 

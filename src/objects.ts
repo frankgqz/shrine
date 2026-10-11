@@ -210,7 +210,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // ============ FLOOR VENTS + THERMAL WISPS (air) + FLOOR UPLIGHTS ============
   const wisps: THREE.Mesh[] = [];
   const floorLights: THREE.PointLight[] = [];
-  const ventZs = [-2.2, 1.6, 5.4];
+  const ventZs = [-5.7, 2.8, 6.4];
   for (const z of ventZs) {
     const vent = new THREE.Group();
     vent.add(mesh(new THREE.BoxGeometry(1.35, 0.12, 2.3), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.6, metalness: 0.5 }), 0, 0.06, 0));
