@@ -44,6 +44,7 @@ export interface SceneObjects {
   lightRay: THREE.Mesh;
   ventFins: THREE.Mesh[];
   monScreens: THREE.Mesh[];
+  steamBeams: THREE.Mesh[];
 }
 
 export function buildObjects(scene: THREE.Scene): SceneObjects {
@@ -55,15 +56,15 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // speakers on the desk (one each side of the monitors)
   for (const sz of [3.55, -3.35]) {
     desk.add(mesh(new THREE.BoxGeometry(0.62, 1.15, 0.62), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.55 }), -1.05, 3.37, sz));
-    const cone = mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.08, 12), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -0.72, 3.05, sz); // big LOW
+    const cone = mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.08, 12), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -0.72, 3.22, sz); // big LOW
     cone.rotation.z = Math.PI / 2;
     desk.add(cone);
-    const midRing = mesh(new THREE.TorusGeometry(0.255, 0.02, 8, 22), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -0.67, 3.05, sz);
+    const midRing = mesh(new THREE.TorusGeometry(0.255, 0.02, 8, 22), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -0.67, 3.22, sz);
     midRing.rotation.y = Math.PI / 2;
     desk.add(midRing);
-    const tweeter = mesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -0.72, 3.55, sz); // small HIGH
+    const tweeter = mesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -0.72, 3.7, sz); // small HIGH
     desk.add(tweeter);
-    const twRing = mesh(new THREE.TorusGeometry(0.13, 0.016, 8, 18), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -0.67, 3.55, sz);
+    const twRing = mesh(new THREE.TorusGeometry(0.13, 0.016, 8, 18), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -0.67, 3.7, sz);
     twRing.rotation.y = Math.PI / 2;
     desk.add(twRing);
   }
@@ -117,48 +118,48 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // rounded ergonomic shapes — wide shapely seat, curved back shell
   // wide, slightly square seat with curved edges
   const seatShell = new THREE.Mesh(new RoundedBoxGeometry(2.6, 0.44, 2.4, 4, 0.2), leather);
-  seatShell.position.set(0, 2.22, 0);
+  seatShell.position.set(0, 1.86, 0);
   chair.add(seatShell);
   const seatCushion = new THREE.Mesh(new RoundedBoxGeometry(2.38, 0.36, 2.18, 4, 0.17), leather);
-  seatCushion.position.set(0, 2.52, 0);
+  seatCushion.position.set(0, 2.16, 0);
   chair.add(seatCushion);
   // rectangular back with curved edges (no more oval pillows)
   const backShell = new THREE.Mesh(new RoundedBoxGeometry(0.5, 3.15, 2.05, 4, 0.16), leather);
-  backShell.position.set(-0.85, 4.35, 0);
+  backShell.position.set(-0.85, 3.99, 0);
   backShell.rotation.z = 0.1;
   chair.add(backShell);
   const backPad = new THREE.Mesh(new RoundedBoxGeometry(0.3, 2.3, 1.6, 4, 0.12), leather);
-  backPad.position.set(-0.72, 4.3, 0); // recessed behind — shape without the jut
+  backPad.position.set(-0.72, 3.94, 0); // recessed behind — shape without the jut
   backPad.rotation.z = 0.1;
   chair.add(backPad);
   const lumbar = new THREE.Mesh(new RoundedBoxGeometry(0.3, 0.85, 1.5, 4, 0.1), leather);
-  lumbar.position.set(-0.52, 3.75, 0);
+  lumbar.position.set(-0.52, 3.39, 0);
   chair.add(lumbar);
   // headrest — rectangular, extended out on two black poles
   for (const z of [-0.55, 0.55]) {
-    chair.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.85, 8), blackTrim, -0.92, 6.25, z));
+    chair.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.85, 8), blackTrim, -0.92, 5.89, z));
   }
   const headrest = new THREE.Mesh(new RoundedBoxGeometry(0.42, 0.62, 1.5, 4, 0.09), leather);
-  headrest.position.set(-0.88, 6.72, 0);
+  headrest.position.set(-0.88, 6.36, 0);
   headrest.rotation.z = 0.14;
   chair.add(headrest);
   // short side brackets tie the backrest to the seat; the height lever lives
   // on the SIDE of the post (not off the back)
   for (const z of [-0.82, 0.82]) {
-    const bracket = mesh(new THREE.BoxGeometry(0.62, 0.16, 0.14), blackTrim, -0.6, 2.68, z);
+    const bracket = mesh(new THREE.BoxGeometry(0.62, 0.16, 0.14), blackTrim, -0.78, 2.32, z);
     bracket.rotation.z = 0.55;
     chair.add(bracket);
   }
-  const heightLever = mesh(new THREE.BoxGeometry(0.55, 0.11, 0.15), blackTrim, 0.32, 1.52, 0.4);
+  const heightLever = mesh(new THREE.BoxGeometry(0.55, 0.11, 0.15), blackTrim, 0.32, 1.32, 0.4);
   heightLever.rotation.z = -0.22;
   chair.add(heightLever);
   for (const z of [-1.05, 1.05]) {
-    const armPad = mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.95, 10), blackTrim, 0.12, 3.2, z);
+    const armPad = mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.95, 10), blackTrim, 0.12, 2.84, z);
     armPad.rotation.z = Math.PI / 2;
     chair.add(armPad);
-    chair.add(mesh(new THREE.BoxGeometry(0.17, 0.85, 0.17), blackTrim, 0.12, 2.75, z));
+    chair.add(mesh(new THREE.BoxGeometry(0.17, 0.85, 0.17), blackTrim, 0.12, 2.39, z));
   }
-  chair.add(mesh(new THREE.CylinderGeometry(0.16, 0.16, 1.88, 10), blackTrim, 0, 1.32, 0));
+  chair.add(mesh(new THREE.CylinderGeometry(0.16, 0.16, 1.5, 10), blackTrim, 0, 1.12, 0));
   for (let i = 0; i < 5; i++) {
     const a = (i / 5) * Math.PI * 2;
     const arm = mesh(new THREE.BoxGeometry(0.23, 0.13, 1.35), blackTrim, Math.sin(a) * 0.6, 0.38, Math.cos(a) * 0.6);
@@ -172,7 +173,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   scene.add(tag(chair, "air", "the chair — leather, tall, facing the work"));
 
   // ============ INDOOR PLANTS — slot 6, right of + below the projection ============
-  for (const [px, pz, s, prot] of [[-8.9, 0.2, 0.8, 0.6], [-9.35, -1.1, 1.0, -0.5], [-9.75, -8.05, 0.95, -1.3]] as Array<[number, number, number, number]>) {
+  for (const [px, pz, s, prot] of [[-8.55, 1.15, 0.8, 0.6], [-8.85, -0.35, 1.0, -0.5], [-9.75, -7.4, 0.95, -1.3]] as Array<[number, number, number, number]>) {
     const pot = new THREE.Group();
     pot.add(mesh(new THREE.CylinderGeometry(0.62 * s, 0.48 * s, 0.85 * s, 12), new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.85 }), 0, 0.42 * s, 0));
     for (let i = 0; i < 7; i++) {
@@ -193,6 +194,17 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       scene.add(mesh(new THREE.BoxGeometry(0.42, 0.35, 0.1), metal, 10.05, wy - 0.22, bz));
     }
   }
+
+  // a little vase of flowers on the wall shelf
+  const vase = new THREE.Group();
+  vase.add(mesh(new THREE.CylinderGeometry(0.13, 0.1, 0.3, 10), new THREE.MeshStandardMaterial({ color: "#c8d4e0", roughness: 0.3 }), 0, 0.15, 0));
+  for (let f = 0; f < 5; f++) {
+    const fang = (f / 5) * Math.PI * 2;
+    vase.add(mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.32, 5), new THREE.MeshStandardMaterial({ color: "#5d7a3a", roughness: 0.9 }), Math.sin(fang) * 0.05, 0.42, Math.cos(fang) * 0.05));
+    vase.add(mesh(new THREE.SphereGeometry(0.055, 6, 5), new THREE.MeshStandardMaterial({ color: ["#e8a0b4", "#f2d27a", "#c98fbf", "#e88a7a", "#f0e6c8"][f], roughness: 0.85 }), Math.sin(fang) * 0.14, 0.62, Math.cos(fang) * 0.14));
+  }
+  vase.position.set(10.05, 4.01, 5.6);
+  scene.add(tag(vase, "earth", "flowers on the shelf — a small bright hello"));
 
   // ============ A PAINTING on the right wall (a warm dusk) ============
   const paintCanvas = document.createElement("canvas");
@@ -543,6 +555,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const wisps: THREE.Mesh[] = [];
   const floorLights: THREE.PointLight[] = [];
   const ventFins: THREE.Mesh[] = [];
+  const steamBeams: THREE.Mesh[] = [];
   // a soft cloud puff texture — this is what makes steam look like steam
   const steamCanvas = document.createElement("canvas");
   steamCanvas.width = 64;
@@ -564,17 +577,18 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   for (const [vx, vz] of ventSpecs) {
     const airColor = "#ff6a4a"; // live mode color, recolored in the animation loop
     const vent = new THREE.Group();
-    // a louvre grille like the photo: white frame, dark cavity, full-width
+    // a BLACK louvre grille like the photo: frame, dark cavity, full-width
     // blades that LIFT on one side when the air breathes
-    vent.add(mesh(new THREE.BoxGeometry(2.1, 0.14, 1.5), new THREE.MeshStandardMaterial({ color: "#e8e2d5", roughness: 0.55 }), 0, 0.07, 0));
-    vent.add(mesh(new THREE.BoxGeometry(1.82, 0.1, 1.22), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.7 }), 0, 0.12, 0));
+    vent.add(mesh(new THREE.BoxGeometry(2.1, 0.14, 1.5), new THREE.MeshStandardMaterial({ color: "#1c1c20", roughness: 0.55 }), 0, 0.07, 0));
+    vent.add(mesh(new THREE.BoxGeometry(1.82, 0.1, 1.22), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.7 }), 0, 0.12, 0));
     for (let i = 0; i < 5; i++) {
-      const fin = mesh(new THREE.BoxGeometry(1.82, 0.05, 0.19), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.5, metalness: 0.5 }), 0, 0.19, -0.48 + i * 0.24);
+      const fin = mesh(new THREE.BoxGeometry(1.82, 0.05, 0.19), new THREE.MeshStandardMaterial({ color: "#26262c", roughness: 0.5, metalness: 0.5 }), 0, 0.19, -0.48 + i * 0.24);
       fin.rotation.x = 0.08; // nearly flush at rest
       ventFins.push(fin);
       vent.add(fin);
     }
     vent.position.set(vx, 0, vz);
+    if (vx > 9 && vz > 6) vent.rotation.y = Math.PI; // spot 1: blades lift TOWARD the viewer
     scene.add(tag(vent, "air", "the vent grille — blades lift, steam rises"));
 
     for (let w = 0; w < 6; w++) {
@@ -587,6 +601,17 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       wisp.userData.vx = vx;
       scene.add(tag(wisp, "air", "the air — steam when the vents breathe"));
       wisps.push(wisp);
+    }
+
+    // TEST steam — bold colored columns so the mist is unmistakable (refine later)
+    for (let b = 0; b < 3; b++) {
+      const beam = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.18, 0.55, 3.4, 8, 1, true),
+        new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
+      );
+      beam.position.set(vx + (b - 1) * 0.55, 1.8, vz + (b % 2 ? 0.2 : -0.2));
+      scene.add(tag(beam, "air", "steam — the air made visible"));
+      steamBeams.push(beam);
     }
 
     const fixture = mesh(new THREE.CylinderGeometry(0.16, 0.22, 0.09, 12), new THREE.MeshStandardMaterial({ color: "#d9c9a8", emissive: airColor, emissiveIntensity: 0.2 }), vx + (vx < 0 ? 0.95 : -0.95), 0.05, vz);
@@ -638,7 +663,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const fireCone = mesh(new THREE.ConeGeometry(0.62, 1.15, 8), new THREE.MeshStandardMaterial({ color: "#ff8a2e", emissive: "#ff6a1f", emissiveIntensity: 2.3 }), 0, 1.05, 0);
   firePit.add(fireCone);
   firePit.add(mesh(new THREE.ConeGeometry(0.34, 0.7, 7), new THREE.MeshStandardMaterial({ color: "#ffc46b", emissive: "#ffb03a", emissiveIntensity: 2.8 }), 0.35, 0.9, -0.2));
-  firePit.position.set(-1.6, 0.28, -11.6); // no big base circle — the fire sits on the ground
+  firePit.position.set(-1.6, 0.35, -11.6); // no big base circle — the fire sits on the ground
   scene.add(tag(firePit, "fire", "the fire pit — warmth under the sky"));
 
   const fire = new THREE.PointLight("#ff7a2a", 22, 22, 2);
@@ -663,8 +688,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       bench.add(mesh(new THREE.CylinderGeometry(0.13, 0.17, 0.9, 8), darkWood, Math.cos(la) * 2.55, 0.45, -Math.sin(la) * 2.55));
     }
   }
-  bench.position.set(-0.7, 0, -11.7);
-  bench.rotation.y = -0.5; // seats toward 12-3-4 rather than 2-5
+  bench.position.set(-0.7, 0.35, -11.7);
+  bench.rotation.y = 0.5; // opposite way, per Frank
   scene.add(tag(bench, "fire", "the semicircle bench — sit, face the fire and the house"));
 
   // ============ EARTH — garden near the cliff, tree on the balcony ============
@@ -698,29 +723,23 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // fluctuates like two veils merging and parting
   const portalVeils: THREE.Mesh[] = [];
   const portal = new THREE.Group();
-  // a MINI BLACK HOLE — a dark oval body, veils hugging it, clear of the bay walls
-  const hole = new THREE.Mesh(
-    new THREE.SphereGeometry(0.95, 24, 18),
-    new THREE.MeshStandardMaterial({ color: "#0a0714", emissive: "#241542", emissiveIntensity: 0.5, roughness: 0.35, transparent: true, opacity: 0.42 })
-  );
-  hole.scale.set(0.82, 1.22, 0.82);
-  portal.add(hole);
+  // (no big solid sphere — just faint circles now)
   const veilC = new THREE.Mesh(
     new THREE.CircleGeometry(1.02, 32),
-    new THREE.MeshBasicMaterial({ color: "#120b22", transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide })
+    new THREE.MeshBasicMaterial({ color: "#120b22", transparent: true, opacity: 0.1, depthWrite: false, side: THREE.DoubleSide })
   );
   veilC.scale.set(0.85, 1.25, 1);
   portal.add(veilC);
   const veilA = new THREE.Mesh(
     new THREE.CircleGeometry(0.88, 32),
-    new THREE.MeshBasicMaterial({ color: "#1a1030", transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide })
+    new THREE.MeshBasicMaterial({ color: "#1a1030", transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide })
   );
   veilA.position.z = 0.06;
   veilA.scale.set(0.85, 1.25, 1);
   portal.add(veilA);
   const veilB = new THREE.Mesh(
     new THREE.CircleGeometry(0.68, 28),
-    new THREE.MeshBasicMaterial({ color: "#241542", transparent: true, opacity: 0.26, depthWrite: false, side: THREE.DoubleSide })
+    new THREE.MeshBasicMaterial({ color: "#241542", transparent: true, opacity: 0.12, depthWrite: false, side: THREE.DoubleSide })
   );
   veilB.position.z = 0.12;
   veilB.scale.set(0.85, 1.25, 1);
@@ -728,7 +747,14 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   portal.position.set(9.55, 3.1, -5.885); // inside the shelf's open bay
   portal.rotation.y = -Math.PI / 2; // faces the room
   scene.add(tag(portal, "space", "the portal — a way to another reality"));
-  portalVeils.push(veilA, veilB, veilC);
+  const veilD = new THREE.Mesh(
+    new THREE.CircleGeometry(1.22, 36),
+    new THREE.MeshBasicMaterial({ color: "#0e081c", transparent: true, opacity: 0.08, depthWrite: false, side: THREE.DoubleSide })
+  );
+  veilD.position.z = -0.06;
+  veilD.scale.set(0.85, 1.25, 1);
+  portal.add(veilD);
+  portalVeils.push(veilA, veilB, veilC, veilD);
 
   // (the balcony gudi/shrine is PARKED 2026-10-12 — Frank wants to see the
   // bookshelf pooja items first. Restore here when he says the word.)
@@ -740,5 +766,5 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   );
   scene.add(tag(yogaMat, "space", "the yoga mat — silence, sun, breath"));
 
-  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens };
+  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams };
 }

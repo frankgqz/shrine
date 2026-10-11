@@ -54,18 +54,41 @@ objects.monScreens.forEach((m, i) => {
   codeScreens.push({ tex, ctx, w: c.width, h: c.height });
 });
 function drawCode(ctx: CanvasRenderingContext2D, w: number, h: number, t: number): void {
-  ctx.fillStyle = "#0c1016";
+  // a calm editor, VS Code flavour — light code, not a data storm
+  ctx.fillStyle = "#1e1e1e";
   ctx.fillRect(0, 0, w, h);
-  const rows = Math.floor(h / 18);
+  ctx.fillStyle = "#252526"; // activity bar + sidebar
+  ctx.fillRect(0, 0, 16, h);
+  ctx.fillRect(16, 0, 40, h);
+  ctx.fillStyle = "#2d2d2d"; // tab strip
+  ctx.fillRect(56, 0, w - 56, 18);
+  ctx.fillStyle = "#1e1e1e"; // gutter
+  ctx.fillRect(56, 18, 34, h - 18);
+  for (let s2 = 0; s2 < 5; s2++) {
+    ctx.fillStyle = "#3c3c40";
+    ctx.fillRect(22, 28 + s2 * 16, 22 + (s2 % 3) * 5, 4);
+  }
+  const rows = Math.floor((h - 30) / 15);
   for (let r = 0; r < rows; r++) {
-    const y = r * 18 + 4;
-    const scroll = (t * 55 + r * 90) % (w + 260);
-    for (let k = 0; k < 22; k++) {
-      const x = ((k * 52 + r * 31 + scroll) % (w + 140)) - 70;
-      const lw = 7 + ((k * 29 + r * 17) % 26);
-      ctx.fillStyle = (k + r) % 3 === 0 ? "#7fc4ff" : (k + r) % 3 === 1 ? "#9fe8b0" : "#5a6b80";
-      ctx.fillRect(x, y, lw, 7);
+    const y = 26 + r * 15;
+    ctx.fillStyle = "#4a4a50"; // line numbers
+    ctx.fillRect(62, y, 9, 3);
+    const indent = ((r * 7 + 3) % 4) * 9;
+    let x = 98 + indent;
+    const nTokens = 2 + ((r * 5 + 2) % 3);
+    for (let k = 0; k < nTokens; k++) {
+      const seed = (r * 31 + k * 17) % 97;
+      const lw = 14 + (seed % 34);
+      ctx.fillStyle = k === 0 ? "#6a9955" : seed % 2 ? "#9cdcfe" : "#ce9178";
+      ctx.fillRect(x, y, lw, 4);
+      x += lw + 8;
+      if (x > w - 20) break;
     }
+  }
+  // a soft blinking cursor
+  if (Math.floor(t * 1.1) % 2 === 0) {
+    ctx.fillStyle = "#aeafad";
+    ctx.fillRect(112, 22 + (Math.floor(t * 0.25) % rows) * 15, 4, 11);
   }
 }
 const lights = buildLights(scene);
@@ -247,7 +270,7 @@ function animate(): void {
   });
   // the gill fins rotate UP when the air breathes, lie flat when it rests
   objects.ventFins.forEach((f) => {
-    const target = ventOn ? 0.55 : 0.08; // blades LIFT on one side (like the photo)
+    const target = ventOn ? 0.3 : 0.08; // blades lift a touch (lower angle)
     f.rotation.x += (target - f.rotation.x) * 0.07;
   });
   const warmth = 1 + nightMix * 0.45;
@@ -263,7 +286,7 @@ function animate(): void {
     w.position.x += (Math.sin(t * 0.9 + (w.userData.phase as number)) * 0.18 - ((w.position.x - vx) * 0.02)) * 0.06;
     const wm = w.material as THREE.MeshBasicMaterial;
     wm.color.set(ventColor);
-    wm.opacity = (ventOn ? 1 : 0) * (0.55 + nightMix * 0.25) * (1 - phase / 2.6);
+    wm.opacity = (ventOn ? 1 : 0) * (0.7 + nightMix * 0.2) * (1 - phase / 2.6);
   });
 
   codeScreens.forEach((s, i) => {
@@ -271,10 +294,17 @@ function animate(): void {
     s.tex.needsUpdate = true;
   });
 
-  // the portal breathes — two dark veils merging and parting
+  // the mist TEST beams pulse with the mode color
+  objects.steamBeams.forEach((b, i) => {
+    const m = b.material as THREE.MeshBasicMaterial;
+    m.color.set(ventColor);
+    m.opacity = ventOn ? 0.22 + Math.sin(t * 2.2 + i) * 0.08 : 0;
+  });
+
+  // the portal breathes — faint circles merging and parting
   objects.portalVeils.forEach((v, i) => {
     const m = v.material as THREE.MeshBasicMaterial;
-    m.opacity = 0.1 + i * 0.07 + Math.sin(t * 0.6 + i * 2.1) * 0.09 + Math.sin(t * 1.5 + i) * 0.045;
+    m.opacity = 0.05 + i * 0.03 + Math.sin(t * 0.6 + i * 2.1) * 0.045 + Math.sin(t * 1.5 + i) * 0.025;
   });
 
   // the UST light ray — faint, clearest at night

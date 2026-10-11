@@ -284,10 +284,10 @@ export function buildRoom(scene: THREE.Scene): void {
 
   // rocks stacked HIGH up the LEFT glass — the 9-zone climb, touching the window
   for (const [ox, oy, oz, os] of [
-    [-9.45, 0.75, -8.95, 1.2], [-8.55, 1.7, -8.7, 1.05], [-9.2, 2.75, -8.55, 0.95],
-    [-8.35, 3.65, -8.5, 0.88], [-9.35, 4.55, -8.55, 0.8], [-8.6, 5.4, -8.62, 0.72],
-    [-9.55, 6.15, -8.8, 0.62], [-8.1, 0.85, -9.45, 1.05], [-9.85, 3.35, -9.15, 0.78],
-    [-8.1, 4.75, -8.95, 0.68], [-7.45, 1.05, -9.7, 1.3], [-7.3, 2.35, -9.85, 0.95],
+    [-9.45, 0.75, -10.05, 1.2], [-8.55, 1.7, -9.9, 1.05], [-9.2, 2.75, -9.8, 0.95],
+    [-8.35, 3.65, -9.72, 0.88], [-9.35, 4.55, -9.65, 0.8], [-8.6, 5.4, -9.55, 0.72],
+    [-9.55, 6.15, -9.45, 0.62], [-8.1, 0.85, -10.15, 1.05], [-9.85, 3.35, -9.95, 0.78],
+    [-8.1, 4.75, -9.75, 0.68], [-7.45, 1.05, -10.0, 1.3], [-7.3, 2.35, -10.15, 0.95],
   ] as Array<[number, number, number, number]>) {
     const r = rock(os, ["#8a8279", "#948c82", "#7d7770"][Math.floor(Math.random() * 3)]);
     r.position.set(ox, oy, oz);
@@ -295,6 +295,37 @@ export function buildRoom(scene: THREE.Scene): void {
     r.castShadow = true;
     r.receiveShadow = true;
     scene.add(r);
+  }
+
+  // a wooden DECK around the fire — dirt steps back, the decking shows
+  const deck = new THREE.Group();
+  const deckBase = new THREE.Mesh(new THREE.BoxGeometry(8.6, 1.2, 5.6), new THREE.MeshStandardMaterial({ color: "#8a6a48", roughness: 0.85 }));
+  deckBase.position.y = -0.25;
+  deck.add(deckBase);
+  for (let s = 0; s < 7; s++) {
+    const plank = new THREE.Mesh(new THREE.BoxGeometry(8.5, 0.05, 0.62), new THREE.MeshStandardMaterial({ color: s % 2 ? "#c9a06a" : "#bf9560", roughness: 0.8 }));
+    plank.position.set(0, 0.345, -2.4 + s * 0.8);
+    deck.add(plank);
+  }
+  deck.position.set(-1.2, 0, -11.7);
+  deck.receiveShadow = true;
+  scene.add(deck);
+
+  // dirt mounds rising where the trees and grass are
+  for (const [mx, mz, ms] of [[9.2, -10.1, 1.6], [7.5, -11.8, 1.35], [9.8, -13.2, 1.15], [8.6, -14.6, 1.0]] as Array<[number, number, number]>) {
+    const mound = new THREE.Mesh(new THREE.SphereGeometry(ms, 12, 9), new THREE.MeshStandardMaterial({ color: "#7a5c3e", roughness: 1 }));
+    mound.scale.y = 0.32;
+    mound.position.set(mx, 0.18, mz);
+    mound.receiveShadow = true;
+    scene.add(mound);
+  }
+
+  // a little GRASS inside, in the other corner
+  for (let g = 0; g < 6; g++) {
+    const blade = new THREE.Mesh(new THREE.ConeGeometry(0.1 + Math.random() * 0.06, 0.55 + Math.random() * 0.4, 5), new THREE.MeshStandardMaterial({ color: g % 2 ? "#5d7a3a" : "#6d8a45", roughness: 1 }));
+    blade.position.set(9.6 + (Math.random() - 0.5) * 0.9, 0.32, 7.6 + (Math.random() - 0.5) * 0.9);
+    blade.rotation.set((Math.random() - 0.5) * 0.4, Math.random() * Math.PI, (Math.random() - 0.5) * 0.4);
+    scene.add(blade);
   }
 
   // a paved PATH of deck tiles: glass doors -> fire -> rocks (IKEA-tile style)
@@ -308,7 +339,7 @@ export function buildRoom(scene: THREE.Scene): void {
       slat.position.set(0, 0.1, -0.52 + s * 0.26);
       tile.add(slat);
     }
-    tile.position.set(x, 0, z);
+    tile.position.set(x, 0.32, z); // deck-level, clear of the dirt
     tile.rotation.y = rot;
     tile.traverse((c) => {
       const m = c as THREE.Mesh;
