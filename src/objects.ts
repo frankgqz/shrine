@@ -42,6 +42,7 @@ export interface SceneObjects {
   floatRocks: THREE.Mesh[];
   portalVeils: THREE.Mesh[];
   lightRay: THREE.Mesh;
+  ventFins: THREE.Mesh[];
 }
 
 export function buildObjects(scene: THREE.Scene): SceneObjects {
@@ -55,12 +56,12 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     const cone = mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.08, 12), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -1.38, 3.55, sz);
     cone.rotation.z = Math.PI / 2;
     desk.add(cone);
-    const midRing = mesh(new THREE.TorusGeometry(0.255, 0.028, 8, 20), new THREE.MeshStandardMaterial({ color: "#1c1c20", roughness: 0.5, metalness: 0.3 }), -1.425, 3.55, sz);
+    const midRing = mesh(new THREE.TorusGeometry(0.27, 0.036, 8, 22), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -1.44, 3.55, sz);
     midRing.rotation.y = Math.PI / 2;
     desk.add(midRing);
     const tweeter = mesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -1.38, 3.05, sz);
     desk.add(tweeter);
-    const twRing = mesh(new THREE.TorusGeometry(0.125, 0.02, 8, 16), new THREE.MeshStandardMaterial({ color: "#1c1c20", roughness: 0.5, metalness: 0.3 }), -1.425, 3.05, sz);
+    const twRing = mesh(new THREE.TorusGeometry(0.14, 0.026, 8, 18), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -1.44, 3.05, sz);
     twRing.rotation.y = Math.PI / 2;
     desk.add(twRing);
   }
@@ -160,7 +161,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   scene.add(tag(chair, "air", "the chair — leather, tall, facing the work"));
 
   // ============ INDOOR PLANTS — slot 6, right of + below the projection ============
-  for (const [px, pz, s] of [[-8.7, -7.3, 1.15], [-8.7, -1.6, 0.95], [-8.7, -0.5, 0.72]] as Array<[number, number, number]>) {
+  for (const [px, pz, s] of [[-7.15, 2.35, 1.15], [-7.1, 1.1, 0.95], [-7.2, -0.15, 0.72]] as Array<[number, number, number]>) {
     const pot = new THREE.Group();
     pot.add(mesh(new THREE.CylinderGeometry(0.62 * s, 0.48 * s, 0.85 * s, 12), new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.85 }), 0, 0.42 * s, 0));
     for (let i = 0; i < 7; i++) {
@@ -173,7 +174,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
 
   // ============ WALL SHELVES above the couch (empty for now) ============
-  for (const [wy, wz] of [[4.75, 1.2], [6.15, 2.9]]) {
+  for (const [wy, wz] of [[4.75, 4.3], [6.15, 6.0]]) {
     const plank = mesh(new THREE.BoxGeometry(0.42, 0.12, 2.8), wood, 10.05, wy, wz);
     scene.add(tag(plank, "space", "a wall shelf — waiting"));
     for (const bz of [wz - 1.25, wz + 1.25]) {
@@ -214,14 +215,14 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const canvasPlane = mesh(new THREE.PlaneGeometry(3.5, 2.6), new THREE.MeshStandardMaterial({ map: paintingTex, roughness: 0.8 }), -0.08, 0, 0);
   canvasPlane.rotation.y = -Math.PI / 2;
   painting.add(canvasPlane);
-  painting.position.set(10.22, 6.15, -1.7);
+  painting.position.set(10.22, 6.15, 1.3);
   scene.add(tag(painting, "space", "the painting — a warm dusk held on cloth"));
 
   // ============ BOOKSHELF — right wall, between the glass and the couch ============
   const shelf = new THREE.Group();
   // an IKEA-style OPEN frame: two side panels, a thin back, planks between
-  shelf.add(mesh(new THREE.BoxGeometry(1.5, 6.6, 0.16), wood, 0, 3.3, -1.72)); // side
-  shelf.add(mesh(new THREE.BoxGeometry(1.5, 6.6, 0.16), wood, 0, 3.3, 1.72)); // side
+  shelf.add(mesh(new THREE.BoxGeometry(1.5, 6.6, 0.16), wood, 0, 3.3, -1.82)); // side
+  shelf.add(mesh(new THREE.BoxGeometry(1.5, 6.6, 0.16), wood, 0, 3.3, 1.82)); // side (extended toward the sofa)
   shelf.add(mesh(new THREE.BoxGeometry(0.08, 6.6, 3.6), new THREE.MeshStandardMaterial({ color: "#c9b28f", roughness: 0.85 }), 0.72, 3.3, 0)); // thin back
   const shelfYs = [0.12, 1.05, 2.25, 3.75, 5.15, 6.5];
   for (const y of shelfYs) {
@@ -231,7 +232,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
   shelf.add(mesh(new THREE.BoxGeometry(1.5, 5.3, 0.12), wood, 0, 3.65, 0.75)); // one divider
   // only a FEW books — the shelf is mostly sacred things
-  for (const [by, bh, bz, n] of [[1.62, 1.1, -1.35, 3], [1.62, 1.1, -0.78, 2], [1.75, 1.1, 1.45, 2]] as Array<[number, number, number, number]>) {
+  for (const [by, bh, bz, n] of [[1.62, 1.1, -1.35, 3], [1.62, 1.1, -0.78, 2], [1.75, 1.1, 1.22, 2]] as Array<[number, number, number, number]>) {
     for (let b = 0; b < n; b++) {
       const h = bh * (0.62 + Math.random() * 0.3);
       shelf.add(mesh(
@@ -244,7 +245,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // ---- the pooja collection (consecrated objects) ----
   const brassSoft = new THREE.MeshStandardMaterial({ color: "#d9a94f", roughness: 0.45, metalness: 0.55 });
   // crystals
-  for (const [cy, cz, cs, col] of [[3.98, 1.42, 0.24, "#b58ce0"], [4.02, 1.08, 0.18, "#8ce0d4"], [4.0, 1.55, 0.2, "#e0c98c"]] as Array<[number, number, number, string]>) {
+  for (const [cy, cz, cs, col] of [[3.98, 1.38, 0.24, "#b58ce0"], [4.02, 1.05, 0.18, "#8ce0d4"], [4.0, 1.5, 0.2, "#e0c98c"]] as Array<[number, number, number, string]>) {
     const crystal = mesh(new THREE.IcosahedronGeometry(cs, 0), new THREE.MeshStandardMaterial({ color: col, roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85 }), 0.35, cy, cz);
     crystal.scale.y = 1.7;
     shelf.add(crystal);
@@ -274,7 +275,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   dome.scale.y = 0.75;
   gudi.add(dome);
   gudi.add(mesh(new THREE.ConeGeometry(0.09, 0.32, 8), brassSoft, 0, 1.32, 0));
-  gudi.position.set(0.05, 5.2, 1.35);
+  gudi.position.set(0.05, 5.2, 1.28);
   gudi.scale.setScalar(0.85);
   shelf.add(tag(gudi, "space", "the gudi — consecrated, quietly alive"));
 
@@ -287,7 +288,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   kalash.add(mesh(new THREE.SphereGeometry(0.24, 10, 8), brassSoft, 0, 0.22, 0));
   kalash.add(mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.16, 10), brassSoft, 0, 0.48, 0));
   kalash.add(mesh(new THREE.SphereGeometry(0.13, 8, 6), new THREE.MeshStandardMaterial({ color: "#3f7a4e", roughness: 0.7 }), 0, 0.6, 0)); // coconut
-  kalash.position.set(0.42, 1.43, 1.3);
+  kalash.position.set(0.42, 1.43, 1.25);
   shelf.add(tag(kalash, "space", "the kalash — abundance in brass"));
   const mala = new THREE.Group();
   for (let i = 0; i < 18; i++) {
@@ -304,7 +305,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
   incense.position.set(0.08, 5.25, 0.35);
   shelf.add(tag(incense, "fire", "incense — the air made prayerful"));
-  for (const [cy, cz, cs, col] of [[5.55, -1.35, 0.2, "#e08c8c"], [5.5, 1.05, 0.17, "#8cc4e0"], [2.5, 1.5, 0.19, "#c4e08c"], [5.42, -1.32, 0.15, "#d4a0e8"]] as Array<[number, number, number, string]>) {
+  for (const [cy, cz, cs, col] of [[5.55, -1.35, 0.2, "#e08c8c"], [5.5, 1.02, 0.17, "#8cc4e0"], [2.5, 1.45, 0.19, "#c4e08c"], [5.42, -1.32, 0.15, "#d4a0e8"]] as Array<[number, number, number, string]>) {
     const crystal = mesh(new THREE.IcosahedronGeometry(cs, 0), new THREE.MeshStandardMaterial({ color: col, roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85 }), 0.05, cy, cz);
     crystal.scale.y = 1.55;
     shelf.add(crystal);
@@ -364,7 +365,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     const count = along ? Math.max(2, Math.round(w / 2.2)) : Math.max(2, Math.round(d / 2.2));
     for (let i = 0; i < count; i++) {
       const t = (i + 0.5) / count - 0.5;
-      const cw = along ? w / count * 0.97 : d - 0.14;
+      const cw = along ? w / count * 0.97 : w - 0.14;   // was d-0.14 here — slabs
       const cd = along ? d - 0.14 : d / count * 0.97;
       const cushion = new THREE.Mesh(new RoundedBoxGeometry(cw, 0.46, cd, 4, 0.14), fluffy);
       cushion.position.set(along ? x + t * w : x, 1.18, along ? z : z + t * d);
@@ -480,10 +481,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     new THREE.ConeGeometry(1.75, 3.9, 4, 1, true),
     new THREE.MeshBasicMaterial({ color: "#cfe4ff", transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide })
   );
-  lightRay.position.set(-10.15, 2.55, -3.8);
-  lightRay.rotation.x = Math.PI;      // apex down at the unit, fanning up the wall
-  lightRay.rotation.y = Math.PI / 4;
-  lightRay.rotation.z = -0.12;
+  lightRay.position.set(-9.75, 2.35, -3.8);
+  lightRay.rotation.set(Math.PI, 0, -0.45); // apex at the unit, top angled BEHIND the wall
   scene.add(tag(lightRay, "space", "the light ray — the projector's breath"));
 
   const screenRig = new THREE.Group();
@@ -531,31 +530,45 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // ============ FLOOR VENTS + THERMAL WISPS (air) + FLOOR UPLIGHTS ============
   const wisps: THREE.Mesh[] = [];
   const floorLights: THREE.PointLight[] = [];
+  const ventFins: THREE.Mesh[] = [];
+  // a soft cloud puff texture — this is what makes steam look like steam
+  const steamCanvas = document.createElement("canvas");
+  steamCanvas.width = 64;
+  steamCanvas.height = 64;
+  const sctx = steamCanvas.getContext("2d") as CanvasRenderingContext2D;
+  const grad = sctx.createRadialGradient(32, 32, 2, 32, 32, 30);
+  grad.addColorStop(0, "rgba(255,255,255,1)");
+  grad.addColorStop(0.55, "rgba(255,255,255,0.5)");
+  grad.addColorStop(1, "rgba(255,255,255,0)");
+  sctx.fillStyle = grad;
+  sctx.fillRect(0, 0, 64, 64);
+  const steamTex = new THREE.CanvasTexture(steamCanvas);
   // 2 vents left, 2 right — in the corners, grilles set diagonally. All four
   // share ONE mode color: red (warm) / blue (cool) / off, cycled by the switch.
   const ventSpecs: Array<[number, number]> = [
     [-9.55, -6.3], [-9.55, 6.2],
-    [9.35, -7.55], [9.55, 6.4],
+    [9.15, -7.55], [9.2, 6.4],
   ];
   for (const [vx, vz] of ventSpecs) {
     const airColor = "#ff6a4a"; // live mode color, recolored in the animation loop
     const vent = new THREE.Group();
-    vent.add(mesh(new THREE.BoxGeometry(2.2, 0.1, 1.15), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.6, metalness: 0.5 }), 0, 0.05, 0));
-    // GILLS — fins standing out of the ground, leaning like fish gills
+    vent.add(mesh(new THREE.BoxGeometry(2.0, 0.1, 1.15), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.6, metalness: 0.5 }), 0, 0.05, 0));
+    // GILLS — fins that lie low when off and rotate UP when the air breathes
     for (let i = 0; i < 6; i++) {
-      const fin = mesh(new THREE.BoxGeometry(0.12, 1.15, 0.62), new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.5, metalness: 0.55 }), -0.85 + i * 0.34, 0.52, 0);
-      fin.rotation.x = -0.5;
+      const fin = mesh(new THREE.BoxGeometry(0.12, 1.15, 0.62), new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.5, metalness: 0.55 }), -0.8 + i * 0.32, 0.52, 0);
+      fin.rotation.x = -1.42;
+      ventFins.push(fin);
       vent.add(fin);
     }
     vent.position.set(vx, 0, vz);
     scene.add(tag(vent, "air", "the vent gills — steam rises when the air breathes"));
 
-    for (let w = 0; w < 3; w++) {
+    for (let w = 0; w < 5; w++) {
       const wisp = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.8, 2.4, 1, 8),
-        new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false })
+        new THREE.PlaneGeometry(1.15, 1.5),
+        new THREE.MeshBasicMaterial({ map: steamTex, color: airColor, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false })
       );
-      wisp.position.set(vx + (w - 1) * 0.34, 1.4, vz + (w % 2 ? 0.28 : -0.28));
+      wisp.position.set(vx + (w - 2) * 0.3, 1.2 + (w % 3) * 0.55, vz + (w % 2 ? 0.26 : -0.26));
       wisp.userData.phase = w * 1.7 + vz + vx;
       wisp.userData.vx = vx;
       scene.add(tag(wisp, "air", "the air — steam when the vents breathe"));
@@ -577,7 +590,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const lever = mesh(new THREE.BoxGeometry(0.14, 0.34, 0.16), new THREE.MeshStandardMaterial({ color: "#f2efe8", roughness: 0.5 }), -0.09, 0.06, 0);
   lever.userData.action = "toggle-vents";
   lightSwitch.add(lever);
-  lightSwitch.position.set(10.28, 1.45, 6.9);
+  lightSwitch.position.set(10.18, 1.45, 6.9);
   lightSwitch.userData = { element: "air", label: "the switch — warm air, cool air, or still" };
   lightSwitch.traverse((c) => {
     c.userData = { ...c.userData, element: "air", label: "the switch — warm air, cool air, or still" };
@@ -619,34 +632,32 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const fireCone = mesh(new THREE.ConeGeometry(0.62, 1.15, 8), new THREE.MeshStandardMaterial({ color: "#ff8a2e", emissive: "#ff6a1f", emissiveIntensity: 2.3 }), 0, 1.05, 0);
   firePit.add(fireCone);
   firePit.add(mesh(new THREE.ConeGeometry(0.34, 0.7, 7), new THREE.MeshStandardMaterial({ color: "#ffc46b", emissive: "#ffb03a", emissiveIntensity: 2.8 }), 0.35, 0.9, -0.2));
-  const pitPlatform = mesh(new THREE.CylinderGeometry(2.1, 2.35, 0.5, 20), stone, -1.6, 0.25, -11.6);
-  scene.add(tag(pitPlatform, "fire", "the fire's stone platform"));
-  firePit.position.set(-1.6, 0.5, -11.6);
+  firePit.position.set(-1.6, 0.28, -11.6); // no big base circle — the fire sits on the ground
   scene.add(tag(firePit, "fire", "the fire pit — warmth under the sky"));
 
   const fire = new THREE.PointLight("#ff7a2a", 22, 22, 2);
   fire.position.set(-1.6, 2.0, -11.6);
   scene.add(fire);
 
-  // the semicircle SPLIT into two arcs with a walk-through gap
+  // two SMALL seat arcs, hugging the far side from the rocks
   const bench = new THREE.Group();
-  for (const startA of [0.23, 1.78]) {
-    const benchArc = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.5, 8, 18, Math.PI * 0.36), darkWood);
+  for (const startA of [-1.02, 0.2]) {
+    const benchArc = new THREE.Mesh(new THREE.TorusGeometry(2.55, 0.42, 8, 16, 0.88), darkWood);
     benchArc.rotation.z = startA;
     benchArc.rotation.x = -Math.PI / 2;
-    benchArc.position.y = 1.02;
+    benchArc.position.y = 0.92;
     benchArc.castShadow = true;
     bench.add(benchArc);
-    const benchPad = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.3, 8, 18, Math.PI * 0.36), new THREE.MeshStandardMaterial({ color: "#e8dcc8", roughness: 0.9 }));
+    const benchPad = new THREE.Mesh(new THREE.TorusGeometry(2.55, 0.26, 8, 16, 0.88), new THREE.MeshStandardMaterial({ color: "#e8dcc8", roughness: 0.9 }));
     benchPad.rotation.z = startA;
     benchPad.rotation.x = -Math.PI / 2;
-    benchPad.position.y = 1.34;
+    benchPad.position.y = 1.2;
     bench.add(benchPad);
-    for (const la of [startA + 0.12, startA + Math.PI * 0.24]) {
-      bench.add(mesh(new THREE.CylinderGeometry(0.14, 0.18, 1.0, 8), darkWood, Math.sin(la) * 2.95, 0.5, Math.cos(la) * 2.95));
+    for (const la of [startA + 0.15, startA + 0.72]) {
+      bench.add(mesh(new THREE.CylinderGeometry(0.13, 0.17, 0.9, 8), darkWood, Math.cos(la) * 2.55, 0.45, -Math.sin(la) * 2.55));
     }
   }
-  bench.position.set(-1.6, 0, -11.6);
+  bench.position.set(-0.7, 0, -11.7);
   scene.add(tag(bench, "fire", "the semicircle bench — sit, face the fire and the house"));
 
   // ============ EARTH — garden near the cliff, tree on the balcony ============
@@ -683,7 +694,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // a MINI BLACK HOLE — a dark oval body, veils hugging it, clear of the bay walls
   const hole = new THREE.Mesh(
     new THREE.SphereGeometry(0.95, 24, 18),
-    new THREE.MeshStandardMaterial({ color: "#0a0714", emissive: "#241542", emissiveIntensity: 0.5, roughness: 0.35 })
+    new THREE.MeshStandardMaterial({ color: "#0a0714", emissive: "#241542", emissiveIntensity: 0.5, roughness: 0.35, transparent: true, opacity: 0.42 })
   );
   hole.scale.set(0.82, 1.22, 0.82);
   portal.add(hole);
@@ -722,5 +733,5 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   );
   scene.add(tag(yogaMat, "space", "the yoga mat — silence, sun, breath"));
 
-  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay };
+  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins };
 }

@@ -212,10 +212,17 @@ function animate(): void {
       fm.emissiveIntensity = ventOn ? 0.35 : 0.08;
     }
   });
+  // the gill fins rotate UP when the air breathes, lie flat when it rests
+  objects.ventFins.forEach((f) => {
+    const target = ventOn ? -0.5 : -1.42;
+    f.rotation.x += (target - f.rotation.x) * 0.06;
+  });
   const warmth = 1 + nightMix * 0.45;
   objects.wisps.forEach((w) => {
     const phase = (t * 0.5 + (w.userData.phase as number)) % 2.6;
     w.position.y = 1.2 + phase;
+    const puff = 0.75 + phase * 0.55; // steam swells as it rises
+    w.scale.setScalar(puff);
     // steam: a slow sideways sway + tilt
     const sway = Math.sin(t * 1.6 + (w.userData.phase as number));
     w.rotation.z = sway * 0.22;

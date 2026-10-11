@@ -154,15 +154,23 @@ export function buildRoom(scene: THREE.Scene): void {
     bracket.position.set(hx, 2.95, -16.45);
     scene.add(bracket);
   }
-  for (let h = 0; h < 11; h++) {
-    const herb = new THREE.Mesh(
-      new THREE.SphereGeometry(0.16 + Math.random() * 0.1, 8, 6),
-      new THREE.MeshStandardMaterial({ color: ["#8fbf6a", "#c98fbf", "#e0b45c", "#6d8a45", "#b86a8a", "#a8c4e0"][h % 6], roughness: 0.9 })
-    );
-    herb.scale.y = 1.3 + Math.random() * 0.6;
-    herb.position.set(3.95 + h * 0.29 + (Math.random() - 0.5) * 0.1, 2.62 + Math.random() * 0.15, -16.45 + (Math.random() - 0.5) * 0.2);
-    herb.castShadow = true;
-    scene.add(herb);
+  // dainty little plants — thin stems, tiny leaves, whisper flowers
+  for (let h = 0; h < 13; h++) {
+    const hx = 3.95 + h * 0.25 + (Math.random() - 0.5) * 0.08;
+    const hz = -16.45 + (Math.random() - 0.5) * 0.22;
+    const stemH = 0.28 + Math.random() * 0.3;
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.02, stemH, 5), new THREE.MeshStandardMaterial({ color: "#5d7a3a", roughness: 0.9 }));
+    stem.position.set(hx, 2.42 + stemH / 2, hz);
+    scene.add(stem);
+    for (let l = 0; l < 3; l++) {
+      const leaf = new THREE.Mesh(new THREE.SphereGeometry(0.05 + Math.random() * 0.03, 6, 4), new THREE.MeshStandardMaterial({ color: ["#8fbf6a", "#6d8a45", "#a8c4b0"][l % 3], roughness: 0.9 }));
+      leaf.scale.set(1.6, 0.5, 0.8);
+      leaf.position.set(hx + (Math.random() - 0.5) * 0.12, 2.5 + l * stemH * 0.3, hz + (Math.random() - 0.5) * 0.12);
+      scene.add(leaf);
+    }
+    const bloom = new THREE.Mesh(new THREE.SphereGeometry(0.035 + Math.random() * 0.025, 6, 5), new THREE.MeshStandardMaterial({ color: ["#c98fbf", "#e0b45c", "#b86a8a", "#a8c4e0", "#e8d8f0"][h % 5], roughness: 0.85 }));
+    bloom.position.set(hx, 2.44 + stemH, hz);
+    scene.add(bloom);
   }
 
   // ---- Walls at the cube edges, ~20% taller (9.6) ----
