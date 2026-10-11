@@ -264,7 +264,7 @@ function animate(): void {
   const flicker = 0.82 + Math.sin(t * 9.3) * 0.09 + Math.sin(t * 23.7) * 0.06;
   objects.fire.intensity = 22 * flicker * warmth;
   objects.fireCone.scale.setScalar(0.94 + Math.sin(t * 11) * 0.07);
-  objects.water.position.y = 0.82 + Math.sin(t * 1.6) * 0.012;
+  objects.water.position.y = 1.18 + Math.sin(t * 1.6) * 0.012;
   objects.lamp.intensity = (14 + Math.sin(t * 2.2) * 0.5) * warmth;
 
   const target = pick();

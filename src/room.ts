@@ -195,52 +195,26 @@ export function buildRoom(scene: THREE.Scene): void {
   scene.add(handrail);
   // (the cliff edges at slot 9 carry no wooden poles — the drop is the point)
 
-  // ---- The waterfall (slot 9: top-9 -> bottom-9, through the ground) ----
-  const fallMat = new THREE.MeshStandardMaterial({
-    color: "#a5dcf0", transparent: true, opacity: 0.72, roughness: 0.12,
-    emissive: "#4d9fc4", emissiveIntensity: 0.35, side: THREE.DoubleSide,
-  });
-  const waterfall = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 22), fallMat);
-  waterfall.position.set(-7, -8.2, -13.15);
-  scene.add(waterfall);
-
-  // Water path: ABOVE top-6 (over the projection, high on the left wall)
-  // -> an elevated rock channel sloping back to top-9 -> the fall at slot 9
-  // -> down below bottom-9 into the plunge pool and the lake.
-  const waterMat = new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.15, transparent: true, opacity: 0.85, emissive: "#2f7fa0", emissiveIntensity: 0.25 });
-
-  // the spout high on the left wall, above the projection
-  const spout = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 1.1), beamMat);
-  spout.position.set(-10.1, 9.7, -4.6);
-  scene.add(spout);
-
-  // the elevated channel: two rock shelves with water riding them
-  const channelA = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.55, 5.6), stoneChannelMat);
-  channelA.position.set(-8.6, 8.75, -6.6);
-  channelA.rotation.x = -0.28;
-  scene.add(channelA);
-  const waterA = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.12, 5.3), waterMat);
-  waterA.position.set(-8.6, 9.12, -6.55);
-  waterA.rotation.x = -0.28;
-  scene.add(waterA);
-
-  const channelB = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.55, 5.2), stoneChannelMat);
-  channelB.position.set(-7.7, 6.15, -10.6);
-  channelB.rotation.x = -0.42;
-  scene.add(channelB);
-  const waterB = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.12, 4.9), waterMat);
-  waterB.position.set(-7.7, 6.55, -10.55);
-  waterB.rotation.x = -0.42;
-  scene.add(waterB);
-
-  // the pool at top-9 where the fall begins
-  const sourcePool = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.3, 0.3, 14), waterMat);
-  sourcePool.position.set(-7, 6.2, -11.9);
-  scene.add(sourcePool);
-  const sourceShelf = rock(1.7, "#8d7a66");
-  sourceShelf.position.set(-7, 5.15, -11.5);
-  sourceShelf.castShadow = true;
-  scene.add(sourceShelf);
+  // ---- Zone 9: BIG ROCKS with a dry channel stepping down between them.
+  // The waterfall itself is parked (Frank 2026-10-12) — this is where water
+  // will run down between the rocks, into the plunge pool. ----
+  for (let i = 0; i < 5; i++) {
+    const t = i / 4;
+    const slab = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.32, 3.1), stoneChannelMat);
+    slab.position.set(-7, 4.9 - t * 12.6, -11.9 - t * 2.4);
+    slab.rotation.x = -0.42 - t * 0.55;
+    slab.receiveShadow = true;
+    scene.add(slab);
+  }
+  for (let i = 0; i < 11; i++) {
+    const t = i / 10;
+    const side = i % 2 ? 1 : -1;
+    const r = rock(1.35 + Math.random() * 1.15, i % 2 ? "#77624e" : "#8d7a66");
+    r.position.set(-7 + side * (1.7 + Math.random() * 0.85), 4.7 - t * 12.4 + Math.random() * 0.7, -11.9 - t * 2.4 + (Math.random() - 0.5) * 1.1);
+    r.rotation.y = Math.random() * Math.PI;
+    r.castShadow = true;
+    scene.add(r);
+  }
 
   // rocks and shrubs around the water
   for (let i = 0; i < 9; i++) {
