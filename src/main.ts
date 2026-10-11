@@ -247,8 +247,8 @@ function animate(): void {
   });
   // the gill fins rotate UP when the air breathes, lie flat when it rests
   objects.ventFins.forEach((f) => {
-    const target = ventOn ? 0.55 : 0; // skillion slats twist open — low side along one edge
-    f.rotation.z += (target - f.rotation.z) * 0.07;
+    const target = ventOn ? 0.55 : 0.08; // blades LIFT on one side (like the photo)
+    f.rotation.x += (target - f.rotation.x) * 0.07;
   });
   const warmth = 1 + nightMix * 0.45;
   objects.wisps.forEach((w) => {

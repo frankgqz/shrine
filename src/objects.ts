@@ -564,15 +564,18 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   for (const [vx, vz] of ventSpecs) {
     const airColor = "#ff6a4a"; // live mode color, recolored in the animation loop
     const vent = new THREE.Group();
-    vent.add(mesh(new THREE.BoxGeometry(2.0, 0.1, 1.15), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.6, metalness: 0.5 }), 0, 0.05, 0));
-    // SKILLION slats — one low side along the vent, twisting open together
+    // a louvre grille like the photo: white frame, dark cavity, full-width
+    // blades that LIFT on one side when the air breathes
+    vent.add(mesh(new THREE.BoxGeometry(2.1, 0.14, 1.5), new THREE.MeshStandardMaterial({ color: "#e8e2d5", roughness: 0.55 }), 0, 0.07, 0));
+    vent.add(mesh(new THREE.BoxGeometry(1.82, 0.1, 1.22), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.7 }), 0, 0.12, 0));
     for (let i = 0; i < 5; i++) {
-      const fin = mesh(new THREE.BoxGeometry(0.34, 0.055, 1.05), new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.5, metalness: 0.55 }), -0.78 + i * 0.39, 0.11 + i * 0.035, 0);
+      const fin = mesh(new THREE.BoxGeometry(1.82, 0.05, 0.19), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.5, metalness: 0.5 }), 0, 0.19, -0.48 + i * 0.24);
+      fin.rotation.x = 0.08; // nearly flush at rest
       ventFins.push(fin);
       vent.add(fin);
     }
     vent.position.set(vx, 0, vz);
-    scene.add(tag(vent, "air", "the vent gills — steam rises when the air breathes"));
+    scene.add(tag(vent, "air", "the vent grille — blades lift, steam rises"));
 
     for (let w = 0; w < 6; w++) {
       const wisp = new THREE.Mesh(
