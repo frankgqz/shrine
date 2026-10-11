@@ -53,15 +53,15 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // speakers on the desk (one each side of the monitors)
   for (const sz of [3.55, -3.35]) {
     desk.add(mesh(new THREE.BoxGeometry(0.62, 1.15, 0.62), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.55 }), -1.05, 3.37, sz));
-    const cone = mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.08, 12), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -1.38, 3.55, sz);
+    const cone = mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.08, 12), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -0.72, 3.55, sz);
     cone.rotation.z = Math.PI / 2;
     desk.add(cone);
-    const midRing = mesh(new THREE.TorusGeometry(0.27, 0.036, 8, 22), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -1.44, 3.55, sz);
+    const midRing = mesh(new THREE.TorusGeometry(0.255, 0.02, 8, 22), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -0.67, 3.55, sz);
     midRing.rotation.y = Math.PI / 2;
     desk.add(midRing);
-    const tweeter = mesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -1.38, 3.05, sz);
+    const tweeter = mesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -0.72, 3.05, sz);
     desk.add(tweeter);
-    const twRing = mesh(new THREE.TorusGeometry(0.14, 0.026, 8, 18), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -1.44, 3.05, sz);
+    const twRing = mesh(new THREE.TorusGeometry(0.13, 0.016, 8, 18), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -0.67, 3.05, sz);
     twRing.rotation.y = Math.PI / 2;
     desk.add(twRing);
   }
@@ -138,10 +138,16 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   headrest.position.set(-0.88, 6.72, 0);
   headrest.rotation.z = 0.14;
   chair.add(headrest);
-  // black metal spine — connects the backrest to the base
-  const spine = mesh(new THREE.BoxGeometry(0.17, 2.0, 0.32), blackTrim, -0.68, 2.15, 0);
-  spine.rotation.z = 0.34;
-  chair.add(spine);
+  // short side brackets tie the backrest to the seat; the height lever lives
+  // on the SIDE of the post (not off the back)
+  for (const z of [-0.82, 0.82]) {
+    const bracket = mesh(new THREE.BoxGeometry(0.62, 0.16, 0.14), blackTrim, -0.6, 2.68, z);
+    bracket.rotation.z = 0.55;
+    chair.add(bracket);
+  }
+  const heightLever = mesh(new THREE.BoxGeometry(0.55, 0.11, 0.15), blackTrim, 0.32, 1.52, 0.4);
+  heightLever.rotation.z = -0.22;
+  chair.add(heightLever);
   for (const z of [-1.05, 1.05]) {
     const armPad = mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.95, 10), blackTrim, 0.12, 3.2, z);
     armPad.rotation.z = Math.PI / 2;
@@ -156,12 +162,13 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     chair.add(arm);
     chair.add(mesh(new THREE.SphereGeometry(0.18, 8, 6), blackTrim, Math.sin(a) * 1.22, 0.2, Math.cos(a) * 1.22)); // wheels touch the floor
   }
+  chair.scale.setScalar(0.92); // a touch lower
   chair.position.set(-5.55, 0, 4.6);
   chair.rotation.y = Math.PI; // faces the computer (and its two monitors)
   scene.add(tag(chair, "air", "the chair — leather, tall, facing the work"));
 
   // ============ INDOOR PLANTS — slot 6, right of + below the projection ============
-  for (const [px, pz, s] of [[-7.15, 2.35, 1.15], [-7.1, 1.1, 0.95], [-7.2, -0.15, 0.72]] as Array<[number, number, number]>) {
+  for (const [px, pz, s] of [[-8.5, 2.9, 0.8], [-9.35, -1.1, 1.0], [-9.7, -7.4, 1.15]] as Array<[number, number, number]>) {
     const pot = new THREE.Group();
     pot.add(mesh(new THREE.CylinderGeometry(0.62 * s, 0.48 * s, 0.85 * s, 12), new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.85 }), 0, 0.42 * s, 0));
     for (let i = 0; i < 7; i++) {
@@ -174,7 +181,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
 
   // ============ WALL SHELVES above the couch (empty for now) ============
-  for (const [wy, wz] of [[4.75, 4.3], [6.15, 6.0]]) {
+  for (const [wy, wz] of [[3.95, 4.9], [5.35, 6.6]]) {
     const plank = mesh(new THREE.BoxGeometry(0.42, 0.12, 2.8), wood, 10.05, wy, wz);
     scene.add(tag(plank, "space", "a wall shelf — waiting"));
     for (const bz of [wz - 1.25, wz + 1.25]) {
@@ -360,7 +367,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const couch = new THREE.Group();
   const fluffy = new THREE.MeshStandardMaterial({ color: "#f4efe8", roughness: 0.95 });
   const seat = (x: number, z: number, w: number, d: number) => {
-    couch.add(mesh(new THREE.BoxGeometry(w, 0.55, d), fluffy, x, 0.82, z));
+    couch.add(mesh(new THREE.BoxGeometry(w, 0.55, d), fluffy, x, 0.95, z));
     const along = w > d;
     const count = along ? Math.max(2, Math.round(w / 2.2)) : Math.max(2, Math.round(d / 2.2));
     for (let i = 0; i < count; i++) {
@@ -368,13 +375,13 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       const cw = along ? w / count * 0.97 : w - 0.14;   // was d-0.14 here — slabs
       const cd = along ? d - 0.14 : d / count * 0.97;
       const cushion = new THREE.Mesh(new RoundedBoxGeometry(cw, 0.46, cd, 4, 0.14), fluffy);
-      cushion.position.set(along ? x + t * w : x, 1.18, along ? z : z + t * d);
+      cushion.position.set(along ? x + t * w : x, 1.3, along ? z : z + t * d);
       cushion.castShadow = true; cushion.receiveShadow = true;
       couch.add(cushion);
     }
   };
   const back = (x: number, z: number, w: number, d: number) => {
-    couch.add(mesh(new THREE.BoxGeometry(w, 1.25, d), fluffy, x, 1.62, z));
+    couch.add(mesh(new THREE.BoxGeometry(w, 1.25, d), fluffy, x, 1.75, z));
     const along = w > d;
     const count = along ? Math.max(2, Math.round(w / 2.1)) : Math.max(2, Math.round(d / 2.1));
     for (let i = 0; i < count; i++) {
@@ -382,43 +389,43 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       const pw = along ? w / count * 0.94 : 0.42;
       const pd = along ? 0.42 : d / count * 0.94;
       const pillow = new THREE.Mesh(new RoundedBoxGeometry(pw, 1.05, pd, 4, 0.15), fluffy);
-      pillow.position.set(along ? x + t * w : x, 2.0, along ? z : z + t * d);
+      pillow.position.set(along ? x + t * w : x, 2.12, along ? z : z + t * d);
       if (along) pillow.rotation.x = -0.14; else pillow.rotation.z = 0.14;
       pillow.castShadow = true; pillow.receiveShadow = true;
       couch.add(pillow);
     }
   };
-  seat(7.45, 1.75, 1.35, 5.7); // 1,4 side — 3 segments toward the bookshelf,
-  back(8.3, 1.75, 0.45, 5.7);  // seats shallow (not behind the back, not at the table)
-  seat(3.75, 5.5, 7.7, 1.9);   // the 1,2 side — the extended legroom lives here
+  seat(7.32, 1.75, 1.62, 5.7); // 1,4 side — 3 segments toward the bookshelf,
+  back(8.3, 1.75, 0.45, 5.7);  // seats a touch deeper toward the coffee table
+  seat(3.75, 5.38, 7.7, 2.16); // the 1,2 side — the extended legroom lives here
   back(3.75, 6.65, 7.7, 0.55);
   // the corner — the two backrests meet; a corner cushion fills the nook
   const cornerBackA = new THREE.Mesh(new RoundedBoxGeometry(0.45, 1.25, 1.9, 4, 0.12), fluffy);
-  cornerBackA.position.set(8.3, 1.62, 5.5);
+  cornerBackA.position.set(8.3, 1.75, 5.5);
   cornerBackA.castShadow = true; cornerBackA.receiveShadow = true;
   couch.add(cornerBackA);
   const cornerBackB = new THREE.Mesh(new RoundedBoxGeometry(1.6, 1.25, 0.5, 4, 0.12), fluffy);
-  cornerBackB.position.set(7.35, 1.62, 6.65);
+  cornerBackB.position.set(7.35, 1.75, 6.65);
   cornerBackB.castShadow = true; cornerBackB.receiveShadow = true;
   couch.add(cornerBackB);
   const cornerSeat = new THREE.Mesh(new RoundedBoxGeometry(1.6, 0.46, 1.9, 4, 0.14), fluffy);
-  cornerSeat.position.set(7.35, 1.18, 5.5);
+  cornerSeat.position.set(7.35, 1.3, 5.5);
   cornerSeat.castShadow = true; cornerSeat.receiveShadow = true;
   couch.add(cornerSeat);
   const cornerCushion = new THREE.Mesh(new THREE.SphereGeometry(0.72, 12, 10), fluffy);
   cornerCushion.scale.set(1, 0.85, 0.55);
-  cornerCushion.position.set(7.95, 1.78, 5.98);
+  cornerCushion.position.set(7.95, 1.9, 5.98);
   cornerCushion.rotation.y = Math.PI / 4;
   cornerCushion.rotation.x = -0.42;
   cornerCushion.castShadow = true;
   couch.add(cornerCushion);
   // the sofa stands on legs
   for (const [lx, lz] of [[6.65, 0.9], [8.05, 0.9], [6.65, 2.7], [8.05, 2.7], [6.65, 4.2], [8.05, 4.2], [0.45, 4.75], [0.45, 6.25], [2.6, 4.75], [2.6, 6.25], [4.9, 4.75], [4.9, 6.25], [7.0, 4.75], [7.0, 6.25]] as Array<[number, number]>) {
-    couch.add(mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.56, 8), new THREE.MeshStandardMaterial({ color: "#5d3b20", roughness: 0.7 }), lx, 0.28, lz));
+    couch.add(mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.72, 8), new THREE.MeshStandardMaterial({ color: "#5d3b20", roughness: 0.7 }), lx, 0.36, lz));
   }
   // proper armrests at the two outer ends
-  couch.add(mesh(new THREE.BoxGeometry(1.4, 1.25, 0.7), fluffy, 7.45, 1.45, -1.45)); // arm at the new far end
-  couch.add(mesh(new THREE.BoxGeometry(0.7, 1.25, 1.95), fluffy, 0.05, 1.45, 5.5));
+  couch.add(mesh(new THREE.BoxGeometry(1.4, 1.25, 0.7), fluffy, 7.45, 1.58, -1.45)); // arm at the new far end
+  couch.add(mesh(new THREE.BoxGeometry(0.7, 1.25, 1.95), fluffy, 0.05, 1.58, 5.5));
   // throw cushions — RELAXED on the seat, leaning into the backrest
   for (const [cx, cz, cc, side] of [[7.95, 1.1, "#c98f6b", "x"], [7.95, 3.4, "#8fa8b8", "x"], [5.2, 6.15, "#c98f6b", "z"], [2.4, 6.15, "#a8b894", "z"]] as Array<[number, number, string, string]>) {
     const throwCushion = new THREE.Mesh(new THREE.SphereGeometry(0.62, 12, 10), new THREE.MeshStandardMaterial({ color: cc, roughness: 0.95 }));
@@ -429,7 +436,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       throwCushion.scale.set(1, 1, 0.55); // thin against the back at +z
       throwCushion.rotation.x = 0.7;      // fallen BACK onto the seat rest
     }
-    throwCushion.position.set(cx, 1.58, cz);
+    throwCushion.position.set(cx, 1.7, cz);
     throwCushion.castShadow = true;
     couch.add(throwCushion);
   }
@@ -553,22 +560,21 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     const airColor = "#ff6a4a"; // live mode color, recolored in the animation loop
     const vent = new THREE.Group();
     vent.add(mesh(new THREE.BoxGeometry(2.0, 0.1, 1.15), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.6, metalness: 0.5 }), 0, 0.05, 0));
-    // GILLS — fins that lie low when off and rotate UP when the air breathes
-    for (let i = 0; i < 6; i++) {
-      const fin = mesh(new THREE.BoxGeometry(0.12, 1.15, 0.62), new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.5, metalness: 0.55 }), -0.8 + i * 0.32, 0.52, 0);
-      fin.rotation.x = -1.42;
+    // BLINDS — horizontal panels flush on the floor; they twist open a few cm
+    for (let i = 0; i < 5; i++) {
+      const fin = mesh(new THREE.BoxGeometry(0.34, 0.055, 1.05), new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.5, metalness: 0.55 }), -0.78 + i * 0.39, 0.13, 0);
       ventFins.push(fin);
       vent.add(fin);
     }
     vent.position.set(vx, 0, vz);
     scene.add(tag(vent, "air", "the vent gills — steam rises when the air breathes"));
 
-    for (let w = 0; w < 5; w++) {
+    for (let w = 0; w < 6; w++) {
       const wisp = new THREE.Mesh(
-        new THREE.PlaneGeometry(1.15, 1.5),
-        new THREE.MeshBasicMaterial({ map: steamTex, color: airColor, transparent: true, opacity: 0.32, side: THREE.DoubleSide, depthWrite: false })
+        new THREE.PlaneGeometry(1.7, 2.1),
+        new THREE.MeshBasicMaterial({ map: steamTex, color: airColor, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })
       );
-      wisp.position.set(vx + (w - 2) * 0.3, 1.2 + (w % 3) * 0.55, vz + (w % 2 ? 0.26 : -0.26));
+      wisp.position.set(vx + (w - 2.5) * 0.32, 1.2 + (w % 3) * 0.55, vz + (w % 2 ? 0.28 : -0.28));
       wisp.userData.phase = w * 1.7 + vz + vx;
       wisp.userData.vx = vx;
       scene.add(tag(wisp, "air", "the air — steam when the vents breathe"));
@@ -590,7 +596,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const lever = mesh(new THREE.BoxGeometry(0.14, 0.34, 0.16), new THREE.MeshStandardMaterial({ color: "#f2efe8", roughness: 0.5 }), -0.09, 0.06, 0);
   lever.userData.action = "toggle-vents";
   lightSwitch.add(lever);
-  lightSwitch.position.set(10.18, 1.45, 6.9);
+  lightSwitch.position.set(10.18, 2.3, 6.9);
   lightSwitch.userData = { element: "air", label: "the switch — warm air, cool air, or still" };
   lightSwitch.traverse((c) => {
     c.userData = { ...c.userData, element: "air", label: "the switch — warm air, cool air, or still" };
@@ -598,16 +604,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   lever.userData.action = "toggle-vents";
   scene.add(lightSwitch);
 
-  // ============ FLOATING ROCKS — waterfall stones adrift indoors ============
+  // ============ no rocks indoors (Frank 2026-10-12) ============
   const floatRocks: THREE.Mesh[] = [];
-  for (const [rx, ry, rz, rs, ph] of [[-4.5, 3.4, -4.2, 0.42, 0], [-2.2, 4.6, -1.4, 0.3, 1.6], [0.8, 3.1, -5.2, 0.36, 3.1], [3.6, 4.2, -2.6, 0.26, 4.4], [-6.2, 5.1, -0.4, 0.22, 5.5], [1.9, 5.4, -6.3, 0.3, 2.3]] as Array<[number, number, number, number, number]>) {
-    const fr = mesh(new THREE.DodecahedronGeometry(rs, 0), stone, rx, ry, rz);
-    fr.rotation.set(Math.random(), Math.random(), Math.random());
-    fr.userData.baseY = ry;
-    fr.userData.phase = ph;
-    scene.add(tag(fr, "water", "a stone adrift — the waterfall's memory"));
-    floatRocks.push(fr);
-  }
 
   // ============ WATERFALL plunge pool (slot 9) ============
   const plungePool = new THREE.Mesh(

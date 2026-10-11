@@ -214,14 +214,14 @@ function animate(): void {
   });
   // the gill fins rotate UP when the air breathes, lie flat when it rests
   objects.ventFins.forEach((f) => {
-    const target = ventOn ? -0.5 : -1.42;
+    const target = ventOn ? -0.3 : 0; // blinds twist open a few cm
     f.rotation.x += (target - f.rotation.x) * 0.06;
   });
   const warmth = 1 + nightMix * 0.45;
   objects.wisps.forEach((w) => {
     const phase = (t * 0.5 + (w.userData.phase as number)) % 2.6;
     w.position.y = 1.2 + phase;
-    const puff = 0.75 + phase * 0.55; // steam swells as it rises
+    const puff = 0.85 + phase * 0.75; // steam swells as it rises
     w.scale.setScalar(puff);
     // steam: a slow sideways sway + tilt
     const sway = Math.sin(t * 1.6 + (w.userData.phase as number));
@@ -230,7 +230,7 @@ function animate(): void {
     w.position.x += (Math.sin(t * 0.9 + (w.userData.phase as number)) * 0.18 - ((w.position.x - vx) * 0.02)) * 0.06;
     const wm = w.material as THREE.MeshBasicMaterial;
     wm.color.set(ventColor);
-    wm.opacity = (ventOn ? 1 : 0) * (0.16 + nightMix * 0.14) * (1 - phase / 2.6);
+    wm.opacity = (ventOn ? 1 : 0) * (0.42 + nightMix * 0.22) * (1 - phase / 2.6);
   });
 
   // the portal breathes — two dark veils merging and parting

@@ -257,9 +257,14 @@ export function buildRoom(scene: THREE.Scene): void {
     r.receiveShadow = true;
     scene.add(r);
   }
-  // rocks sitting ON rocks — real height in the cluster
-  for (const [ox, oy, oz, os] of [[-5.6, 1.8, -10.7, 0.85], [-8.9, 2.0, -13.6, 0.75], [-6.6, 2.25, -15.3, 0.65], [-4.9, 1.65, -13.9, 0.8]] as Array<[number, number, number, number]>) {
-    const r = rock(os, "#8a8279");
+  // rocks stacked HIGH up the LEFT glass — the 9-zone climb, touching the window
+  for (const [ox, oy, oz, os] of [
+    [-9.45, 0.75, -8.95, 1.2], [-8.55, 1.7, -8.7, 1.05], [-9.2, 2.75, -8.55, 0.95],
+    [-8.35, 3.65, -8.5, 0.88], [-9.35, 4.55, -8.55, 0.8], [-8.6, 5.4, -8.62, 0.72],
+    [-9.55, 6.15, -8.8, 0.62], [-8.1, 0.85, -9.45, 1.05], [-9.85, 3.35, -9.15, 0.78],
+    [-8.1, 4.75, -8.95, 0.68], [-7.45, 1.05, -9.7, 1.3], [-7.3, 2.35, -9.85, 0.95],
+  ] as Array<[number, number, number, number]>) {
+    const r = rock(os, ["#8a8279", "#948c82", "#7d7770"][Math.floor(Math.random() * 3)]);
     r.position.set(ox, oy, oz);
     r.rotation.set(Math.random() * 0.6, Math.random() * Math.PI, Math.random() * 0.6);
     r.castShadow = true;
@@ -292,6 +297,22 @@ export function buildRoom(scene: THREE.Scene): void {
     const nxt = pathPts[Math.min(i + 1, pathPts.length - 1)];
     const rot = Math.atan2(nxt[0] - px, nxt[1] - pz) + (Math.random() - 0.5) * 0.12;
     pathTile(px, pz, rot);
+  }
+  // a side branch of tiles to the fire seats
+  pathTile(0.55, -10.45, 0.35);
+  pathTile(1.95, -11.7, Math.PI / 2 + 0.12);
+  pathTile(0.55, -12.95, -0.3);
+
+  // a wooden STEP at the glass line — floorboards down to dirt
+  const step = new THREE.Mesh(new THREE.BoxGeometry(21, 0.34, 1.25), new THREE.MeshStandardMaterial({ color: "#8a6a48", roughness: 0.85 }));
+  step.position.set(0, 0.12, -8.95);
+  step.receiveShadow = true;
+  step.castShadow = true;
+  scene.add(step);
+  for (const sz2 of [-9.35, -8.95, -8.55]) {
+    const seam = new THREE.Mesh(new THREE.BoxGeometry(21, 0.02, 0.06), new THREE.MeshStandardMaterial({ color: "#6e4a2c", roughness: 0.9 }));
+    seam.position.set(0, 0.3, sz2);
+    scene.add(seam);
   }
 
   // rocks and shrubs around the water
