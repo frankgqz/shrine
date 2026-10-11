@@ -146,6 +146,50 @@ const daySky = skyTexture();
 const darkSky = nightSkyTexture();
 const dayHorizon = new THREE.Color("#f6e2c2");
 const nightHorizon = new THREE.Color("#22304f");
+// ---- the projector's little world: an animated landscape canvas ----
+const artCanvas = document.createElement("canvas");
+artCanvas.width = 840;
+artCanvas.height = 480;
+const actx = artCanvas.getContext("2d") as CanvasRenderingContext2D;
+const art = new THREE.CanvasTexture(artCanvas);
+function drawLandscape(t: number): void {
+  const w = artCanvas.width;
+  const h = artCanvas.height;
+  const sky = actx.createLinearGradient(0, 0, 0, h);
+  sky.addColorStop(0, "#7fc4ff");
+  sky.addColorStop(0.55, "#ffd9a0");
+  sky.addColorStop(1, "#ffb27a");
+  actx.fillStyle = sky;
+  actx.fillRect(0, 0, w, h);
+  actx.fillStyle = "#fff3c4";
+  actx.beginPath();
+  actx.arc(w * 0.68, h * 0.5 + Math.sin(t * 0.1) * 10, 46, 0, Math.PI * 2);
+  actx.fill();
+  for (const [hy, col, amp, spd] of [[0.62, "#3f6d4e", 28, 0.12], [0.74, "#2f5a3e", 40, 0.2], [0.87, "#24462f", 54, 0.3]] as Array<[number, string, number, number]>) {
+    actx.fillStyle = col;
+    actx.beginPath();
+    actx.moveTo(0, h);
+    for (let x = 0; x <= w; x += 12) {
+      actx.lineTo(x, h * hy + Math.sin(x * 0.012 + t * spd) * amp);
+    }
+    actx.lineTo(w, h);
+    actx.closePath();
+    actx.fill();
+  }
+  actx.fillStyle = "rgba(220,240,255,0.7)";
+  actx.fillRect(w * 0.22, h * 0.62, 11, h * 0.25);
+  actx.fillStyle = "rgba(255,255,255,0.85)";
+  for (let i = 0; i < 4; i++) {
+    const cx = ((t * 18 + i * 230) % (w + 180)) - 90;
+    const cy = 66 + i * 44;
+    actx.beginPath();
+    actx.ellipse(cx, cy, 52, 18, 0, 0, Math.PI * 2);
+    actx.ellipse(cx + 34, cy + 8, 34, 14, 0, 0, Math.PI * 2);
+    actx.fill();
+  }
+  art.needsUpdate = true;
+}
+
 function animate(): void {
   const t = clock.getElapsedTime();
 
@@ -188,9 +232,32 @@ function animate(): void {
 
   // projector on/off glow
   const cloth = objects.screenCloth.material as THREE.MeshStandardMaterial;
-  // blank wall when off; white light with a faint shimmer when on
-  const shimmer = projectorOn ? 0.34 + Math.sin(t * 2.7) * 0.05 + Math.sin(t * 6.1) * 0.025 : 0;
+  // blank wall when off; a living landscape when on
+  if (projectorOn) {
+    drawLandscape(t * 0.9);
+    if (cloth.map !== art) {
+      cloth.map = art;
+      cloth.emissiveMap = art;
+      cloth.emissive.set("#ffffff");
+      cloth.color.set("#ffffff");
+      cloth.needsUpdate = true;
+    }
+  } else if (cloth.map !== null) {
+    cloth.map = null;
+    cloth.emissiveMap = null;
+    cloth.color.set("#e8d8bd");
+    cloth.emissive.set("#dff0ff");
+    cloth.needsUpdate = true;
+  }
+  const shimmer = projectorOn ? 0.42 + Math.sin(t * 2.7) * 0.04 + Math.sin(t * 6.1) * 0.02 : 0;
   cloth.emissiveIntensity += (shimmer - cloth.emissiveIntensity) * 0.08;
+  // floating rocks drift and turn
+  objects.floatRocks.forEach((r, i) => {
+    r.position.y = (r.userData.baseY as number) + Math.sin(t * 0.55 + (r.userData.phase as number)) * 0.28;
+    r.rotation.y += 0.0018 + i * 0.0004;
+    r.rotation.x = Math.sin(t * 0.22 + (r.userData.phase as number)) * 0.1;
+  });
+
   const lens = objects.lensGlow.material as THREE.MeshStandardMaterial;
   lens.emissiveIntensity += ((projectorOn ? 2.2 : 0.05) - lens.emissiveIntensity) * 0.08;
 
