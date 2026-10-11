@@ -69,3 +69,9 @@ in code comments (e.g. "lantern at top-5").
 - everything else: hover shows element label; click logs activation (hooks for
   per-element behaviours still to come).
 
+## Bringing in models (2026-10-12)
+`src/loader.ts` = the door: `loadModel(scene, "chair.glb", { position, scale,
+element, label })` with the file in `public/models/`. CC0 packs (no
+attribution): Kenney.nl, Quaternius, Poly Haven. Bespoke ritual pieces stay
+procedural; models are for furniture/plants/clutter.
+

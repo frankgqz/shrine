@@ -74,19 +74,29 @@ export function buildRoom(scene: THREE.Scene): void {
     scene.add(seam);
   }
 
-  // ---- Earth ground: stops at the walls. The left-back balcony section ends
-  // early at z=-13 — that edge is the waterfall cliff (slot 9). ----
-  const mainGround = new THREE.Mesh(new THREE.PlaneGeometry(21, 26.9), soilMat);
-  mainGround.rotation.x = -Math.PI / 2;
-  mainGround.position.set(0, 0, -5.15);
-  mainGround.receiveShadow = true;
-  scene.add(mainGround);
-
-  const leftShelf = new THREE.Mesh(new THREE.PlaneGeometry(7.1, 21.3), soilMat);
-  leftShelf.rotation.x = -Math.PI / 2;
-  leftShelf.position.set(-7.05, 0, -2.35);
-  leftShelf.receiveShadow = true;
-  scene.add(leftShelf);
+  // ---- Earth: a rounded cliff-top plateau, not a rectangle. Two bites are
+  // missing: the waterfall cut at slot 9, and the outer band at 7-8 where a
+  // glass walkway hangs over the drop. Ground is displaced + organic.
+  const makeTerrain = (w: number, d: number, x: number, z: number, seed: number) => {
+    const geo = new THREE.PlaneGeometry(w, d, 14, 14);
+    const pos = geo.getAttribute("position");
+    for (let i = 0; i < pos.count; i++) {
+      const px = pos.getX(i), py = pos.getY(i);
+      const edge = Math.min(w / 2 - Math.abs(px), d / 2 - Math.abs(py));
+      const round = Math.min(1, Math.max(0, edge / 1.6));
+      const n = Math.sin(px * 0.55 + seed) * 0.22 + Math.cos(py * 0.7 + seed * 2) * 0.18 + Math.sin((px + py) * 1.1 + seed) * 0.1;
+      pos.setZ(i, n * round);
+    }
+    geo.computeVertexNormals();
+    const m = new THREE.Mesh(geo, soilMat);
+    m.rotation.x = -Math.PI / 2;
+    m.position.set(x, 0, z);
+    m.receiveShadow = true;
+    return m;
+  };
+  scene.add(makeTerrain(21, 23.2, 0, -3.6, 1.3));        // the main plateau (walls -> mid balcony)
+  scene.add(makeTerrain(7.2, 8.2, -7.05, -11.4, 2.7));   // the slot-9 shelf (smaller, bites at the fall)
+  scene.add(makeTerrain(14.2, 5.4, 3.6, -12.6, 4.1));    // the 7-8 shelf (ends short of the rail)
 
   // the cliff face under the left-back cut, and under the balcony generally
   const cliffMat = new THREE.MeshStandardMaterial({ color: "#77624e", roughness: 1 });
@@ -158,6 +168,17 @@ export function buildRoom(scene: THREE.Scene): void {
       scene.add(post);
     }
   };
+  // the glass walkway — you stand on air above the missing ground
+  const walkwayGlass = new THREE.MeshStandardMaterial({ color: "#cfe8f2", transparent: true, opacity: 0.24, roughness: 0.05, side: THREE.DoubleSide });
+  const walkway = new THREE.Mesh(new THREE.BoxGeometry(14.2, 0.12, 3.1), walkwayGlass);
+  walkway.position.set(3.6, 0.02, -16.75);
+  scene.add(walkway);
+  for (let i = 0; i < 6; i++) {
+    const rib = new THREE.Mesh(new THREE.BoxGeometry(14.2, 0.08, 0.12), metalPostMat);
+    rib.position.set(3.6, 0.08, -15.35 - i * 0.56);
+    scene.add(rib);
+  }
+
   // glass balustrade across slots 7-8 (thin metal handrail + glass panels)
   const glassRailMat = new THREE.MeshStandardMaterial({ color: "#cfe8f2", transparent: true, opacity: 0.22, roughness: 0.05, side: THREE.DoubleSide });
   for (let i = 0; i < 7; i++) {
@@ -173,10 +194,7 @@ export function buildRoom(scene: THREE.Scene): void {
   handrail.position.set(3.1, 3.2, -18.6);
   scene.add(handrail);
   addRail(new THREE.Vector3(10.5, 0, -18.6), new THREE.Vector3(10.5, 0, -8.4));
-  addRail(new THREE.Vector3(-10.5, 0, -8.4), new THREE.Vector3(-10.5, 0, -13));
-  // cliff edge rails with the waterfall gap at x -8.2..-5.8
-  addRail(new THREE.Vector3(-10.5, 0, -13), new THREE.Vector3(-8.2, 0, -13));
-  addRail(new THREE.Vector3(-5.8, 0, -13), new THREE.Vector3(-3.4, 0, -13));
+  // (the cliff edges at slot 9 carry no wooden poles — the drop is the point)
 
   // ---- The waterfall (slot 9: top-9 -> bottom-9, through the ground) ----
   const fallMat = new THREE.MeshStandardMaterial({
