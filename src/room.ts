@@ -144,19 +144,25 @@ export function buildRoom(scene: THREE.Scene): void {
     }
   }
 
-  // a small HERB GARDEN between the trees and the railing
-  const herbBed = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.32, 2.3), new THREE.MeshStandardMaterial({ color: "#5c4326", roughness: 1 }));
-  herbBed.position.set(5.6, 0.16, -14.9);
-  herbBed.receiveShadow = true;
-  scene.add(herbBed);
-  for (let row = 0; row < 3; row++) {
-    for (let h = 0; h < 7; h++) {
-      const herb = new THREE.Mesh(new THREE.SphereGeometry(0.22 + Math.random() * 0.14, 8, 6), new THREE.MeshStandardMaterial({ color: ["#6d8a45", "#7da050", "#5d7a3a"][(row + h) % 3], roughness: 1 }));
-      herb.scale.y = 1.25 + Math.random() * 0.4;
-      herb.position.set(3.8 + h * 0.6 + (Math.random() - 0.5) * 0.16, 0.55, -15.65 + row * 0.72);
-      herb.castShadow = true;
-      scene.add(herb);
-    }
+  // the HERB GARDEN hangs off the railing — raised, delicate, softly colored
+  const herbBox = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.5, 0.62), new THREE.MeshStandardMaterial({ color: "#6e4a2c", roughness: 0.85 }));
+  herbBox.position.set(5.4, 2.15, -16.45);
+  herbBox.castShadow = true;
+  scene.add(herbBox);
+  for (const hx of [3.85, 6.95]) {
+    const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.15, 0.1), new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.45, metalness: 0.6 }));
+    bracket.position.set(hx, 2.95, -16.45);
+    scene.add(bracket);
+  }
+  for (let h = 0; h < 11; h++) {
+    const herb = new THREE.Mesh(
+      new THREE.SphereGeometry(0.16 + Math.random() * 0.1, 8, 6),
+      new THREE.MeshStandardMaterial({ color: ["#8fbf6a", "#c98fbf", "#e0b45c", "#6d8a45", "#b86a8a", "#a8c4e0"][h % 6], roughness: 0.9 })
+    );
+    herb.scale.y = 1.3 + Math.random() * 0.6;
+    herb.position.set(3.95 + h * 0.29 + (Math.random() - 0.5) * 0.1, 2.62 + Math.random() * 0.15, -16.45 + (Math.random() - 0.5) * 0.2);
+    herb.castShadow = true;
+    scene.add(herb);
   }
 
   // ---- Walls at the cube edges, ~20% taller (9.6) ----
@@ -216,33 +222,37 @@ export function buildRoom(scene: THREE.Scene): void {
 
   // ---- Zone 9: granite boulders ON THE GROUND with a shallow channel
   // running between them (waterfall parked 2026-10-12 — water runs here later).
-  const channelBed = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.2, 8.2), stoneChannelMat);
-  channelBed.position.set(-7.4, 0.11, -12.6);
+  // the channel bed — granite, low in the ground (no wooden tray)
+  const graniteMat = new THREE.MeshStandardMaterial({ color: "#8a8279", roughness: 0.95 });
+  const channelBed = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.16, 8.2), graniteMat);
+  channelBed.position.set(-7.4, 0.09, -12.6);
   channelBed.rotation.x = 0.045;
   channelBed.receiveShadow = true;
   scene.add(channelBed);
 
-  // the water — a ribbon down the channel and a little fall onto the rocks
+  // the water — a ribbon down the channel
   const waterMat = new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.12, transparent: true, opacity: 0.72, emissive: "#2f7fa0", emissiveIntensity: 0.22 });
-  const ribbon = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.06, 8.0), waterMat);
-  ribbon.position.set(-7.4, 0.23, -12.55);
+  const ribbon = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.06, 8.0), waterMat);
+  ribbon.position.set(-7.4, 0.19, -12.55);
   ribbon.rotation.x = 0.045;
   scene.add(ribbon);
-  // the feeder slab up the slope + the fall tumbling onto the first boulders
-  const feeder = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.35, 1.7), stoneChannelMat);
-  feeder.position.set(-7.4, 1.95, -9.1);
-  feeder.rotation.x = -0.32;
-  feeder.castShadow = true;
-  scene.add(feeder);
-  const fall = new THREE.Mesh(new THREE.PlaneGeometry(1.05, 2.05), waterMat);
-  fall.position.set(-7.4, 1.05, -9.55);
-  fall.rotation.x = -0.12;
-  scene.add(fall);
-  for (const [fx, fy, fz] of [[-7.75, 0.5, -9.9], [-7.1, 0.42, -10.15], [-7.45, 0.46, -10.5]]) {
-    const foam = new THREE.Mesh(new THREE.SphereGeometry(0.3 + Math.random() * 0.18, 8, 6), new THREE.MeshStandardMaterial({ color: "#dff2f7", transparent: true, opacity: 0.8, roughness: 0.3 }));
-    foam.position.set(fx, fy, fz);
-    scene.add(foam);
-  }
+
+  // TWO ROCKS STACKED at the head of the channel — the water follows the rock
+  const stackLow = rock(1.3, "#8a8279");
+  stackLow.position.set(-7.45, 1.05, -9.7);
+  stackLow.rotation.set(0.15, 0.9, 0.1);
+  stackLow.castShadow = true;
+  scene.add(stackLow);
+  const stackHigh = rock(0.95, "#948c82");
+  stackHigh.position.set(-7.3, 2.35, -9.85);
+  stackHigh.rotation.set(0.42, 1.6, 0.18);
+  stackHigh.castShadow = true;
+  scene.add(stackHigh);
+  // the water sheeting down the stacked rock into the channel
+  const film = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 2.5), waterMat);
+  film.position.set(-7.1, 1.35, -9.38);
+  film.rotation.x = -0.34;
+  scene.add(film);
 
   // boulders in a NATURAL cluster around the channel (water pours into them)
   for (let i = 0; i < 18; i++) {
@@ -263,12 +273,14 @@ export function buildRoom(scene: THREE.Scene): void {
     r.position.set(-9.4 + Math.random() * 4.8, 0.3 + Math.random() * 0.35, -12.9 + Math.random() * 6.6);
     r.castShadow = true;
     scene.add(r);
-    if (i % 2 === 0) {
-      const shrub = new THREE.Mesh(new THREE.SphereGeometry(0.5 + Math.random() * 0.4, 8, 6), new THREE.MeshStandardMaterial({ color: "#57713c", roughness: 1 }));
-      shrub.scale.y = 0.75;
-      shrub.position.set(-9.2 + Math.random() * 4.4, 0.5 + Math.random() * 0.3, -12.6 + Math.random() * 6.2);
-      scene.add(shrub);
-    }
+  }
+  // shrubs live in the far 7-8 corner now (not growing out of the rocks)
+  for (let i = 0; i < 7; i++) {
+    const shrub = new THREE.Mesh(new THREE.SphereGeometry(0.5 + Math.random() * 0.4, 8, 6), new THREE.MeshStandardMaterial({ color: i % 2 ? "#57713c" : "#49662f", roughness: 1 }));
+    shrub.scale.y = 0.75;
+    shrub.position.set(5.2 + Math.random() * 3.6, 0.5 + Math.random() * 0.3, -15.2 + Math.random() * 1.6);
+    shrub.castShadow = true;
+    scene.add(shrub);
   }
 
   // (the floating crag tower is gone — rocks live on the ground now)

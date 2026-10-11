@@ -40,6 +40,8 @@ export interface SceneObjects {
   screenCloth: THREE.Mesh;
   lensGlow: THREE.Mesh;
   floatRocks: THREE.Mesh[];
+  portalVeils: THREE.Mesh[];
+  lightRay: THREE.Mesh;
 }
 
 export function buildObjects(scene: THREE.Scene): SceneObjects {
@@ -114,8 +116,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   backShell.position.set(-0.85, 4.35, 0);
   backShell.rotation.z = 0.1;
   chair.add(backShell);
-  const backPad = new THREE.Mesh(new RoundedBoxGeometry(0.34, 2.4, 1.75, 4, 0.12), leather);
-  backPad.position.set(-0.5, 4.3, 0);
+  const backPad = new THREE.Mesh(new RoundedBoxGeometry(0.3, 2.3, 1.6, 4, 0.12), leather);
+  backPad.position.set(-0.72, 4.3, 0); // recessed behind — shape without the jut
   backPad.rotation.z = 0.1;
   chair.add(backPad);
   const lumbar = new THREE.Mesh(new RoundedBoxGeometry(0.3, 0.85, 1.5, 4, 0.1), leather);
@@ -148,7 +150,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   scene.add(tag(chair, "air", "the chair — leather, tall, facing the work"));
 
   // ============ INDOOR PLANTS — slot 6, right of + below the projection ============
-  for (const [px, pz, s] of [[-8.7, -7.5, 1.15], [-8.7, 0.35, 0.95], [-8.7, -0.85, 0.72]] as Array<[number, number, number]>) {
+  for (const [px, pz, s] of [[-8.7, -7.5, 1.15], [-8.7, -1.1, 0.95], [-8.7, -2.6, 0.72]] as Array<[number, number, number]>) {
     const pot = new THREE.Group();
     pot.add(mesh(new THREE.CylinderGeometry(0.62 * s, 0.48 * s, 0.85 * s, 12), new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.85 }), 0, 0.42 * s, 0));
     for (let i = 0; i < 7; i++) {
@@ -339,10 +341,11 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   cornerSeat.position.set(7.35, 1.18, 5.5);
   cornerSeat.castShadow = true; cornerSeat.receiveShadow = true;
   couch.add(cornerSeat);
-  const cornerCushion = new THREE.Mesh(new RoundedBoxGeometry(1.3, 1.1, 1.3, 4, 0.2), fluffy);
-  cornerCushion.position.set(7.6, 2.0, 5.85);
+  const cornerCushion = new THREE.Mesh(new THREE.SphereGeometry(0.72, 12, 10), fluffy);
+  cornerCushion.scale.set(1, 0.85, 0.55);
+  cornerCushion.position.set(7.95, 1.78, 5.98);
   cornerCushion.rotation.y = Math.PI / 4;
-  cornerCushion.rotation.x = -0.3;
+  cornerCushion.rotation.x = -0.42;
   cornerCushion.castShadow = true;
   couch.add(cornerCushion);
   // the sofa stands on legs
@@ -400,16 +403,32 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   scene.add(tag(rug, "earth", "the rug — natural, warm underfoot"));
 
   // ============ PROJECTOR + SCREEN — the "TV", his preference ============
-  const projector = new THREE.Group();
-  projector.add(mesh(new THREE.BoxGeometry(1.15, 0.42, 1.55), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.5, metalness: 0.35 }), 0, 0, 0));
-  projector.add(mesh(new THREE.CylinderGeometry(0.19, 0.24, 0.3, 14), metal, -0.72, 0, 0)); // lens
-  const lensGlow = mesh(new THREE.CircleGeometry(0.17, 14), new THREE.MeshStandardMaterial({ color: "#eaf4ff", emissive: "#bfe3ff", emissiveIntensity: 2.2 }), -0.88, 0, 0);
-  lensGlow.rotation.y = -Math.PI / 2;
-  projector.add(lensGlow);
-  projector.position.set(5.5, 8.35, -4.6);
-  projector.rotation.y = -Math.PI / 2;
-  scene.add(tag(projector, "space", "the projector — click to turn it on or off"));
-  projector.traverse((c) => (c.userData.action = "toggle-projector"));
+  // ULTRA SHORT THROW — sits on the floor under the projection
+  const ust = new THREE.Group();
+  ust.add(mesh(new THREE.BoxGeometry(1.05, 0.5, 3.3), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.5, metalness: 0.35 }), 0, 0, 0));
+  ust.add(mesh(new THREE.BoxGeometry(0.95, 0.1, 3.1), new THREE.MeshStandardMaterial({ color: "#3c3c44", roughness: 0.4, metalness: 0.4 }), 0, 0.28, 0));
+  const lensGlow = mesh(new THREE.BoxGeometry(0.08, 0.05, 2.6), new THREE.MeshStandardMaterial({ color: "#eaf4ff", emissive: "#bfe3ff", emissiveIntensity: 2.2 }), 0.45, 0.32, 0);
+  ust.add(lensGlow);
+  ust.position.set(-9.85, 0.42, -3.8);
+  scene.add(tag(ust, "space", "the ultra short throw projector — click to turn it on or off"));
+  ust.traverse((c) => (c.userData.action = "toggle-projector"));
+  // the soundbar, just below the screen
+  const soundbar = new THREE.Group();
+  soundbar.add(mesh(new THREE.BoxGeometry(0.24, 0.42, 4.8), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.55, metalness: 0.3 }), 0, 0, 0));
+  soundbar.add(mesh(new THREE.BoxGeometry(0.08, 0.3, 4.5), new THREE.MeshStandardMaterial({ color: "#44444c", roughness: 0.7 }), -0.13, 0, 0));
+  soundbar.position.set(-10.28, 1.75, -3.8);
+  scene.add(tag(soundbar, "space", "the soundbar — where the room listens"));
+  soundbar.traverse((c) => (c.userData.action = "toggle-projector"));
+  // a faint light ray toward the wall — clearest at night
+  const lightRay = new THREE.Mesh(
+    new THREE.ConeGeometry(1.75, 3.9, 4, 1, true),
+    new THREE.MeshBasicMaterial({ color: "#cfe4ff", transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide })
+  );
+  lightRay.position.set(-10.15, 2.55, -3.8);
+  lightRay.rotation.x = Math.PI;      // apex down at the unit, fanning up the wall
+  lightRay.rotation.y = Math.PI / 4;
+  lightRay.rotation.z = -0.12;
+  scene.add(tag(lightRay, "space", "the light ray — the projector's breath"));
 
   const screenRig = new THREE.Group();
   screenRig.add(mesh(new THREE.BoxGeometry(0.16, 0.38, 7.6), new THREE.MeshStandardMaterial({ color: "#d9d2c4", roughness: 0.6 }), -10.28, 6.95, -3.8)); // housing
@@ -424,8 +443,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
 
   // ============ SLIDING GLASS WALL — mid-4..6 ============
   const glassMat = new THREE.MeshPhysicalMaterial({
-    color: "#cfe8f2", transparent: true, opacity: 0.22, roughness: 0.05,
-    transmission: 0.75, thickness: 0.4, side: THREE.DoubleSide,
+    color: "#9db8c8", transparent: true, opacity: 0.38, roughness: 0.06,
+    transmission: 0.55, thickness: 0.5, side: THREE.DoubleSide,
+    clearcoat: 0.65, clearcoatRoughness: 0.12,
   });
   const glassPanels: THREE.Mesh[] = [];
   const glassWall = new THREE.Group();
@@ -455,21 +475,22 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // ============ FLOOR VENTS + THERMAL WISPS (air) + FLOOR UPLIGHTS ============
   const wisps: THREE.Mesh[] = [];
   const floorLights: THREE.PointLight[] = [];
-  // 2 vents left, 2 right — in the corners. Back pair = cool (blue lake air),
-  // front pair = hot (red hearth air). Each: grille + wavy air + its uplight.
-  const ventSpecs: Array<[number, number, boolean]> = [
-    [-9.55, -6.3, false], [-9.55, 6.2, true],   // left back (cool), left front (hot)
-    [9.35, -7.55, false], [9.55, 6.4, true],    // right back (cool), right front (hot)
+  // 2 vents left, 2 right — in the corners, grilles set diagonally. All four
+  // share ONE mode color: red (warm) / blue (cool) / off, cycled by the switch.
+  const ventSpecs: Array<[number, number]> = [
+    [-9.55, -6.3], [-9.55, 6.2],
+    [9.35, -7.55], [9.55, 6.4],
   ];
-  for (const [vx, vz, hot] of ventSpecs) {
-    const airColor = hot ? "#ff6a4a" : "#6ab8ff";
+  for (const [vx, vz] of ventSpecs) {
+    const airColor = "#ff6a4a"; // live mode color, recolored in the animation loop
     const vent = new THREE.Group();
     vent.add(mesh(new THREE.BoxGeometry(2.1, 0.12, 1.35), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.6, metalness: 0.5 }), 0, 0.06, 0));
     for (let i = 0; i < 7; i++) {
       vent.add(mesh(new THREE.BoxGeometry(0.11, 0.05, 1.15), metal, -0.9 + i * 0.3, 0.13, 0));
     }
     vent.position.set(vx, 0, vz);
-    scene.add(tag(vent, "air", hot ? "the floor vent — warm air rises" : "the floor vent — cool air drifts"));
+    vent.rotation.y = Math.PI / 4; // diagonal grilles
+    scene.add(tag(vent, "air", "the floor vent — warm air or cool air, as the switch says"));
 
     for (let w = 0; w < 3; w++) {
       const wisp = new THREE.Mesh(
@@ -478,8 +499,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       );
       wisp.position.set(vx + (w - 1) * 0.34, 1.4, vz + (w % 2 ? 0.28 : -0.28));
       wisp.userData.phase = w * 1.7 + vz + vx;
-      wisp.userData.hot = hot;
-      scene.add(tag(wisp, "air", hot ? "warm waves — the room exhales" : "cool waves — the room inhales"));
+      wisp.userData.vx = vx;
+      scene.add(tag(wisp, "air", "the air — steam when the vents breathe"));
       wisps.push(wisp);
     }
 
@@ -487,6 +508,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     scene.add(tag(fixture, "air", "the vent light — it wakes with the air"));
     const uplight = new THREE.PointLight(airColor, 0, 11, 2);
     uplight.position.set(vx + (vx < 0 ? 0.95 : -0.95), 0.4, vz);
+    uplight.userData.fixtureMat = fixture.material;
     scene.add(uplight);
     floorLights.push(uplight);
   }
@@ -498,9 +520,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   lever.userData.action = "toggle-vents";
   lightSwitch.add(lever);
   lightSwitch.position.set(10.28, 1.45, 6.9);
-  lightSwitch.userData = { element: "air", label: "the switch — click to breathe the air on or off" };
+  lightSwitch.userData = { element: "air", label: "the switch — warm air, cool air, or still" };
   lightSwitch.traverse((c) => {
-    c.userData = { ...c.userData, element: "air", label: "the switch — click to breathe the air on or off" };
+    c.userData = { ...c.userData, element: "air", label: "the switch — warm air, cool air, or still" };
   });
   lever.userData.action = "toggle-vents";
   scene.add(lightSwitch);
@@ -548,21 +570,23 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   fire.position.set(-1.6, 2.0, -11.6);
   scene.add(fire);
 
-  // ONE semicircle bench behind the fire, facing the house
+  // the semicircle SPLIT into two arcs with a walk-through gap
   const bench = new THREE.Group();
-  const benchArc = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.5, 8, 26, Math.PI * 0.85), darkWood);
-  benchArc.rotation.z = 0.23;
-  benchArc.rotation.x = -Math.PI / 2;
-  benchArc.position.y = 1.02;
-  benchArc.castShadow = true;
-  bench.add(benchArc);
-  const benchPad = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.3, 8, 26, Math.PI * 0.85), new THREE.MeshStandardMaterial({ color: "#e8dcc8", roughness: 0.9 }));
-  benchPad.rotation.z = 0.23;
-  benchPad.rotation.x = -Math.PI / 2;
-  benchPad.position.y = 1.34;
-  bench.add(benchPad);
-  for (const la of [0.55, 1.45, 2.35, 2.9]) {
-    bench.add(mesh(new THREE.CylinderGeometry(0.14, 0.18, 1.0, 8), darkWood, Math.sin(la) * 2.95, 0.5, Math.cos(la) * 2.95));
+  for (const startA of [0.23, 1.78]) {
+    const benchArc = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.5, 8, 18, Math.PI * 0.36), darkWood);
+    benchArc.rotation.z = startA;
+    benchArc.rotation.x = -Math.PI / 2;
+    benchArc.position.y = 1.02;
+    benchArc.castShadow = true;
+    bench.add(benchArc);
+    const benchPad = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.3, 8, 18, Math.PI * 0.36), new THREE.MeshStandardMaterial({ color: "#e8dcc8", roughness: 0.9 }));
+    benchPad.rotation.z = startA;
+    benchPad.rotation.x = -Math.PI / 2;
+    benchPad.position.y = 1.34;
+    bench.add(benchPad);
+    for (const la of [startA + 0.12, startA + Math.PI * 0.24]) {
+      bench.add(mesh(new THREE.CylinderGeometry(0.14, 0.18, 1.0, 8), darkWood, Math.sin(la) * 2.95, 0.5, Math.cos(la) * 2.95));
+    }
   }
   bench.position.set(-1.6, 0, -11.6);
   scene.add(tag(bench, "fire", "the semicircle bench — sit, face the fire and the house"));
@@ -594,34 +618,31 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
 
   // ============ THE PORTAL — lives in the bookshelf's open bay ============
-  // etheric / transparent / toroidal — a way to another reality
+  // faint, dark, almost transparent — static in place, the transparency
+  // fluctuates like two veils merging and parting
+  const portalVeils: THREE.Mesh[] = [];
   const portal = new THREE.Group();
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(1.25, 0.13, 12, 42),
-    new THREE.MeshStandardMaterial({ color: "#8f6ff2", emissive: "#6a48e0", emissiveIntensity: 1.6, transparent: true, opacity: 0.85 })
+  const veilC = new THREE.Mesh(
+    new THREE.CircleGeometry(1.38, 32),
+    new THREE.MeshBasicMaterial({ color: "#120b22", transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide })
   );
-  portal.add(ring);
-  const ring2 = new THREE.Mesh(
-    new THREE.TorusGeometry(1.02, 0.055, 10, 36),
-    new THREE.MeshStandardMaterial({ color: "#b49cff", emissive: "#8f6ff2", emissiveIntensity: 2.1, transparent: true, opacity: 0.7 })
+  portal.add(veilC);
+  const veilA = new THREE.Mesh(
+    new THREE.CircleGeometry(1.18, 32),
+    new THREE.MeshBasicMaterial({ color: "#1a1030", transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide })
   );
-  portal.add(ring2);
-  const veil = new THREE.Mesh(
-    new THREE.CircleGeometry(1.12, 32),
-    new THREE.MeshStandardMaterial({ color: "#2b1e57", emissive: "#4327a8", emissiveIntensity: 1.15, transparent: true, opacity: 0.32 })
+  veilA.position.z = 0.02;
+  portal.add(veilA);
+  const veilB = new THREE.Mesh(
+    new THREE.CircleGeometry(0.92, 28),
+    new THREE.MeshBasicMaterial({ color: "#241542", transparent: true, opacity: 0.26, depthWrite: false, side: THREE.DoubleSide })
   );
-  portal.add(veil);
+  veilB.position.z = 0.04;
+  portal.add(veilB);
   portal.position.set(9.55, 3.1, -5.885); // inside the shelf's open bay
   portal.rotation.y = -Math.PI / 2; // faces the room
   scene.add(tag(portal, "space", "the portal — a way to another reality"));
-  ring.userData.baseY = 0; // LOCAL to the portal group (was drifting to the plant)
-  ring.userData.phase = 0.7;
-  ring.userData.amp = 0.07;
-  floatRocks.push(ring); // drifts + turns with the floating-stone animation
-  ring2.userData.baseY = 0;
-  ring2.userData.phase = 2.2;
-  ring2.userData.amp = 0.07;
-  floatRocks.push(ring2);
+  portalVeils.push(veilA, veilB, veilC);
 
   // (the balcony gudi/shrine is PARKED 2026-10-12 — Frank wants to see the
   // bookshelf pooja items first. Restore here when he says the word.)
@@ -633,5 +654,5 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   );
   scene.add(tag(yogaMat, "space", "the yoga mat — silence, sun, breath"));
 
-  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks };
+  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay };
 }

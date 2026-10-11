@@ -63,9 +63,9 @@ let hovered: THREE.Object3D | null = null;
 // the sliding glass is a little state machine (Frank 2026-10-12):
 // 0 = closed; click pane 4 (slot 7) -> it tucks into pane 3;
 // click pane 3 -> 3+4 stack into panes 1+2; click pane 1 or 2 -> everything returns
-let glassState = 0;
+let glassState = 2; // the scene opens with the glass stacked left — balcony breathing
 let projectorOn = true;
-let ventsOn = true;
+let ventMode = 1; // 0 = still, 1 = warm (red), 2 = cool (blue) — cycled by the switch
 
 const elementNote: Record<ElementName, string> = {
   earth: "earth — soil, stone, what grows",
@@ -111,8 +111,8 @@ canvas.addEventListener("click", () => {
     return;
   }
   if (act === "toggle-vents") {
-    ventsOn = !ventsOn;
-    labelEl.textContent = ventsOn ? "the vents breathe again" : "the air rests";
+    ventMode = (ventMode + 1) % 3;
+    labelEl.textContent = ventMode === 0 ? "the air rests" : ventMode === 1 ? "warm air rises" : "cool air drifts";
     labelEl.style.opacity = "1";
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
     return;
@@ -201,18 +201,40 @@ function animate(): void {
   renderer.toneMappingExposure = 1.12 - 0.26 * nightMix;
   scene.background = nightMix > 0.5 ? darkSky : daySky;
   (scene.fog as THREE.Fog).color.lerpColors(dayHorizon, nightHorizon, nightMix);
-  objects.floorLights.forEach((l) => (l.intensity = ventsOn ? 4 + nightMix * 11 : 0));
+  const ventColor = ventMode === 1 ? "#ff6a4a" : "#6ab8ff";
+  const ventOn = ventMode > 0;
+  objects.floorLights.forEach((l) => {
+    l.intensity = ventOn ? 4 + nightMix * 11 : 0;
+    l.color.set(ventColor);
+    const fm = l.userData.fixtureMat as THREE.MeshStandardMaterial | undefined;
+    if (fm) {
+      fm.emissive.set(ventOn ? ventColor : "#d9c9a8");
+      fm.emissiveIntensity = ventOn ? 0.35 : 0.08;
+    }
+  });
   const warmth = 1 + nightMix * 0.45;
   objects.wisps.forEach((w) => {
     const phase = (t * 0.5 + (w.userData.phase as number)) % 2.6;
     w.position.y = 1.2 + phase;
-    // wavy air: a slow sideways sway + tilt
+    // steam: a slow sideways sway + tilt
     const sway = Math.sin(t * 1.6 + (w.userData.phase as number));
     w.rotation.z = sway * 0.22;
-    w.position.x += (Math.sin(t * 0.9 + (w.userData.phase as number)) * 0.18 - ((w.position.x - (w.userData.hot ? 9.55 : -9.55)) * 0.02)) * 0.06;
-    (w.material as THREE.MeshBasicMaterial).opacity =
-      (ventsOn ? 1 : 0) * (0.1 + nightMix * 0.1) * (1 - phase / 2.6);
+    const vx = (w.userData.vx as number) ?? 0;
+    w.position.x += (Math.sin(t * 0.9 + (w.userData.phase as number)) * 0.18 - ((w.position.x - vx) * 0.02)) * 0.06;
+    const wm = w.material as THREE.MeshBasicMaterial;
+    wm.color.set(ventColor);
+    wm.opacity = (ventOn ? 1 : 0) * (0.16 + nightMix * 0.14) * (1 - phase / 2.6);
   });
+
+  // the portal breathes — two dark veils merging and parting
+  objects.portalVeils.forEach((v, i) => {
+    const m = v.material as THREE.MeshBasicMaterial;
+    m.opacity = 0.1 + i * 0.07 + Math.sin(t * 0.6 + i * 2.1) * 0.09 + Math.sin(t * 1.5 + i) * 0.045;
+  });
+
+  // the UST light ray — faint, clearest at night
+  const ray = objects.lightRay.material as THREE.MeshBasicMaterial;
+  ray.opacity += (((projectorOn ? 0.03 + nightMix * 0.075 : 0)) - ray.opacity) * 0.08;
 
   if (desired) {
     camera.position.lerp(desired.pos, 0.055);
