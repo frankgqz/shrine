@@ -1,19 +1,21 @@
 import * as THREE from "three";
 
 // The placement language (Frank 2026-10-11): the room is a 3x3x3 cube.
-// Numbers 1-9 run through each layer: 1 = the close right corner (not the
-// balcony side, not the computer side) -> 3 = toward the computer; 4-6 = the
-// middle band where the floor-to-ceiling roller stands; 7-9 = outside on the
-// balcony. Layers: bottom = floor level, mid = standing/eye level, top = high.
-// Say "mid-5" and we both know exactly where.
+// Within each layer, 1-9 runs in depth-triplets: 1,2,3 = the CLOSE band
+// (right, mid, left — slot 1 is the right side away from the computer; the
+// run goes toward the computer at 3/6 on the left wall), 4,5,6 = the further
+// band (near the sliding glass wall), 7,8,9 = outside on the balcony.
+// Layers: bottom = floor level, mid = standing/eye level, top = high.
+// The camera originates from behind/above top-1, looking at the balcony.
 
 export type Layer = "bottom" | "mid" | "top";
 
 export const LAYERS: Layer[] = ["bottom", "mid", "top"];
 
-// room extents: x -10..10 (left wall .. open right), z -8..8.5 (back wall .. balcony edge)
-const X = [-7, 0, 7]; // 1=right-ish when viewed from the corner? see note in AGENTS.md
-const Z = [6, -1.5, -7]; // 1 = close to the open/balcony side -> 3 = deep, near the computer wall
+// frame: camera sits behind (+Z) looking toward the balcony (-Z).
+// columns: right (+X), mid, left (-X = the computer wall)
+const COL_X = [7, 0, -7]; // 1/4/7 = right, 2/5/8 = mid, 3/6/9 = left (computer)
+const ROW_Z = [3, -4, -11.5]; // band 1-3 close, 4-6 near the glass, 7-9 balcony
 const Y: Record<Layer, number> = { bottom: 1.1, mid: 3.9, top: 6.8 };
 
 export function slotPos(slot: string): THREE.Vector3 | null {
@@ -21,11 +23,9 @@ export function slotPos(slot: string): THREE.Vector3 | null {
   if (!m) return null;
   const layer = m[1] as Layer;
   const n = parseInt(m[2], 10) - 1;
-  const col = n % 3; // 0,1,2 -> the 1-2-3 run
-  const row = Math.floor(n / 3); // 0 = band 1-3, 1 = band 4-6, 2 = band 7-9
-  // bands: row 0 = inside (close -> computer), row 1 = the roller wall, row 2 = balcony
-  const bandZ = [6 - row * 6.5, -0.5 - row * 2, -7 + row * 3][row];
-  return new THREE.Vector3(X[col], Y[layer], row === 2 ? 8.2 : bandZ);
+  const col = n % 3;
+  const row = Math.floor(n / 3);
+  return new THREE.Vector3(COL_X[col], Y[layer], ROW_Z[row]);
 }
 
 const LABEL_CACHE = new Map<string, THREE.Texture>();
@@ -61,7 +61,7 @@ export function buildSlotGrid(): THREE.Group {
       const key = `${layer}-${n}`;
       const pos = slotPos(key)!;
       const cell = new THREE.Mesh(
-        new THREE.BoxGeometry(5.4, 2.4, 5.4),
+        new THREE.BoxGeometry(5.6, 2.4, 5.6),
         new THREE.MeshBasicMaterial({ color: "#ffd489", wireframe: true, transparent: true, opacity: 0.22 })
       );
       cell.position.copy(pos);

@@ -1,9 +1,10 @@
 import * as THREE from "three";
 
-// The balcony-room sits on a cliff: earth floor (unpaved), open windows,
-// and the distance carries the elements — mountains, lake, sun, sky.
+// The stage (Frank 2026-10-11 frame): camera sits BEHIND (+Z) — no wall there —
+// computer wall on the LEFT (-X), a wall on the RIGHT (+X), and straight ahead
+// (-Z) the sliding glass opens to the balcony. Beyond the balcony: cliff, lake,
+// mountains, sun. The balcony floor is NOT paved (earth).
 
-const SKY_TOP = new THREE.Color("#8ec9e8");
 const SKY_HORIZON = new THREE.Color("#f6e2c2");
 
 export function skyTexture(): THREE.Texture {
@@ -39,78 +40,77 @@ function rock(size: number, color = "#8d7a66"): THREE.Mesh {
 
 export function buildRoom(scene: THREE.Scene): void {
   scene.background = skyTexture();
-  scene.fog = new THREE.Fog(SKY_HORIZON, 60, 160);
+  scene.fog = new THREE.Fog(SKY_HORIZON, 70, 190);
 
-  // ---- Earth: the balcony floor is NOT paved — soil, stones, moss ----
+  // ---- Earth: the floor and the balcony are NOT paved — one soil ground ----
   const soil = new THREE.Mesh(
-    new THREE.PlaneGeometry(22, 18),
+    new THREE.PlaneGeometry(22, 28),
     new THREE.MeshStandardMaterial({ color: "#7a5c3e", roughness: 1 })
   );
   soil.rotation.x = -Math.PI / 2;
+  soil.position.z = -5;
   soil.receiveShadow = true;
   scene.add(soil);
 
-  for (let i = 0; i < 26; i++) {
+  for (let i = 0; i < 34; i++) {
     const r = rock(0.12 + Math.random() * 0.3);
-    r.position.set(-10 + Math.random() * 20, 0.06, -8 + Math.random() * 16);
+    r.position.set(-10 + Math.random() * 20, 0.06, -17 + Math.random() * 25);
     r.rotation.y = Math.random() * Math.PI;
     r.castShadow = true;
     r.receiveShadow = true;
     scene.add(r);
   }
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 10; i++) {
     const patch = new THREE.Mesh(
       new THREE.CircleGeometry(0.6 + Math.random() * 1.2, 12),
       new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 })
     );
     patch.rotation.x = -Math.PI / 2;
-    patch.position.set(-9 + Math.random() * 18, 0.015, -7 + Math.random() * 14);
+    patch.position.set(-9 + Math.random() * 18, 0.015, -16 + Math.random() * 23);
     scene.add(patch);
   }
 
-  // ---- The cliff the balcony sits on ----
+  // ---- The cliff the whole thing sits on ----
   const cliff = new THREE.Mesh(
-    new THREE.BoxGeometry(24, 14, 20),
+    new THREE.BoxGeometry(26, 16, 32),
     new THREE.MeshStandardMaterial({ color: "#77624e", roughness: 1 })
   );
-  cliff.position.set(0, -7.05, 0);
+  cliff.position.set(0, -8.05, -5);
   cliff.receiveShadow = true;
   scene.add(cliff);
 
-  // ---- Walls: back + left, warm plaster, with big OPEN WINDOWS (air) ----
+  // ---- Walls: LEFT (computer wall, open windows) + RIGHT (plain). NO wall behind. ----
   const plaster = new THREE.MeshStandardMaterial({ color: "#e8d8bd", roughness: 0.9 });
   const beamMat = new THREE.MeshStandardMaterial({ color: "#6e4a2c", roughness: 0.8 });
 
-  const backWall = new THREE.Mesh(new THREE.BoxGeometry(22, 8, 0.4), plaster);
-  backWall.position.set(0, 4, -8.8);
-  backWall.receiveShadow = true;
-  scene.add(backWall);
-
-  const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 8, 18), plaster);
-  leftWall.position.set(-10.8, 4, 0);
+  const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 8, 17), plaster);
+  leftWall.position.set(-10.8, 4, -0.2);
   leftWall.receiveShadow = true;
   scene.add(leftWall);
 
-  // Window openings on the left wall: frame + lintel, no glass — open air
-  for (const z of [-4.5, 1.5]) {
-    const frame = new THREE.Group();
+  const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 8, 17), plaster);
+  rightWall.position.set(10.8, 4, -0.2);
+  rightWall.receiveShadow = true;
+  scene.add(rightWall);
+
+  // Open windows on the LEFT wall (air) — frames, no glass
+  for (const z of [-4.5, 2.5]) {
     const parts: Array<[number, number, number, number, number, number]> = [
-      [0.5, 0.25, 5, -10.6, 7.35, z], // lintel
-      [0.5, 0.25, 5, -10.6, 1.15, z], // sill
-      [0.5, 6.2, 0.25, -10.6, 4.25, z - 2.4],
-      [0.5, 6.2, 0.25, -10.6, 4.25, z + 2.4],
-      [0.5, 6.2, 0.12, -10.6, 4.25, z], // center mullion
+      [0.5, 0.25, 4.6, -10.6, 7.35, z],
+      [0.5, 0.25, 4.6, -10.6, 1.15, z],
+      [0.5, 6.2, 0.25, -10.6, 4.25, z - 2.2],
+      [0.5, 6.2, 0.25, -10.6, 4.25, z + 2.2],
+      [0.5, 6.2, 0.12, -10.6, 4.25, z],
     ];
     for (const [w, h, d, x, y, zz] of parts) {
       const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), beamMat);
       m.position.set(x, y, zz);
       m.castShadow = true;
-      frame.add(m);
+      scene.add(m);
     }
-    scene.add(frame);
   }
 
-  // ---- Railing along the open edges (the balcony) ----
+  // ---- Balcony railing: the far edge + the two side returns ----
   const railY = 3.2;
   const addRail = (from: THREE.Vector3, to: THREE.Vector3) => {
     const len = from.distanceTo(to);
@@ -129,26 +129,26 @@ export function buildRoom(scene: THREE.Scene): void {
       scene.add(post);
     }
   };
-  addRail(new THREE.Vector3(-10.6, 0, 8.6), new THREE.Vector3(10.6, 0, 8.6));
-  addRail(new THREE.Vector3(10.6, 0, 8.6), new THREE.Vector3(10.6, 0, -8.6));
+  addRail(new THREE.Vector3(-10.6, 0, -18.6), new THREE.Vector3(10.6, 0, -18.6));
+  addRail(new THREE.Vector3(-10.6, 0, -18.6), new THREE.Vector3(-10.6, 0, -8.4));
+  addRail(new THREE.Vector3(10.6, 0, -18.6), new THREE.Vector3(10.6, 0, -8.4));
 
-  // ---- Into the distance: cliff edge already below; mountains + lake ----
+  // ---- Into the distance: mountains, lake, clouds, stars ----
   const mountainMat = new THREE.MeshStandardMaterial({ color: "#93a7b4", roughness: 1, flatShading: true });
   for (let i = 0; i < 7; i++) {
     const h = 12 + Math.random() * 18;
     const m = new THREE.Mesh(new THREE.ConeGeometry(10 + Math.random() * 8, h, 5), mountainMat);
-    m.position.set(-55 + i * 18 + Math.random() * 6, h / 2 - 6, -85 - Math.random() * 25);
+    m.position.set(-55 + i * 18 + Math.random() * 6, h / 2 - 7, -95 - Math.random() * 25);
     scene.add(m);
   }
   const lake = new THREE.Mesh(
-    new THREE.PlaneGeometry(240, 120),
+    new THREE.PlaneGeometry(260, 130),
     new THREE.MeshStandardMaterial({ color: "#5b93b8", roughness: 0.25, metalness: 0.1 })
   );
   lake.rotation.x = -Math.PI / 2;
-  lake.position.set(0, -6.5, -70);
+  lake.position.set(0, -7.5, -85);
   scene.add(lake);
 
-  // A few clouds — soft flat spheres
   const cloudMat = new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 1, transparent: true, opacity: 0.85 });
   for (let i = 0; i < 6; i++) {
     const cloud = new THREE.Group();
@@ -157,11 +157,10 @@ export function buildRoom(scene: THREE.Scene): void {
       s.position.set(j * 3.4 - 3.4, Math.random() * 1.2, Math.random() * 1.6);
       cloud.add(s);
     }
-    cloud.position.set(-60 + Math.random() * 120, 26 + Math.random() * 12, -70 - Math.random() * 30);
+    cloud.position.set(-60 + Math.random() * 120, 26 + Math.random() * 12, -85 - Math.random() * 30);
     scene.add(cloud);
   }
 
-  // Celestial hint (space, into the distance) — stars sprinkled high
   const starGeo = new THREE.BufferGeometry();
   const starPts: number[] = [];
   for (let i = 0; i < 160; i++) {
@@ -172,6 +171,4 @@ export function buildRoom(scene: THREE.Scene): void {
   }
   starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPts, 3));
   scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: "#fff7e0", size: 0.7, sizeAttenuation: true })));
-
-  void SKY_TOP;
 }
