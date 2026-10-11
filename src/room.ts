@@ -95,19 +95,22 @@ export function buildRoom(scene: THREE.Scene): void {
     r.receiveShadow = true;
     scene.add(r);
   }
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 12; i++) {
     const patch = new THREE.Mesh(
       new THREE.CircleGeometry(0.6 + Math.random() * 1.2, 12),
       new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 })
     );
     patch.rotation.x = -Math.PI / 2;
-    patch.position.set(-9 + Math.random() * 18, 0.015, -16 + Math.random() * 23);
+    // outdoors only — balcony side of the glass
+    patch.position.set(-9 + Math.random() * 18, 0.015, -17.5 + Math.random() * 8.4);
     scene.add(patch);
   }
 
   // ---- Walls at the cube edges, ~20% taller (9.6) ----
   const plaster = new THREE.MeshStandardMaterial({ color: "#e8d8bd", roughness: 0.9 });
   const beamMat = new THREE.MeshStandardMaterial({ color: "#6e4a2c", roughness: 0.8 });
+  const metalPostMat = new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.45, metalness: 0.6 });
+  const stoneChannelMat = new THREE.MeshStandardMaterial({ color: "#8d7a66", roughness: 0.95 });
 
   const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 9.6, 17), plaster);
   leftWall.position.set(-10.5, 4.8, -0.2);
@@ -119,22 +122,7 @@ export function buildRoom(scene: THREE.Scene): void {
   rightWall.receiveShadow = true;
   scene.add(rightWall);
 
-  // Open windows on the LEFT wall (air) — frames, no glass
-  for (const z of [-4.5, 2.5]) {
-    const parts: Array<[number, number, number, number, number, number]> = [
-      [0.5, 0.25, 4.6, -10.3, 8.95, z],
-      [0.5, 0.25, 4.6, -10.3, 1.15, z],
-      [0.5, 7.8, 0.25, -10.3, 5.05, z - 2.2],
-      [0.5, 7.8, 0.25, -10.3, 5.05, z + 2.2],
-      [0.5, 7.8, 0.12, -10.3, 5.05, z],
-    ];
-    for (const [w, h, d, x, y, zz] of parts) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), beamMat);
-      m.position.set(x, y, zz);
-      m.castShadow = true;
-      scene.add(m);
-    }
-  }
+
 
   // ---- Railings: far balcony edge + right side + the cliff edge (gap for the waterfall) ----
   const railY = 3.2;
@@ -155,7 +143,20 @@ export function buildRoom(scene: THREE.Scene): void {
       scene.add(post);
     }
   };
-  addRail(new THREE.Vector3(-3.4, 0, -18.6), new THREE.Vector3(10.5, 0, -18.6));
+  // glass balustrade across slots 7-8 (thin metal handrail + glass panels)
+  const glassRailMat = new THREE.MeshStandardMaterial({ color: "#cfe8f2", transparent: true, opacity: 0.22, roughness: 0.05, side: THREE.DoubleSide });
+  for (let i = 0; i < 7; i++) {
+    const gx = -2.8 + i * 2.25;
+    const pane = new THREE.Mesh(new THREE.BoxGeometry(2.15, 2.9, 0.08), glassRailMat);
+    pane.position.set(gx, 1.65, -18.6);
+    scene.add(pane);
+    const post = new THREE.Mesh(new THREE.BoxGeometry(0.1, 3.2, 0.1), metalPostMat);
+    post.position.set(gx - 1.15, 1.6, -18.6);
+    scene.add(post);
+  }
+  const handrail = new THREE.Mesh(new THREE.BoxGeometry(16.4, 0.16, 0.22), beamMat);
+  handrail.position.set(3.1, 3.2, -18.6);
+  scene.add(handrail);
   addRail(new THREE.Vector3(10.5, 0, -18.6), new THREE.Vector3(10.5, 0, -8.4));
   addRail(new THREE.Vector3(-10.5, 0, -8.4), new THREE.Vector3(-10.5, 0, -13));
   // cliff edge rails with the waterfall gap at x -8.2..-5.8
@@ -171,24 +172,65 @@ export function buildRoom(scene: THREE.Scene): void {
   waterfall.position.set(-7, -8.2, -13.15);
   scene.add(waterfall);
 
-  // the spring source: a shelf of rock at top-9 where the water leaves
+  // Water path: ABOVE top-6 (over the projection, high on the left wall)
+  // -> an elevated rock channel sloping back to top-9 -> the fall at slot 9
+  // -> down below bottom-9 into the plunge pool and the lake.
+  const waterMat = new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.15, transparent: true, opacity: 0.85, emissive: "#2f7fa0", emissiveIntensity: 0.25 });
+
+  // the spout high on the left wall, above the projection
+  const spout = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.5, 1.1), beamMat);
+  spout.position.set(-10.1, 9.7, -4.6);
+  scene.add(spout);
+
+  // the elevated channel: two rock shelves with water riding them
+  const channelA = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.55, 5.6), stoneChannelMat);
+  channelA.position.set(-8.6, 8.75, -6.6);
+  channelA.rotation.x = -0.28;
+  scene.add(channelA);
+  const waterA = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.12, 5.3), waterMat);
+  waterA.position.set(-8.6, 9.12, -6.55);
+  waterA.rotation.x = -0.28;
+  scene.add(waterA);
+
+  const channelB = new THREE.Mesh(new THREE.BoxGeometry(2.2, 0.55, 5.2), stoneChannelMat);
+  channelB.position.set(-7.7, 6.15, -10.6);
+  channelB.rotation.x = -0.42;
+  scene.add(channelB);
+  const waterB = new THREE.Mesh(new THREE.BoxGeometry(1.45, 0.12, 4.9), waterMat);
+  waterB.position.set(-7.7, 6.55, -10.55);
+  waterB.rotation.x = -0.42;
+  scene.add(waterB);
+
+  // the pool at top-9 where the fall begins
+  const sourcePool = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.3, 0.3, 14), waterMat);
+  sourcePool.position.set(-7, 6.2, -11.9);
+  scene.add(sourcePool);
   const sourceShelf = rock(1.7, "#8d7a66");
-  sourceShelf.position.set(-7, 5.4, -11.4);
+  sourceShelf.position.set(-7, 5.15, -11.5);
   sourceShelf.castShadow = true;
   scene.add(sourceShelf);
-  const sourcePool = new THREE.Mesh(
-    new THREE.CylinderGeometry(1.15, 1.3, 0.3, 14),
-    new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.15, emissive: "#2f7fa0", emissiveIntensity: 0.25 })
-  );
-  sourcePool.position.set(-7, 6.35, -11.6);
-  scene.add(sourcePool);
-  // the stream down to the fall
-  const stream = new THREE.Mesh(
-    new THREE.BoxGeometry(1.5, 0.12, 4.2),
-    new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.15, transparent: true, opacity: 0.85 })
-  );
-  stream.position.set(-7, 0.12, -10.3);
-  scene.add(stream);
+
+  // rocks and shrubs around the water
+  for (let i = 0; i < 9; i++) {
+    const r = rock(0.35 + Math.random() * 0.75, i % 2 ? "#8d7a66" : "#77624e");
+    r.position.set(-9.4 + Math.random() * 4.8, 0.25 + Math.random() * 4.2, -12.9 + Math.random() * 8.6);
+    r.castShadow = true;
+    scene.add(r);
+    if (i % 2 === 0) {
+      const shrub = new THREE.Mesh(new THREE.SphereGeometry(0.5 + Math.random() * 0.4, 8, 6), new THREE.MeshStandardMaterial({ color: "#57713c", roughness: 1 }));
+      shrub.scale.y = 0.75;
+      shrub.position.set(-9.2 + Math.random() * 4.4, 0.45 + Math.random() * 3.6, -12.6 + Math.random() * 8.2);
+      scene.add(shrub);
+    }
+  }
+
+  // the cliff face at zone 9: rock ledges from low to high
+  for (let i = 0; i < 10; i++) {
+    const crag = rock(1.1 + Math.random() * 1.6, i % 2 ? "#77624e" : "#6b5744");
+    crag.position.set(-9.6 + Math.random() * 4.4, -13 + i * 2.1, -13.6 - Math.random() * 1.4);
+    crag.castShadow = true;
+    scene.add(crag);
+  }
 
   // ---- Into the distance: mountains, lake, clouds, stars ----
   const mountainMat = new THREE.MeshStandardMaterial({ color: "#93a7b4", roughness: 1, flatShading: true });

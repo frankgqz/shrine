@@ -147,8 +147,9 @@ function animate(): void {
 
   // the sliding glass: panels 0/1 drift left, 2/3 drift right (stacked open)
   objects.glassPanels.forEach((panel, i) => {
-    const home = -8 + i * 5.35;
-    const goal = glassOpen ? home + (i < 2 ? -5.75 : 5.75) : home;
+    const home = -7.8 + i * 5.2;
+    // open = the right two slide INTO the left two, leaving the right side clear
+    const goal = glassOpen ? (i === 2 ? -2.92 : i === 3 ? -8.12 : home) : home;
     panel.position.x += (goal - panel.position.x) * 0.055;
   });
 
