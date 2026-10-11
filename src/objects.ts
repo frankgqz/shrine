@@ -513,12 +513,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     paddle.rotation.z = wa + Math.PI / 2;
     waterWheel.add(paddle);
   }
-  waterWheel.position.set(-1.05, 1.62, 0.35);
+  waterWheel.position.set(-0.55, 1.5, -0.78); // tucked BEHIND the rocks — less obvious
   waterWheel.rotation.y = 0.5;
-  // the water FEEDS the wheel — a little chute from the rocks to the paddles
-  const feedChute = mesh(new THREE.BoxGeometry(0.95, 0.05, 0.14), new THREE.MeshStandardMaterial({ color: "#aee4f5", transparent: true, opacity: 0.7, roughness: 0.1 }), -0.68, 2.32, 0.28);
-  feedChute.rotation.set(0, 0.3, -0.35);
-  rockFeature.add(feedChute);
   rockFeature.add(tag(waterWheel, "water", "the water wheel — turning in the little fall"));
   coffee.add(rockFeature);
   coffee.position.set(2.2, 0, 0.8);
@@ -619,16 +615,17 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     const vent = new THREE.Group();
     // a BLACK louvre grille like the photo: frame, dark cavity, full-width
     // blades that LIFT on one side when the air breathes
-    vent.add(mesh(new THREE.BoxGeometry(2.1, 0.14, 1.5), new THREE.MeshStandardMaterial({ color: "#3a2c22", roughness: 0.55 }), 0, 0.07, 0));
-    vent.add(mesh(new THREE.BoxGeometry(1.82, 0.1, 1.22), new THREE.MeshStandardMaterial({ color: "#2a2019", roughness: 0.7 }), 0, 0.12, 0));
+    vent.add(mesh(new THREE.BoxGeometry(2.1, 0.14, 1.5), new THREE.MeshStandardMaterial({ color: "#57402e", roughness: 0.55 }), 0, 0.07, 0));
+    vent.add(mesh(new THREE.BoxGeometry(1.82, 0.1, 1.22), new THREE.MeshStandardMaterial({ color: "#3a2b20", roughness: 0.7 }), 0, 0.12, 0));
     for (let i = 0; i < 5; i++) {
-      const fin = mesh(new THREE.BoxGeometry(1.82, 0.05, 0.19), new THREE.MeshStandardMaterial({ color: "#35281f", roughness: 0.5, metalness: 0.5 }), 0, 0.19, -0.48 + i * 0.24);
+      const fin = mesh(new THREE.BoxGeometry(1.82, 0.05, 0.19), new THREE.MeshStandardMaterial({ color: "#4a3626", roughness: 0.5, metalness: 0.5 }), 0, 0.19, -0.48 + i * 0.24);
       fin.rotation.x = 0.08; // nearly flush at rest
       ventFins.push(fin);
       vent.add(fin);
     }
     vent.position.set(vx, 0, vz);
-    if (vx > 9 && vz > 6) vent.rotation.y = Math.PI; // spot 1: blades lift TOWARD the viewer
+    if (vx > 9 && vz > 6) vent.rotation.y = Math.PI / 2;      // vent 1: to the side
+    if (vx < -9 && vz > 6) vent.rotation.y = -Math.PI / 2;    // low-3 vent: the other way
     scene.add(tag(vent, "air", "the vent grille — blades lift, steam rises"));
 
     for (let w = 0; w < 6; w++) {

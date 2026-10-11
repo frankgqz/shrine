@@ -324,13 +324,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     scene.add(mound);
   }
 
-  // a little GRASS inside, in the other corner
-  for (let g = 0; g < 6; g++) {
-    const blade = new THREE.Mesh(new THREE.ConeGeometry(0.1 + Math.random() * 0.06, 0.55 + Math.random() * 0.4, 5), new THREE.MeshStandardMaterial({ color: g % 2 ? "#5d7a3a" : "#6d8a45", roughness: 1 }));
-    blade.position.set(8.4 + (Math.random() - 0.5) * 0.9, 0.32, 8.05 + (Math.random() - 0.5) * 0.7);
-    blade.rotation.set((Math.random() - 0.5) * 0.4, Math.random() * Math.PI, (Math.random() - 0.5) * 0.4);
-    scene.add(blade);
-  }
+  // (the indoor grass near vent 1 is gone — Frank 2026-10-12)
 
   // a paved PATH of deck tiles: glass doors -> fire -> rocks (IKEA-tile style)
   const pathTile = (x: number, z: number, rot: number) => {
@@ -442,6 +436,29 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   const pool = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.08, 20), new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.12, transparent: true, opacity: 0.8, emissive: "#2f7fa0", emissiveIntensity: 0.3 }));
   pool.position.set(-8.55, 0.28, -9.9);
   scene.add(pool);
+
+  // more moss and shrubs around the climb
+  for (let i = 0; i < 7; i++) {
+    const moss2 = new THREE.Mesh(new THREE.SphereGeometry(0.45 + Math.random() * 0.5, 10, 8), new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 }));
+    moss2.scale.y = 0.25;
+    moss2.position.set(-10 + Math.random() * 3.6, 0.14, -9.2 - Math.random() * 2.6);
+    moss2.receiveShadow = true;
+    scene.add(moss2);
+  }
+  for (let i = 0; i < 5; i++) {
+    const shrub2 = new THREE.Mesh(new THREE.SphereGeometry(0.5 + Math.random() * 0.35, 8, 6), new THREE.MeshStandardMaterial({ color: i % 2 ? "#57713c" : "#49662f", roughness: 1 }));
+    shrub2.scale.y = 0.8;
+    shrub2.position.set(-10.1 + Math.random() * 3.2, 0.55, -9.4 - Math.random() * 2.4);
+    shrub2.castShadow = true;
+    scene.add(shrub2);
+  }
+
+  // tiny CATCHMENTS between the rocks — where the water trickles down to
+  for (const [cx, cy, cz, cr] of [[-8.55, 2.42, -9.9, 0.4], [-9.45, 1.62, -10.05, 0.32], [-8.32, 4.35, -9.72, 0.28]] as Array<[number, number, number, number]>) {
+    const pocket = new THREE.Mesh(new THREE.CylinderGeometry(cr, cr, 0.05, 14), new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.12, transparent: true, opacity: 0.8, emissive: "#2f7fa0", emissiveIntensity: 0.3 }));
+    pocket.position.set(cx, cy, cz);
+    scene.add(pocket);
+  }
 
   // ---- Into the distance: mountains, lake, clouds, stars ----
   const mountainMat = new THREE.MeshStandardMaterial({ color: "#93a7b4", roughness: 1, flatShading: true });
