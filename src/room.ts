@@ -94,7 +94,7 @@ export function buildRoom(scene: THREE.Scene): void {
     m.receiveShadow = true;
     return m;
   };
-  scene.add(makeTerrain(21, 23.2, 0, -3.6, 1.3));        // the main plateau (walls -> mid balcony)
+  scene.add(makeTerrain(21, 7.6, 0, -12.2, 1.3));         // the balcony plateau (outside the glass line)
   scene.add(makeTerrain(7.2, 8.2, -7.05, -11.4, 2.7));   // the slot-9 shelf (smaller, bites at the fall)
   scene.add(makeTerrain(14.2, 5.4, 3.6, -12.6, 4.1));    // the 7-8 shelf (ends short of the rail)
 
@@ -193,7 +193,6 @@ export function buildRoom(scene: THREE.Scene): void {
   const handrail = new THREE.Mesh(new THREE.BoxGeometry(16.4, 0.16, 0.22), beamMat);
   handrail.position.set(3.1, 3.2, -18.6);
   scene.add(handrail);
-  addRail(new THREE.Vector3(10.5, 0, -18.6), new THREE.Vector3(10.5, 0, -8.4));
   // (the cliff edges at slot 9 carry no wooden poles — the drop is the point)
 
   // ---- The waterfall (slot 9: top-9 -> bottom-9, through the ground) ----
