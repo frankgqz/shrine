@@ -34,6 +34,10 @@ controls.autoRotate = false;
 controls.update();
 
 const waterSheet = buildRoom(scene);
+
+// ---- the speakers play Frank's track (click them) ----
+const song = new Audio("/audio/song.mp4");
+song.loop = true;
 const objects = buildObjects(scene);
 
 // ---- the monitors: black screens with code scrolling on them ----
@@ -174,6 +178,26 @@ canvas.addEventListener("click", () => {
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
     return;
   }
+  if (act === "toggle-music") {
+    if (song.paused) {
+      song.volume = 0.55;
+      void song.play();
+      labelEl.textContent = "the speakers — Pandora, turning";
+    } else {
+      song.pause();
+      labelEl.textContent = "the speakers rest";
+    }
+    labelEl.style.opacity = "1";
+    window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
+    return;
+  }
+  if (act === "toggle-night") {
+    night = !night;
+    labelEl.textContent = night ? "night falls over the shrine" : "the day returns";
+    labelEl.style.opacity = "1";
+    window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
+    return;
+  }
   if (act === "toggle-projector") {
     projectorOn = !projectorOn;
     labelEl.textContent = projectorOn ? "the projector hums to life" : "the projector sleeps";
@@ -295,22 +319,17 @@ function animate(): void {
     s.tex.needsUpdate = true;
   });
 
-  // smoke: puffs rise, billow and fade
-  objects.steamBeams.forEach((s, i) => {
+  // subtle beams: gentle pulse with the mode color
+  objects.steamBeams.forEach((s) => {
     const m = s.material as THREE.MeshBasicMaterial;
     m.color.set(ventColor);
-    const ph = (t * 0.5 + (s.userData.phase as number)) % 2.2;
-    s.position.y = (s.userData.baseY as number) + ph * 1.25;
-    const grow = 0.7 + ph * 0.5;
-    s.scale.set(grow, 1 + ph * 0.3, grow);
-    s.rotation.y = t * 0.35 + i;
-    m.opacity = ventOn ? 0.16 * (1 - ph / 2.2) + 0.03 : 0;
+    m.opacity = ventOn ? 0.1 + Math.sin(t * 1.8 + (s.userData.phase as number)) * 0.045 : 0;
   });
 
   // the water sheet flows down the rocks; the little wheel turns
   const flowMap = (waterSheet.material as THREE.MeshStandardMaterial).map;
   if (flowMap) flowMap.offset.y = -t * 0.22;
-  objects.waterWheel.rotation.z += 0.02;
+  objects.waterWheel.rotation.z += 0.014 + Math.sin(t * 2.3) * 0.006; // driven by the water
 
   // the portal breathes — faint circles merging and parting
   objects.portalVeils.forEach((v, i) => {

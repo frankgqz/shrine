@@ -327,7 +327,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   // a little GRASS inside, in the other corner
   for (let g = 0; g < 6; g++) {
     const blade = new THREE.Mesh(new THREE.ConeGeometry(0.1 + Math.random() * 0.06, 0.55 + Math.random() * 0.4, 5), new THREE.MeshStandardMaterial({ color: g % 2 ? "#5d7a3a" : "#6d8a45", roughness: 1 }));
-    blade.position.set(9.6 + (Math.random() - 0.5) * 0.9, 0.32, 7.6 + (Math.random() - 0.5) * 0.9);
+    blade.position.set(8.4 + (Math.random() - 0.5) * 0.9, 0.32, 8.05 + (Math.random() - 0.5) * 0.7);
     blade.rotation.set((Math.random() - 0.5) * 0.4, Math.random() * Math.PI, (Math.random() - 0.5) * 0.4);
     scene.add(blade);
   }
@@ -428,6 +428,20 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   waterSheet.position.set(-8.55, 3.35, -9.15);
   waterSheet.rotation.z = 0.12;
   scene.add(waterSheet);
+
+  // ---- a little POOL at the sheet's foot — rocks around a cavity of water ----
+  for (let i = 0; i < 8; i++) {
+    const pa = (i / 8) * Math.PI * 2;
+    const pr = 1.42 + Math.random() * 0.35;
+    const rr = rock(0.42 + Math.random() * 0.32, "#8a8279");
+    rr.position.set(-8.55 + Math.cos(pa) * pr, 0.32, -9.9 + Math.sin(pa) * pr * 0.72);
+    rr.rotation.set(Math.random() * 0.5, Math.random() * Math.PI, Math.random() * 0.5);
+    rr.castShadow = true;
+    scene.add(rr);
+  }
+  const pool = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.08, 20), new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.12, transparent: true, opacity: 0.8, emissive: "#2f7fa0", emissiveIntensity: 0.3 }));
+  pool.position.set(-8.55, 0.28, -9.9);
+  scene.add(pool);
 
   // ---- Into the distance: mountains, lake, clouds, stars ----
   const mountainMat = new THREE.MeshStandardMaterial({ color: "#93a7b4", roughness: 1, flatShading: true });
