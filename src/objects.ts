@@ -185,7 +185,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
   shelf.add(mesh(new THREE.BoxGeometry(1.5, 5.3, 0.12), wood, 0, 3.65, 0.75)); // one divider
   // only a FEW books — the shelf is mostly sacred things
-  for (const [by, bh, bz, n] of [[1.62, 1.1, -1.25, 3], [4.5, 1.25, 1.38, 2], [1.75, 1.1, 1.45, 2]] as Array<[number, number, number, number]>) {
+  for (const [by, bh, bz, n] of [[1.62, 1.1, -1.35, 3], [1.62, 1.1, -0.78, 2], [1.75, 1.1, 1.45, 2]] as Array<[number, number, number, number]>) {
     for (let b = 0; b < n; b++) {
       const h = bh * (0.62 + Math.random() * 0.3);
       shelf.add(mesh(
@@ -262,6 +262,22 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     crystal.scale.y = 1.55;
     shelf.add(crystal);
   }
+  // esoteric things — orb, singing bowl, an obelisk, a candle pair
+  const esotericOrb = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 10), new THREE.MeshStandardMaterial({ color: "#5a4a8a", emissive: "#7a5fd0", emissiveIntensity: 0.9, transparent: true, opacity: 0.85 }));
+  esotericOrb.position.set(0.4, 1.32, 0.72);
+  shelf.add(tag(esotericOrb, "space", "the orb — a held breath of violet"));
+  const bowl = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), brassSoft);
+  bowl.rotation.x = Math.PI;
+  bowl.position.set(0.4, 1.38, 0.28);
+  shelf.add(tag(bowl, "space", "the singing bowl — silence with a rim"));
+  const obelisk = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.95, 4), new THREE.MeshStandardMaterial({ color: "#2e2438", roughness: 0.4, metalness: 0.2 }));
+  obelisk.position.set(0.4, 1.65, -0.25);
+  shelf.add(tag(obelisk, "space", "the obelisk — a dark finger pointing"));
+  for (const [cx2, ch] of [[-0.45, 0.62], [-0.32, 0.42]] as Array<[number, number]>) {
+    shelf.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, ch, 8), new THREE.MeshStandardMaterial({ color: "#e8dcc8", roughness: 0.7 }), cx2, 1.22 + ch / 2, 0.62));
+    shelf.add(mesh(new THREE.ConeGeometry(0.035, 0.12, 6), new THREE.MeshStandardMaterial({ color: "#ffb03a", emissive: "#ff9420", emissiveIntensity: 1.9 }), cx2, 1.22 + ch + 0.06, 0.62));
+  }
+
   // a water bowl — still water, catching the light
   shelf.add(mesh(new THREE.CylinderGeometry(0.34, 0.26, 0.2, 14), brassSoft, -0.45, 1.22, -1.05)); // offering water at the portal's foot
   shelf.add(mesh(new THREE.CylinderGeometry(0.29, 0.29, 0.03, 14), new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.1, transparent: true, opacity: 0.85, emissive: "#2f7fa0", emissiveIntensity: 0.25 }), -0.45, 1.33, -1.05));
