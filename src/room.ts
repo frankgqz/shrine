@@ -251,12 +251,37 @@ export function buildRoom(scene: THREE.Scene): void {
     const side = Math.random() < 0.5 ? -1 : 1;
     const spread = 1.1 + Math.random() * 1.9 + (Math.random() < 0.3 ? 1.4 : 0);
     const r = rock(0.7 + Math.random() * 1.15, ["#8a8279", "#948c82", "#7d7770"][i % 3]);
-    r.position.set(-7.4 + side * spread, 0.35 + Math.random() * 0.35, -9.2 - t * 7.2 + (Math.random() - 0.5) * 1.6);
+    let bx = -7.4 + side * spread;
+    const bz = -9.2 - t * 7.2 + (Math.random() - 0.5) * 1.6;
+    if (Math.hypot(bx + 1.6, bz + 11.6) < 3.6) bx = -5.6 - Math.random() * 1.8; // clear of the fire
+    r.position.set(bx, 0.35 + Math.random() * 0.35, bz);
     r.rotation.set(Math.random() * 0.5, Math.random() * Math.PI, Math.random() * 0.5);
     r.castShadow = true;
     r.receiveShadow = true;
     scene.add(r);
   }
+  // more rocks + moss + little plants around the climb (water comes later)
+  for (let i = 0; i < 9; i++) {
+    const r = rock(0.3 + Math.random() * 0.6, "#8a8279");
+    r.position.set(-10.1 + Math.random() * 3.4, 0.2 + Math.random() * 0.25, -8.7 - Math.random() * 2.2);
+    r.rotation.set(Math.random() * 0.5, Math.random() * Math.PI, Math.random() * 0.5);
+    r.castShadow = true;
+    scene.add(r);
+  }
+  for (let i = 0; i < 5; i++) {
+    const moss = new THREE.Mesh(new THREE.SphereGeometry(0.5 + Math.random() * 0.45, 10, 8), new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 }));
+    moss.scale.y = 0.22;
+    moss.position.set(-10 + Math.random() * 3.2, 0.12, -8.75 - Math.random() * 2.0);
+    moss.receiveShadow = true;
+    scene.add(moss);
+  }
+  for (let i = 0; i < 7; i++) {
+    const sprout = new THREE.Mesh(new THREE.ConeGeometry(0.1 + Math.random() * 0.07, 0.5 + Math.random() * 0.35, 5), new THREE.MeshStandardMaterial({ color: ["#6d8a45", "#8fbf6a", "#5d7a3a"][i % 3], roughness: 0.95 }));
+    sprout.position.set(-10.05 + Math.random() * 3.1, 0.3, -8.8 - Math.random() * 2.0);
+    sprout.castShadow = true;
+    scene.add(sprout);
+  }
+
   // rocks stacked HIGH up the LEFT glass — the 9-zone climb, touching the window
   for (const [ox, oy, oz, os] of [
     [-9.45, 0.75, -8.95, 1.2], [-8.55, 1.7, -8.7, 1.05], [-9.2, 2.75, -8.55, 0.95],
@@ -318,7 +343,7 @@ export function buildRoom(scene: THREE.Scene): void {
   // rocks and shrubs around the water
   for (let i = 0; i < 9; i++) {
     const r = rock(0.35 + Math.random() * 0.75, i % 2 ? "#8a8279" : "#948c82");
-    r.position.set(-9.4 + Math.random() * 4.8, 0.3 + Math.random() * 0.35, -12.9 + Math.random() * 6.6);
+    r.position.set(-9.4 + Math.random() * 4.8, 0.3 + Math.random() * 0.35, -13.4 + Math.random() * 4.2);
     r.castShadow = true;
     scene.add(r);
   }

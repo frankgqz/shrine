@@ -43,9 +43,11 @@ export interface SceneObjects {
   portalVeils: THREE.Mesh[];
   lightRay: THREE.Mesh;
   ventFins: THREE.Mesh[];
+  monScreens: THREE.Mesh[];
 }
 
 export function buildObjects(scene: THREE.Scene): SceneObjects {
+  const monScreens: THREE.Mesh[] = [];
   // ============ DESK (slot 3) — top, drawer unit, slim legs ============
   const desk = new THREE.Group();
   desk.add(mesh(new THREE.BoxGeometry(2.7, 0.16, 8.2), wood, 0, 2.72, 0));
@@ -53,15 +55,15 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // speakers on the desk (one each side of the monitors)
   for (const sz of [3.55, -3.35]) {
     desk.add(mesh(new THREE.BoxGeometry(0.62, 1.15, 0.62), new THREE.MeshStandardMaterial({ color: "#2c2c33", roughness: 0.55 }), -1.05, 3.37, sz));
-    const cone = mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.08, 12), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -0.72, 3.55, sz);
+    const cone = mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.08, 12), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -0.72, 3.05, sz); // big LOW
     cone.rotation.z = Math.PI / 2;
     desk.add(cone);
-    const midRing = mesh(new THREE.TorusGeometry(0.255, 0.02, 8, 22), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -0.67, 3.55, sz);
+    const midRing = mesh(new THREE.TorusGeometry(0.255, 0.02, 8, 22), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -0.67, 3.05, sz);
     midRing.rotation.y = Math.PI / 2;
     desk.add(midRing);
-    const tweeter = mesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -0.72, 3.05, sz);
+    const tweeter = mesh(new THREE.SphereGeometry(0.1, 8, 6), new THREE.MeshStandardMaterial({ color: "#55555e", roughness: 0.4, metalness: 0.4 }), -0.72, 3.55, sz); // small HIGH
     desk.add(tweeter);
-    const twRing = mesh(new THREE.TorusGeometry(0.13, 0.016, 8, 18), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -0.67, 3.05, sz);
+    const twRing = mesh(new THREE.TorusGeometry(0.13, 0.016, 8, 18), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.45, metalness: 0.35 }), -0.67, 3.55, sz);
     twRing.rotation.y = Math.PI / 2;
     desk.add(twRing);
   }
@@ -88,6 +90,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   );
   portrait.rotation.y = Math.PI / 2;
   computer.add(portrait);
+  monScreens.push(portrait);
   computer.add(mesh(new THREE.BoxGeometry(0.42, 0.16, 1.0), metal, -1.2, 2.9, 1.55));
   // right: landscape monitor — flush against the portrait, a little lower
   computer.add(mesh(new THREE.BoxGeometry(0.12, 2.15, 3.55), metal, -1.2, 4.85, -1.25));
@@ -98,6 +101,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   );
   screen.rotation.y = Math.PI / 2;
   computer.add(screen);
+  monScreens.push(screen);
   computer.add(mesh(new THREE.BoxGeometry(0.42, 0.16, 1.1), metal, -1.2, 2.9, -1.25));
   computer.add(mesh(new THREE.BoxGeometry(0.14, 1.5, 0.14), metal, -1.2, 3.65, -1.25));
   // keyboard + mouse on its right (toward -Z from the sitter)
@@ -168,7 +172,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   scene.add(tag(chair, "air", "the chair — leather, tall, facing the work"));
 
   // ============ INDOOR PLANTS — slot 6, right of + below the projection ============
-  for (const [px, pz, s] of [[-8.5, 2.9, 0.8], [-9.35, -1.1, 1.0], [-9.7, -7.4, 1.15]] as Array<[number, number, number]>) {
+  for (const [px, pz, s, prot] of [[-8.9, 0.2, 0.8, 0.6], [-9.35, -1.1, 1.0, -0.5], [-9.75, -8.05, 0.95, -1.3]] as Array<[number, number, number, number]>) {
     const pot = new THREE.Group();
     pot.add(mesh(new THREE.CylinderGeometry(0.62 * s, 0.48 * s, 0.85 * s, 12), new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.85 }), 0, 0.42 * s, 0));
     for (let i = 0; i < 7; i++) {
@@ -177,6 +181,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       pot.add(leaf);
     }
     pot.position.set(px, 0, pz);
+    pot.rotation.y = prot; // leaves turned off the projection
     scene.add(tag(pot, "earth", "indoor plant — breathing beside the screen"));
   }
 
@@ -395,7 +400,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       couch.add(pillow);
     }
   };
-  seat(7.32, 1.75, 1.62, 5.7); // 1,4 side — 3 segments toward the bookshelf,
+  seat(7.22, 1.75, 1.95, 5.7); // 1,4 side — 3 segments toward the bookshelf,
   back(8.3, 1.75, 0.45, 5.7);  // seats a touch deeper toward the coffee table
   seat(3.75, 5.38, 7.7, 2.16); // the 1,2 side — the extended legroom lives here
   back(3.75, 6.65, 7.7, 0.55);
@@ -408,8 +413,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   cornerBackB.position.set(7.35, 1.75, 6.65);
   cornerBackB.castShadow = true; cornerBackB.receiveShadow = true;
   couch.add(cornerBackB);
-  const cornerSeat = new THREE.Mesh(new RoundedBoxGeometry(1.6, 0.46, 1.9, 4, 0.14), fluffy);
-  cornerSeat.position.set(7.35, 1.3, 5.5);
+  const cornerSeat = new THREE.Mesh(new RoundedBoxGeometry(1.95, 0.46, 1.9, 4, 0.14), fluffy);
+  cornerSeat.position.set(7.22, 1.3, 5.5);
   cornerSeat.castShadow = true; cornerSeat.receiveShadow = true;
   couch.add(cornerSeat);
   const cornerCushion = new THREE.Mesh(new THREE.SphereGeometry(0.72, 12, 10), fluffy);
@@ -420,11 +425,11 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   cornerCushion.castShadow = true;
   couch.add(cornerCushion);
   // the sofa stands on legs
-  for (const [lx, lz] of [[6.65, 0.9], [8.05, 0.9], [6.65, 2.7], [8.05, 2.7], [6.65, 4.2], [8.05, 4.2], [0.45, 4.75], [0.45, 6.25], [2.6, 4.75], [2.6, 6.25], [4.9, 4.75], [4.9, 6.25], [7.0, 4.75], [7.0, 6.25]] as Array<[number, number]>) {
+  for (const [lx, lz] of [[6.45, 0.9], [8.05, 0.9], [6.45, 2.7], [8.05, 2.7], [6.45, 4.2], [8.05, 4.2], [0.45, 4.75], [0.45, 6.25], [2.6, 4.75], [2.6, 6.25], [4.9, 4.75], [4.9, 6.25], [7.0, 4.75], [7.0, 6.25]] as Array<[number, number]>) {
     couch.add(mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.72, 8), new THREE.MeshStandardMaterial({ color: "#5d3b20", roughness: 0.7 }), lx, 0.36, lz));
   }
   // proper armrests at the two outer ends
-  couch.add(mesh(new THREE.BoxGeometry(1.4, 1.25, 0.7), fluffy, 7.45, 1.58, -1.45)); // arm at the new far end
+  couch.add(mesh(new THREE.BoxGeometry(1.75, 1.25, 0.7), fluffy, 7.22, 1.58, -1.45)); // arm at the new far end
   couch.add(mesh(new THREE.BoxGeometry(0.7, 1.25, 1.95), fluffy, 0.05, 1.58, 5.5));
   // throw cushions — RELAXED on the seat, leaning into the backrest
   for (const [cx, cz, cc, side] of [[7.95, 1.1, "#c98f6b", "x"], [7.95, 3.4, "#8fa8b8", "x"], [5.2, 6.15, "#c98f6b", "z"], [2.4, 6.15, "#a8b894", "z"]] as Array<[number, number, string, string]>) {
@@ -560,9 +565,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     const airColor = "#ff6a4a"; // live mode color, recolored in the animation loop
     const vent = new THREE.Group();
     vent.add(mesh(new THREE.BoxGeometry(2.0, 0.1, 1.15), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.6, metalness: 0.5 }), 0, 0.05, 0));
-    // BLINDS — horizontal panels flush on the floor; they twist open a few cm
+    // SKILLION slats — one low side along the vent, twisting open together
     for (let i = 0; i < 5; i++) {
-      const fin = mesh(new THREE.BoxGeometry(0.34, 0.055, 1.05), new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.5, metalness: 0.55 }), -0.78 + i * 0.39, 0.13, 0);
+      const fin = mesh(new THREE.BoxGeometry(0.34, 0.055, 1.05), new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.5, metalness: 0.55 }), -0.78 + i * 0.39, 0.11 + i * 0.035, 0);
       ventFins.push(fin);
       vent.add(fin);
     }
@@ -599,7 +604,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   lightSwitch.position.set(10.18, 2.3, 6.9);
   lightSwitch.userData = { element: "air", label: "the switch — warm air, cool air, or still" };
   lightSwitch.traverse((c) => {
-    c.userData = { ...c.userData, element: "air", label: "the switch — warm air, cool air, or still" };
+    c.userData = { ...c.userData, element: "air", label: "the switch — warm air, cool air, or still", action: "toggle-vents" };
   });
   lever.userData.action = "toggle-vents";
   scene.add(lightSwitch);
@@ -656,6 +661,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     }
   }
   bench.position.set(-0.7, 0, -11.7);
+  bench.rotation.y = -0.5; // seats toward 12-3-4 rather than 2-5
   scene.add(tag(bench, "fire", "the semicircle bench — sit, face the fire and the house"));
 
   // ============ EARTH — garden near the cliff, tree on the balcony ============
@@ -731,5 +737,5 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   );
   scene.add(tag(yogaMat, "space", "the yoga mat — silence, sun, breath"));
 
-  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins };
+  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens };
 }

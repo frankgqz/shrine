@@ -35,6 +35,39 @@ controls.update();
 
 buildRoom(scene);
 const objects = buildObjects(scene);
+
+// ---- the monitors: black screens with code scrolling on them ----
+interface CodeScreen { tex: THREE.CanvasTexture; ctx: CanvasRenderingContext2D; w: number; h: number }
+const codeScreens: CodeScreen[] = [];
+objects.monScreens.forEach((m, i) => {
+  const c = document.createElement("canvas");
+  c.width = 256;
+  c.height = i === 0 ? 384 : 224;
+  const ctx = c.getContext("2d") as CanvasRenderingContext2D;
+  const tex = new THREE.CanvasTexture(c);
+  const mat = m.material as THREE.MeshStandardMaterial;
+  mat.color.set("#0c1016");
+  mat.emissive.set("#ffffff");
+  mat.emissiveIntensity = 0.85;
+  mat.map = tex;
+  mat.emissiveMap = tex;
+  codeScreens.push({ tex, ctx, w: c.width, h: c.height });
+});
+function drawCode(ctx: CanvasRenderingContext2D, w: number, h: number, t: number): void {
+  ctx.fillStyle = "#0c1016";
+  ctx.fillRect(0, 0, w, h);
+  const rows = Math.floor(h / 18);
+  for (let r = 0; r < rows; r++) {
+    const y = r * 18 + 4;
+    const scroll = (t * 55 + r * 90) % (w + 260);
+    for (let k = 0; k < 22; k++) {
+      const x = ((k * 52 + r * 31 + scroll) % (w + 140)) - 70;
+      const lw = 7 + ((k * 29 + r * 17) % 26);
+      ctx.fillStyle = (k + r) % 3 === 0 ? "#7fc4ff" : (k + r) % 3 === 1 ? "#9fe8b0" : "#5a6b80";
+      ctx.fillRect(x, y, lw, 7);
+    }
+  }
+}
 const lights = buildLights(scene);
 
 // ---- placement grid (key G) + composed views (keys 1/2/3) ----
@@ -214,8 +247,8 @@ function animate(): void {
   });
   // the gill fins rotate UP when the air breathes, lie flat when it rests
   objects.ventFins.forEach((f) => {
-    const target = ventOn ? -0.3 : 0; // blinds twist open a few cm
-    f.rotation.x += (target - f.rotation.x) * 0.06;
+    const target = ventOn ? 0.55 : 0; // skillion slats twist open — low side along one edge
+    f.rotation.z += (target - f.rotation.z) * 0.07;
   });
   const warmth = 1 + nightMix * 0.45;
   objects.wisps.forEach((w) => {
@@ -230,7 +263,12 @@ function animate(): void {
     w.position.x += (Math.sin(t * 0.9 + (w.userData.phase as number)) * 0.18 - ((w.position.x - vx) * 0.02)) * 0.06;
     const wm = w.material as THREE.MeshBasicMaterial;
     wm.color.set(ventColor);
-    wm.opacity = (ventOn ? 1 : 0) * (0.42 + nightMix * 0.22) * (1 - phase / 2.6);
+    wm.opacity = (ventOn ? 1 : 0) * (0.55 + nightMix * 0.25) * (1 - phase / 2.6);
+  });
+
+  codeScreens.forEach((s, i) => {
+    drawCode(s.ctx, s.w, s.h, t * (i === 0 ? 1 : 0.75) + i * 10);
+    s.tex.needsUpdate = true;
   });
 
   // the portal breathes — two dark veils merging and parting
