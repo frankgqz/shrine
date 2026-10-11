@@ -65,6 +65,7 @@ let hovered: THREE.Object3D | null = null;
 // click pane 3 -> 3+4 stack into panes 1+2; click pane 1 or 2 -> everything returns
 let glassState = 0;
 let projectorOn = true;
+let ventsOn = true;
 
 const elementNote: Record<ElementName, string> = {
   earth: "earth — soil, stone, what grows",
@@ -109,6 +110,13 @@ canvas.addEventListener("click", () => {
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
     return;
   }
+  if (act === "toggle-vents") {
+    ventsOn = !ventsOn;
+    labelEl.textContent = ventsOn ? "the vents breathe again" : "the air rests";
+    labelEl.style.opacity = "1";
+    window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
+    return;
+  }
   if (act === "toggle-projector") {
     projectorOn = !projectorOn;
     labelEl.textContent = projectorOn ? "the projector hums to life" : "the projector sleeps";
@@ -149,12 +157,17 @@ function animate(): void {
   renderer.toneMappingExposure = 1.12 - 0.26 * nightMix;
   scene.background = nightMix > 0.5 ? darkSky : daySky;
   (scene.fog as THREE.Fog).color.lerpColors(dayHorizon, nightHorizon, nightMix);
-  objects.floorLights.forEach((l) => (l.intensity = nightMix * 15));
+  objects.floorLights.forEach((l) => (l.intensity = ventsOn ? 4 + nightMix * 11 : 0));
   const warmth = 1 + nightMix * 0.45;
   objects.wisps.forEach((w) => {
     const phase = (t * 0.5 + (w.userData.phase as number)) % 2.6;
     w.position.y = 1.2 + phase;
-    (w.material as THREE.MeshBasicMaterial).opacity = (0.06 + nightMix * 0.13) * (1 - phase / 2.6);
+    // wavy air: a slow sideways sway + tilt
+    const sway = Math.sin(t * 1.6 + (w.userData.phase as number));
+    w.rotation.z = sway * 0.22;
+    w.position.x += (Math.sin(t * 0.9 + (w.userData.phase as number)) * 0.18 - ((w.position.x - (w.userData.hot ? 9.55 : -9.55)) * 0.02)) * 0.06;
+    (w.material as THREE.MeshBasicMaterial).opacity =
+      (ventsOn ? 1 : 0) * (0.1 + nightMix * 0.1) * (1 - phase / 2.6);
   });
 
   if (desired) {
@@ -175,7 +188,9 @@ function animate(): void {
 
   // projector on/off glow
   const cloth = objects.screenCloth.material as THREE.MeshStandardMaterial;
-  cloth.emissiveIntensity += ((projectorOn ? 0.32 : 0.02) - cloth.emissiveIntensity) * 0.08;
+  // blank wall when off; white light with a faint shimmer when on
+  const shimmer = projectorOn ? 0.34 + Math.sin(t * 2.7) * 0.05 + Math.sin(t * 6.1) * 0.025 : 0;
+  cloth.emissiveIntensity += (shimmer - cloth.emissiveIntensity) * 0.08;
   const lens = objects.lensGlow.material as THREE.MeshStandardMaterial;
   lens.emissiveIntensity += ((projectorOn ? 2.2 : 0.05) - lens.emissiveIntensity) * 0.08;
 

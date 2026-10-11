@@ -61,8 +61,8 @@ export function buildRoom(scene: THREE.Scene): void {
   const soilMat = new THREE.MeshStandardMaterial({ color: "#7a5c3e", roughness: 1 });
 
   // ---- Very light wooden floorboards INSIDE the glass line ----
-  const boardMat = new THREE.MeshStandardMaterial({ color: "#e8d5b5", roughness: 0.8 });
-  const boardSeam = new THREE.MeshStandardMaterial({ color: "#d4bd97", roughness: 0.85 });
+  const boardMat = new THREE.MeshStandardMaterial({ color: "#b98a5e", roughness: 0.8 });
+  const boardSeam = new THREE.MeshStandardMaterial({ color: "#a67a4f", roughness: 0.85 });
   const indoorFloor = new THREE.Mesh(new THREE.PlaneGeometry(21, 16.9), boardMat);
   indoorFloor.rotation.x = -Math.PI / 2;
   indoorFloor.position.set(0, 0.035, -0.05);
