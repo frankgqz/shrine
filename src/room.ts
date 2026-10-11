@@ -94,7 +94,7 @@ export function buildRoom(scene: THREE.Scene): void {
     m.receiveShadow = true;
     return m;
   };
-  scene.add(makeTerrain(21, 7.6, 0, -12.2, 1.3));         // the balcony plateau (outside the glass line)
+  scene.add(makeTerrain(21, 9.2, 0, -13.0, 1.3));         // the balcony plateau (outside the glass line)
   scene.add(makeTerrain(7.2, 8.2, -7.05, -11.4, 2.7));   // the slot-9 shelf (smaller, bites at the fall)
   scene.add(makeTerrain(14.2, 5.4, 3.6, -12.6, 4.1));    // the 7-8 shelf (ends short of the rail)
 
@@ -113,22 +113,50 @@ export function buildRoom(scene: THREE.Scene): void {
     r.position.set(
       nearFall ? -9.5 + Math.random() * 5 : -2 + Math.random() * 12,
       0.06,
-      nearFall ? -12.6 + Math.random() * 3.8 : -15.8 + Math.random() * 6.5
+      nearFall ? -12.6 + Math.random() * 3.8 : -16.6 + Math.random() * 7.2
     );
     r.rotation.y = Math.random() * Math.PI;
     r.castShadow = true;
     r.receiveShadow = true;
     scene.add(r);
   }
-  for (let i = 0; i < 12; i++) {
-    const patch = new THREE.Mesh(
-      new THREE.CircleGeometry(0.6 + Math.random() * 1.2, 12),
-      new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 })
-    );
-    patch.rotation.x = -Math.PI / 2;
-    // outdoors only — balcony side of the glass
-    patch.position.set(-9 + Math.random() * 18, 0.015, -15.8 + Math.random() * 6.5);
-    scene.add(patch);
+  // thick bushy GRASS — clumped under the trees, lifted like little mounds;
+  // the middle of the balcony stays bare dirt
+  const grassBlade = new THREE.MeshStandardMaterial({ color: "#5d7a3a", roughness: 1 });
+  const grassBlade2 = new THREE.MeshStandardMaterial({ color: "#6d8a45", roughness: 1 });
+  const treeSpots: Array<[number, number]> = [[9.2, -10.1], [7.5, -11.8], [9.8, -13.2]];
+  for (const [tx, tz] of treeSpots) {
+    for (let g = 0; g < 4; g++) {
+      const gx = tx + (Math.random() - 0.5) * 4.2;
+      const gz = tz + (Math.random() - 0.5) * 4.2;
+      const mound = new THREE.Mesh(new THREE.SphereGeometry(0.8 + Math.random() * 0.7, 10, 8), new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 }));
+      mound.scale.y = 0.28;
+      mound.position.set(gx, 0.16, gz);
+      mound.receiveShadow = true;
+      scene.add(mound);
+      for (let b = 0; b < 7; b++) {
+        const blade = new THREE.Mesh(new THREE.ConeGeometry(0.12 + Math.random() * 0.1, 0.85 + Math.random() * 0.55, 5), b % 2 ? grassBlade : grassBlade2);
+        blade.position.set(gx + (Math.random() - 0.5) * 1.25, 0.55 + Math.random() * 0.3, gz + (Math.random() - 0.5) * 1.25);
+        blade.rotation.set((Math.random() - 0.5) * 0.5, Math.random() * Math.PI, (Math.random() - 0.5) * 0.5);
+        blade.castShadow = true;
+        scene.add(blade);
+      }
+    }
+  }
+
+  // a small HERB GARDEN between the trees and the railing
+  const herbBed = new THREE.Mesh(new THREE.BoxGeometry(4.6, 0.32, 2.3), new THREE.MeshStandardMaterial({ color: "#5c4326", roughness: 1 }));
+  herbBed.position.set(5.6, 0.16, -14.9);
+  herbBed.receiveShadow = true;
+  scene.add(herbBed);
+  for (let row = 0; row < 3; row++) {
+    for (let h = 0; h < 7; h++) {
+      const herb = new THREE.Mesh(new THREE.SphereGeometry(0.22 + Math.random() * 0.14, 8, 6), new THREE.MeshStandardMaterial({ color: ["#6d8a45", "#7da050", "#5d7a3a"][(row + h) % 3], roughness: 1 }));
+      herb.scale.y = 1.25 + Math.random() * 0.4;
+      herb.position.set(3.8 + h * 0.6 + (Math.random() - 0.5) * 0.16, 0.55, -15.65 + row * 0.72);
+      herb.castShadow = true;
+      scene.add(herb);
+    }
   }
 
   // ---- Walls at the cube edges, ~20% taller (9.6) ----
@@ -175,14 +203,14 @@ export function buildRoom(scene: THREE.Scene): void {
   for (let i = 0; i < 7; i++) {
     const gx = -2.8 + i * 2.25;
     const pane = new THREE.Mesh(new THREE.BoxGeometry(2.15, 2.9, 0.08), glassRailMat);
-    pane.position.set(gx, 1.65, -15.65);
+    pane.position.set(gx, 1.65, -16.95);
     scene.add(pane);
     const post = new THREE.Mesh(new THREE.BoxGeometry(0.1, 3.2, 0.1), metalPostMat);
-    post.position.set(gx - 1.15, 1.6, -15.65);
+    post.position.set(gx - 1.15, 1.6, -16.95);
     scene.add(post);
   }
   const handrail = new THREE.Mesh(new THREE.BoxGeometry(16.4, 0.16, 0.22), beamMat);
-  handrail.position.set(3.1, 3.2, -15.65);
+  handrail.position.set(3.1, 3.2, -16.95);
   scene.add(handrail);
   // (the cliff edges at slot 9 carry no wooden poles — the drop is the point)
 
@@ -193,12 +221,37 @@ export function buildRoom(scene: THREE.Scene): void {
   channelBed.rotation.x = 0.045;
   channelBed.receiveShadow = true;
   scene.add(channelBed);
-  for (let i = 0; i < 13; i++) {
-    const t = i / 12;
-    const side = i % 2 ? 1 : -1;
-    const r = rock(0.85 + Math.random() * 1.0, i % 2 ? "#8a8279" : "#948c82");
-    r.position.set(-7.4 + side * (1.45 + Math.random() * 0.8), 0.45 + Math.random() * 0.3, -8.9 - t * 7.3 + (Math.random() - 0.5) * 1.1);
-    r.rotation.y = Math.random() * Math.PI;
+
+  // the water — a ribbon down the channel and a little fall onto the rocks
+  const waterMat = new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.12, transparent: true, opacity: 0.72, emissive: "#2f7fa0", emissiveIntensity: 0.22 });
+  const ribbon = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.06, 8.0), waterMat);
+  ribbon.position.set(-7.4, 0.23, -12.55);
+  ribbon.rotation.x = 0.045;
+  scene.add(ribbon);
+  // the feeder slab up the slope + the fall tumbling onto the first boulders
+  const feeder = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.35, 1.7), stoneChannelMat);
+  feeder.position.set(-7.4, 1.95, -9.1);
+  feeder.rotation.x = -0.32;
+  feeder.castShadow = true;
+  scene.add(feeder);
+  const fall = new THREE.Mesh(new THREE.PlaneGeometry(1.05, 2.05), waterMat);
+  fall.position.set(-7.4, 1.05, -9.55);
+  fall.rotation.x = -0.12;
+  scene.add(fall);
+  for (const [fx, fy, fz] of [[-7.75, 0.5, -9.9], [-7.1, 0.42, -10.15], [-7.45, 0.46, -10.5]]) {
+    const foam = new THREE.Mesh(new THREE.SphereGeometry(0.3 + Math.random() * 0.18, 8, 6), new THREE.MeshStandardMaterial({ color: "#dff2f7", transparent: true, opacity: 0.8, roughness: 0.3 }));
+    foam.position.set(fx, fy, fz);
+    scene.add(foam);
+  }
+
+  // boulders in a NATURAL cluster around the channel (water pours into them)
+  for (let i = 0; i < 18; i++) {
+    const t = Math.random();
+    const side = Math.random() < 0.5 ? -1 : 1;
+    const spread = 1.1 + Math.random() * 1.9 + (Math.random() < 0.3 ? 1.4 : 0);
+    const r = rock(0.7 + Math.random() * 1.15, ["#8a8279", "#948c82", "#7d7770"][i % 3]);
+    r.position.set(-7.4 + side * spread, 0.35 + Math.random() * 0.35, -9.2 - t * 7.2 + (Math.random() - 0.5) * 1.6);
+    r.rotation.set(Math.random() * 0.5, Math.random() * Math.PI, Math.random() * 0.5);
     r.castShadow = true;
     r.receiveShadow = true;
     scene.add(r);

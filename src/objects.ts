@@ -183,7 +183,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
   shelf.add(mesh(new THREE.BoxGeometry(1.5, 5.3, 0.12), wood, 0, 3.65, 0.75)); // one divider
   // only a FEW books — the shelf is mostly sacred things
-  for (const [by, bh, bz, n] of [[1.62, 1.1, -1.25, 3], [4.5, 1.25, -1.25, 2], [1.75, 1.1, 1.45, 2]] as Array<[number, number, number, number]>) {
+  for (const [by, bh, bz, n] of [[1.62, 1.1, -1.25, 3], [4.5, 1.25, 1.38, 2], [1.75, 1.1, 1.45, 2]] as Array<[number, number, number, number]>) {
     for (let b = 0; b < n; b++) {
       const h = bh * (0.62 + Math.random() * 0.3);
       shelf.add(mesh(
@@ -322,47 +322,47 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       couch.add(pillow);
     }
   };
-  seat(7.85, 2.6, 1.7, 4.4);   // the 1,4 side — shrunken, off the right wall
-  back(8.85, 2.6, 0.5, 4.4);
+  seat(7.35, 2.5, 1.6, 4.2);   // the 1,4 side — clear of the right wall
+  back(8.35, 2.5, 0.5, 4.2);
   seat(3.75, 5.5, 7.7, 1.9);   // the 1,2 side — the extended legroom lives here
   back(3.75, 6.65, 7.7, 0.55);
   // the corner — the two backrests meet; a corner cushion fills the nook
   const cornerBackA = new THREE.Mesh(new RoundedBoxGeometry(0.5, 1.25, 1.9, 4, 0.12), fluffy);
-  cornerBackA.position.set(8.85, 1.62, 5.5);
+  cornerBackA.position.set(8.35, 1.62, 5.5);
   cornerBackA.castShadow = true; cornerBackA.receiveShadow = true;
   couch.add(cornerBackA);
-  const cornerBackB = new THREE.Mesh(new RoundedBoxGeometry(1.7, 1.25, 0.5, 4, 0.12), fluffy);
-  cornerBackB.position.set(7.85, 1.62, 6.65);
+  const cornerBackB = new THREE.Mesh(new RoundedBoxGeometry(1.6, 1.25, 0.5, 4, 0.12), fluffy);
+  cornerBackB.position.set(7.35, 1.62, 6.65);
   cornerBackB.castShadow = true; cornerBackB.receiveShadow = true;
   couch.add(cornerBackB);
-  const cornerSeat = new THREE.Mesh(new RoundedBoxGeometry(1.7, 0.46, 1.9, 4, 0.14), fluffy);
-  cornerSeat.position.set(7.85, 1.18, 5.5);
+  const cornerSeat = new THREE.Mesh(new RoundedBoxGeometry(1.6, 0.46, 1.9, 4, 0.14), fluffy);
+  cornerSeat.position.set(7.35, 1.18, 5.5);
   cornerSeat.castShadow = true; cornerSeat.receiveShadow = true;
   couch.add(cornerSeat);
   const cornerCushion = new THREE.Mesh(new RoundedBoxGeometry(1.3, 1.1, 1.3, 4, 0.2), fluffy);
-  cornerCushion.position.set(8.05, 2.0, 5.85);
+  cornerCushion.position.set(7.6, 2.0, 5.85);
   cornerCushion.rotation.y = Math.PI / 4;
   cornerCushion.rotation.x = -0.3;
   cornerCushion.castShadow = true;
   couch.add(cornerCushion);
   // the sofa stands on legs
-  for (const [lx, lz] of [[7.15, 0.9], [8.55, 0.9], [7.15, 2.7], [8.55, 2.7], [7.15, 4.3], [8.55, 4.3], [0.45, 4.75], [0.45, 6.25], [2.6, 4.75], [2.6, 6.25], [4.9, 4.75], [4.9, 6.25], [7.2, 4.75], [7.2, 6.25]] as Array<[number, number]>) {
+  for (const [lx, lz] of [[6.65, 0.9], [8.05, 0.9], [6.65, 2.7], [8.05, 2.7], [6.65, 4.2], [8.05, 4.2], [0.45, 4.75], [0.45, 6.25], [2.6, 4.75], [2.6, 6.25], [4.9, 4.75], [4.9, 6.25], [7.0, 4.75], [7.0, 6.25]] as Array<[number, number]>) {
     couch.add(mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.56, 8), new THREE.MeshStandardMaterial({ color: "#5d3b20", roughness: 0.7 }), lx, 0.28, lz));
   }
   // proper armrests at the two outer ends
-  couch.add(mesh(new THREE.BoxGeometry(1.75, 1.25, 0.7), fluffy, 7.85, 1.45, 0.0));
+  couch.add(mesh(new THREE.BoxGeometry(1.65, 1.25, 0.7), fluffy, 7.35, 1.45, 0.1));
   couch.add(mesh(new THREE.BoxGeometry(0.7, 1.25, 1.95), fluffy, 0.05, 1.45, 5.5));
   // throw cushions — RELAXED on the seat, leaning into the backrest
-  for (const [cx, cz, cc, side] of [[7.75, 1.1, "#c98f6b", "x"], [7.75, 3.4, "#8fa8b8", "x"], [5.2, 5.62, "#c98f6b", "z"], [2.4, 5.62, "#a8b894", "z"]] as Array<[number, number, string, string]>) {
+  for (const [cx, cz, cc, side] of [[7.95, 1.1, "#c98f6b", "x"], [7.95, 3.4, "#8fa8b8", "x"], [5.2, 6.15, "#c98f6b", "z"], [2.4, 6.15, "#a8b894", "z"]] as Array<[number, number, string, string]>) {
     const throwCushion = new THREE.Mesh(new THREE.SphereGeometry(0.62, 12, 10), new THREE.MeshStandardMaterial({ color: cc, roughness: 0.95 }));
-    throwCushion.scale.set(1, 1, 0.55);
-    throwCushion.position.set(cx, 1.62, cz);
     if (side === "x") {
-      throwCushion.rotation.y = Math.PI / 2; // thin axis across the seat
-      throwCushion.rotation.z = -0.72;       // fallen over against the back at +x
+      throwCushion.scale.set(0.55, 1, 1); // thin against the back at +x
+      throwCushion.rotation.z = -0.7;     // fallen BACK onto the seat rest
     } else {
-      throwCushion.rotation.x = -0.72;       // fallen over against the back at +z
+      throwCushion.scale.set(1, 1, 0.55); // thin against the back at +z
+      throwCushion.rotation.x = 0.7;      // fallen BACK onto the seat rest
     }
+    throwCushion.position.set(cx, 1.58, cz);
     throwCushion.castShadow = true;
     couch.add(throwCushion);
   }
@@ -539,35 +539,33 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const fireCone = mesh(new THREE.ConeGeometry(0.62, 1.15, 8), new THREE.MeshStandardMaterial({ color: "#ff8a2e", emissive: "#ff6a1f", emissiveIntensity: 2.3 }), 0, 1.05, 0);
   firePit.add(fireCone);
   firePit.add(mesh(new THREE.ConeGeometry(0.34, 0.7, 7), new THREE.MeshStandardMaterial({ color: "#ffc46b", emissive: "#ffb03a", emissiveIntensity: 2.8 }), 0.35, 0.9, -0.2));
-  const pitPlatform = mesh(new THREE.CylinderGeometry(2.1, 2.35, 0.5, 20), stone, -3.8, 0.25, -11.8);
+  const pitPlatform = mesh(new THREE.CylinderGeometry(2.1, 2.35, 0.5, 20), stone, -1.6, 0.25, -11.6);
   scene.add(tag(pitPlatform, "fire", "the fire's stone platform"));
-  firePit.position.set(-3.8, 0.5, -11.8);
+  firePit.position.set(-1.6, 0.5, -11.6);
   scene.add(tag(firePit, "fire", "the fire pit — warmth under the sky"));
 
   const fire = new THREE.PointLight("#ff7a2a", 22, 22, 2);
-  fire.position.set(-3.8, 2.0, -11.8);
+  fire.position.set(-1.6, 2.0, -11.6);
   scene.add(fire);
 
-  // a few bench SEGMENTS of an arc around the fire (not a full ring)
+  // ONE semicircle bench behind the fire, facing the house
   const bench = new THREE.Group();
-  for (const startA of [0.35, 1.75, 3.35, 4.75]) {
-    const seg = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.5, 8, 14, Math.PI * 0.3), darkWood);
-    seg.rotation.z = startA;
-    seg.rotation.x = -Math.PI / 2;
-    seg.position.y = 1.02;
-    seg.castShadow = true;
-    bench.add(seg);
-    const segPad = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.3, 8, 14, Math.PI * 0.3), new THREE.MeshStandardMaterial({ color: "#e8dcc8", roughness: 0.9 }));
-    segPad.rotation.z = startA;
-    segPad.rotation.x = -Math.PI / 2;
-    segPad.position.y = 1.34;
-    bench.add(segPad);
-    for (const la of [startA + 0.12, startA + Math.PI * 0.18]) {
-      bench.add(mesh(new THREE.CylinderGeometry(0.14, 0.18, 1.0, 8), darkWood, Math.sin(la) * 2.95, 0.5, Math.cos(la) * 2.95));
-    }
+  const benchArc = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.5, 8, 26, Math.PI * 0.85), darkWood);
+  benchArc.rotation.z = 0.23;
+  benchArc.rotation.x = -Math.PI / 2;
+  benchArc.position.y = 1.02;
+  benchArc.castShadow = true;
+  bench.add(benchArc);
+  const benchPad = new THREE.Mesh(new THREE.TorusGeometry(2.95, 0.3, 8, 26, Math.PI * 0.85), new THREE.MeshStandardMaterial({ color: "#e8dcc8", roughness: 0.9 }));
+  benchPad.rotation.z = 0.23;
+  benchPad.rotation.x = -Math.PI / 2;
+  benchPad.position.y = 1.34;
+  bench.add(benchPad);
+  for (const la of [0.55, 1.45, 2.35, 2.9]) {
+    bench.add(mesh(new THREE.CylinderGeometry(0.14, 0.18, 1.0, 8), darkWood, Math.sin(la) * 2.95, 0.5, Math.cos(la) * 2.95));
   }
-  bench.position.set(-3.8, 0, -11.8);
-  scene.add(tag(bench, "fire", "the bench segments — sit anywhere, face the fire"));
+  bench.position.set(-1.6, 0, -11.6);
+  scene.add(tag(bench, "fire", "the semicircle bench — sit, face the fire and the house"));
 
   // ============ EARTH — garden near the cliff, tree on the balcony ============
   const garden = new THREE.Group();
@@ -616,11 +614,11 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   portal.position.set(9.55, 3.1, -5.885); // inside the shelf's open bay
   portal.rotation.y = -Math.PI / 2; // faces the room
   scene.add(tag(portal, "space", "the portal — a way to another reality"));
-  ring.userData.baseY = 3.1;
+  ring.userData.baseY = 0; // LOCAL to the portal group (was drifting to the plant)
   ring.userData.phase = 0.7;
   ring.userData.amp = 0.07;
   floatRocks.push(ring); // drifts + turns with the floating-stone animation
-  ring2.userData.baseY = 3.1;
+  ring2.userData.baseY = 0;
   ring2.userData.phase = 2.2;
   ring2.userData.amp = 0.07;
   floatRocks.push(ring2);
