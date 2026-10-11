@@ -33,7 +33,7 @@ controls.maxPolarAngle = Math.PI / 2.04;
 controls.autoRotate = false;
 controls.update();
 
-buildRoom(scene);
+const waterSheet = buildRoom(scene);
 const objects = buildObjects(scene);
 
 // ---- the monitors: black screens with code scrolling on them ----
@@ -68,17 +68,18 @@ function drawCode(ctx: CanvasRenderingContext2D, w: number, h: number, t: number
     ctx.fillStyle = "#3c3c40";
     ctx.fillRect(22, 28 + s2 * 16, 22 + (s2 % 3) * 5, 4);
   }
-  const rows = Math.floor((h - 30) / 15);
+  const rows = Math.floor((h - 30) / 21);
   for (let r = 0; r < rows; r++) {
-    const y = 26 + r * 15;
+    if (r % 3 === 2) continue; // airy — blank lines between snippets
+    const y = 26 + r * 21;
     ctx.fillStyle = "#4a4a50"; // line numbers
     ctx.fillRect(62, y, 9, 3);
     const indent = ((r * 7 + 3) % 4) * 9;
     let x = 98 + indent;
-    const nTokens = 2 + ((r * 5 + 2) % 3);
+    const nTokens = 1 + ((r * 5 + 2) % 2); // little snippets, not walls of code
     for (let k = 0; k < nTokens; k++) {
       const seed = (r * 31 + k * 17) % 97;
-      const lw = 14 + (seed % 34);
+      const lw = 10 + (seed % 22);
       ctx.fillStyle = k === 0 ? "#6a9955" : seed % 2 ? "#9cdcfe" : "#ce9178";
       ctx.fillRect(x, y, lw, 4);
       x += lw + 8;
@@ -294,12 +295,22 @@ function animate(): void {
     s.tex.needsUpdate = true;
   });
 
-  // the mist TEST beams pulse with the mode color
-  objects.steamBeams.forEach((b, i) => {
-    const m = b.material as THREE.MeshBasicMaterial;
+  // smoke: puffs rise, billow and fade
+  objects.steamBeams.forEach((s, i) => {
+    const m = s.material as THREE.MeshBasicMaterial;
     m.color.set(ventColor);
-    m.opacity = ventOn ? 0.22 + Math.sin(t * 2.2 + i) * 0.08 : 0;
+    const ph = (t * 0.5 + (s.userData.phase as number)) % 2.2;
+    s.position.y = (s.userData.baseY as number) + ph * 1.25;
+    const grow = 0.7 + ph * 0.5;
+    s.scale.set(grow, 1 + ph * 0.3, grow);
+    s.rotation.y = t * 0.35 + i;
+    m.opacity = ventOn ? 0.16 * (1 - ph / 2.2) + 0.03 : 0;
   });
+
+  // the water sheet flows down the rocks; the little wheel turns
+  const flowMap = (waterSheet.material as THREE.MeshStandardMaterial).map;
+  if (flowMap) flowMap.offset.y = -t * 0.22;
+  objects.waterWheel.rotation.z += 0.02;
 
   // the portal breathes — faint circles merging and parting
   objects.portalVeils.forEach((v, i) => {

@@ -54,7 +54,7 @@ function rock(size: number, color = "#8a8279"): THREE.Mesh {
   return new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, roughness: 0.95 }));
 }
 
-export function buildRoom(scene: THREE.Scene): void {
+export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   scene.background = skyTexture();
   scene.fog = new THREE.Fog(SKY_HORIZON, 80, 220);
 
@@ -250,10 +250,12 @@ export function buildRoom(scene: THREE.Scene): void {
     const t = Math.random();
     const side = Math.random() < 0.5 ? -1 : 1;
     const spread = 1.1 + Math.random() * 1.9 + (Math.random() < 0.3 ? 1.4 : 0);
-    const r = rock(0.7 + Math.random() * 1.15, ["#8a8279", "#948c82", "#7d7770"][i % 3]);
+    const rsize = 0.7 + Math.random() * 1.15;
+    const r = rock(rsize, ["#8a8279", "#948c82", "#7d7770"][i % 3]);
     let bx = -7.4 + side * spread;
-    const bz = -9.2 - t * 7.2 + (Math.random() - 0.5) * 1.6;
+    let bz = -9.2 - t * 7.2 + (Math.random() - 0.5) * 1.6;
     if (Math.hypot(bx + 1.6, bz + 11.6) < 3.6) bx = -5.6 - Math.random() * 1.8; // clear of the fire
+    bz = Math.min(bz, -9.1 - 1.15 * rsize); // NEVER through the window
     r.position.set(bx, 0.35 + Math.random() * 0.35, bz);
     r.rotation.set(Math.random() * 0.5, Math.random() * Math.PI, Math.random() * 0.5);
     r.castShadow = true;
@@ -262,8 +264,10 @@ export function buildRoom(scene: THREE.Scene): void {
   }
   // more rocks + moss + little plants around the climb (water comes later)
   for (let i = 0; i < 9; i++) {
-    const r = rock(0.3 + Math.random() * 0.6, "#8a8279");
-    r.position.set(-10.1 + Math.random() * 3.4, 0.2 + Math.random() * 0.25, -8.7 - Math.random() * 2.2);
+    const rsize2 = 0.3 + Math.random() * 0.6;
+    const r = rock(rsize2, "#8a8279");
+    const rz2 = Math.min(-8.7 - Math.random() * 2.2, -8.85 - rsize2 * 1.1); // clear of the glass
+    r.position.set(-10.1 + Math.random() * 3.4, 0.2 + Math.random() * 0.25, rz2);
     r.rotation.set(Math.random() * 0.5, Math.random() * Math.PI, Math.random() * 0.5);
     r.castShadow = true;
     scene.add(r);
@@ -374,7 +378,7 @@ export function buildRoom(scene: THREE.Scene): void {
   // rocks and shrubs around the water
   for (let i = 0; i < 9; i++) {
     const r = rock(0.35 + Math.random() * 0.75, i % 2 ? "#8a8279" : "#948c82");
-    r.position.set(-9.4 + Math.random() * 4.8, 0.3 + Math.random() * 0.35, -13.4 + Math.random() * 4.2);
+    r.position.set(-9.4 + Math.random() * 4.8, 0.3 + Math.random() * 0.35, -13.8 + Math.random() * 2.6);
     r.castShadow = true;
     scene.add(r);
   }
@@ -388,6 +392,42 @@ export function buildRoom(scene: THREE.Scene): void {
   }
 
   // (the floating crag tower is gone — rocks live on the ground now)
+
+  // ---- A SHEET OF WATER over the climb — flowing down the rocks ----
+  const flowCanvas = document.createElement("canvas");
+  flowCanvas.width = 64;
+  flowCanvas.height = 256;
+  const fctx = flowCanvas.getContext("2d") as CanvasRenderingContext2D;
+  fctx.clearRect(0, 0, 64, 256);
+  for (let i = 0; i < 26; i++) {
+    const fx2 = (i * 17 + (i % 5) * 9) % 64;
+    const fy2 = (i * 53) % 256;
+    const fh = 30 + ((i * 29) % 80);
+    const g = fctx.createLinearGradient(0, fy2, 0, fy2 + fh);
+    g.addColorStop(0, "rgba(255,255,255,0)");
+    g.addColorStop(0.5, "rgba(255,255,255,0.55)");
+    g.addColorStop(1, "rgba(255,255,255,0)");
+    fctx.fillStyle = g;
+    fctx.fillRect(fx2, fy2, 4 + (i % 3) * 3, fh);
+  }
+  const flowTex = new THREE.CanvasTexture(flowCanvas);
+  flowTex.wrapS = THREE.RepeatWrapping;
+  flowTex.wrapT = THREE.RepeatWrapping;
+  const sheetGeo = new THREE.PlaneGeometry(3.8, 9.5, 12, 22);
+  const sPos = sheetGeo.getAttribute("position");
+  for (let i = 0; i < sPos.count; i++) {
+    const px2 = sPos.getX(i), py2 = sPos.getY(i);
+    sPos.setZ(i, Math.sin(px2 * 2.1 + py2 * 0.6) * 0.32 + Math.cos(py2 * 1.7) * 0.28 + (Math.random() - 0.5) * 0.12);
+  }
+  sheetGeo.computeVertexNormals();
+  const waterSheet = new THREE.Mesh(sheetGeo, new THREE.MeshStandardMaterial({
+    color: "#79cbe8", map: flowTex, transparent: true, opacity: 0.55,
+    roughness: 0.15, emissive: "#2f7fa0", emissiveIntensity: 0.25,
+    side: THREE.DoubleSide,
+  }));
+  waterSheet.position.set(-8.55, 3.35, -9.15);
+  waterSheet.rotation.z = 0.12;
+  scene.add(waterSheet);
 
   // ---- Into the distance: mountains, lake, clouds, stars ----
   const mountainMat = new THREE.MeshStandardMaterial({ color: "#93a7b4", roughness: 1, flatShading: true });
@@ -427,4 +467,5 @@ export function buildRoom(scene: THREE.Scene): void {
   }
   starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPts, 3));
   scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: "#fff7e0", size: 0.7, sizeAttenuation: true })));
+  return waterSheet;
 }

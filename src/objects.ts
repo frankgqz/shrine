@@ -45,6 +45,7 @@ export interface SceneObjects {
   ventFins: THREE.Mesh[];
   monScreens: THREE.Mesh[];
   steamBeams: THREE.Mesh[];
+  waterWheel: THREE.Group;
 }
 
 export function buildObjects(scene: THREE.Scene): SceneObjects {
@@ -462,9 +463,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
 
   // ============ COFFEE TABLE (bottom-5) ============
   const coffee = new THREE.Group();
-  coffee.add(mesh(new THREE.BoxGeometry(3.7, 0.12, 3.7), wood, 0, 0.92, 0));
-  coffee.add(mesh(new THREE.BoxGeometry(3.3, 0.08, 3.3), wood, 0, 0.5, 0));
-  for (const [x, z] of [[-1.65, -1.65], [1.65, -1.65], [-1.65, 1.65], [1.65, 1.65]]) {
+  coffee.add(mesh(new THREE.BoxGeometry(4.2, 0.12, 4.2), wood, 0, 0.92, 0));
+  coffee.add(mesh(new THREE.BoxGeometry(3.8, 0.08, 3.8), wood, 0, 0.5, 0));
+  for (const [x, z] of [[-1.9, -1.9], [1.9, -1.9], [-1.9, 1.9], [1.9, 1.9]]) {
     coffee.add(mesh(new THREE.BoxGeometry(0.11, 0.92, 0.11), wood, x, 0.46, z));
   }
   // the flowing-rock water feature, on the table for now
@@ -480,12 +481,38 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const water = mesh(new THREE.CylinderGeometry(0.92, 0.92, 0.05, 18), new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.15, transparent: true, opacity: 0.8, emissive: "#2f7fa0", emissiveIntensity: 0.25 }), 0, 1.18, 0);
   rockFeature.add(water);
   rockFeature.add(mesh(new THREE.CylinderGeometry(0.05, 0.07, 1.9, 8), new THREE.MeshStandardMaterial({ color: "#aee4f5", transparent: true, opacity: 0.75, roughness: 0.1 }), 0.1, 2.0, -0.02));
+  // a splash ring where the thread lands
+  const splashRing = mesh(new THREE.TorusGeometry(0.35, 0.035, 6, 18), new THREE.MeshStandardMaterial({ color: "#dff2f7", transparent: true, opacity: 0.7, emissive: "#9fd8ef", emissiveIntensity: 0.6 }), 0.1, 1.21, -0.02);
+  splashRing.rotation.x = Math.PI / 2;
+  rockFeature.add(splashRing);
+  // a little WATER WHEEL beside the rocks — animated, dipping into the tray
+  const waterWheel = new THREE.Group();
+  const wheelRim = new THREE.MeshStandardMaterial({ color: "#6e4a2c", roughness: 0.8 });
+  for (const ry of [-0.11, 0.11]) {
+    const rim = mesh(new THREE.TorusGeometry(0.52, 0.055, 6, 18), wheelRim, 0, 0, ry);
+    waterWheel.add(rim);
+  }
+  const wheelHub = mesh(new THREE.CylinderGeometry(0.09, 0.09, 0.34, 8), wheelRim, 0, 0, 0);
+  wheelHub.rotation.x = Math.PI / 2;
+  waterWheel.add(wheelHub);
+  for (let sp = 0; sp < 6; sp++) {
+    const wa = (sp / 6) * Math.PI * 2;
+    const spoke = mesh(new THREE.BoxGeometry(0.07, 1.02, 0.06), wheelRim, 0, 0, 0);
+    spoke.rotation.z = wa;
+    waterWheel.add(spoke);
+    const paddle = mesh(new THREE.BoxGeometry(0.24, 0.12, 0.34), wheelRim, Math.cos(wa + Math.PI / 2) * 0.52, Math.sin(wa + Math.PI / 2) * 0.52, 0);
+    paddle.rotation.z = wa + Math.PI / 2;
+    waterWheel.add(paddle);
+  }
+  waterWheel.position.set(-1.05, 1.62, 0.35);
+  waterWheel.rotation.y = 0.5;
+  rockFeature.add(tag(waterWheel, "water", "the water wheel — turning in the little fall"));
   coffee.add(rockFeature);
   coffee.position.set(2.2, 0, 0.8);
   scene.add(tag(coffee, "water", "the flowing rock on the coffee table"));
 
   // ============ AREA RUG under the coffee table (natural) ============
-  const rug = new THREE.Mesh(new RoundedBoxGeometry(7.6, 0.06, 6.3, 4, 0.35), new THREE.MeshStandardMaterial({ color: "#d9c9a8", roughness: 1 }));
+  const rug = new THREE.Mesh(new RoundedBoxGeometry(8.9, 0.06, 7.4, 4, 0.35), new THREE.MeshStandardMaterial({ color: "#d9c9a8", roughness: 1 }));
   rug.position.set(2.2, 0.07, 0.8);
   rug.receiveShadow = true;
   scene.add(tag(rug, "earth", "the rug — natural, warm underfoot"));
@@ -579,10 +606,10 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     const vent = new THREE.Group();
     // a BLACK louvre grille like the photo: frame, dark cavity, full-width
     // blades that LIFT on one side when the air breathes
-    vent.add(mesh(new THREE.BoxGeometry(2.1, 0.14, 1.5), new THREE.MeshStandardMaterial({ color: "#1c1c20", roughness: 0.55 }), 0, 0.07, 0));
-    vent.add(mesh(new THREE.BoxGeometry(1.82, 0.1, 1.22), new THREE.MeshStandardMaterial({ color: "#15151a", roughness: 0.7 }), 0, 0.12, 0));
+    vent.add(mesh(new THREE.BoxGeometry(2.1, 0.14, 1.5), new THREE.MeshStandardMaterial({ color: "#3a2c22", roughness: 0.55 }), 0, 0.07, 0));
+    vent.add(mesh(new THREE.BoxGeometry(1.82, 0.1, 1.22), new THREE.MeshStandardMaterial({ color: "#2a2019", roughness: 0.7 }), 0, 0.12, 0));
     for (let i = 0; i < 5; i++) {
-      const fin = mesh(new THREE.BoxGeometry(1.82, 0.05, 0.19), new THREE.MeshStandardMaterial({ color: "#26262c", roughness: 0.5, metalness: 0.5 }), 0, 0.19, -0.48 + i * 0.24);
+      const fin = mesh(new THREE.BoxGeometry(1.82, 0.05, 0.19), new THREE.MeshStandardMaterial({ color: "#35281f", roughness: 0.5, metalness: 0.5 }), 0, 0.19, -0.48 + i * 0.24);
       fin.rotation.x = 0.08; // nearly flush at rest
       ventFins.push(fin);
       vent.add(fin);
@@ -603,15 +630,17 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       wisps.push(wisp);
     }
 
-    // TEST steam — bold colored columns so the mist is unmistakable (refine later)
-    for (let b = 0; b < 3; b++) {
-      const beam = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.18, 0.55, 3.4, 8, 1, true),
-        new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })
+    // SMOKE — soft billowing puffs, geometry only (texture puffs never rendered)
+    for (let b = 0; b < 5; b++) {
+      const smoke = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.5 + (b % 2) * 0.16, 0.26, 1.15, 10, 1, true),
+        new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0.16, depthWrite: false, side: THREE.DoubleSide })
       );
-      beam.position.set(vx + (b - 1) * 0.55, 1.8, vz + (b % 2 ? 0.2 : -0.2));
-      scene.add(tag(beam, "air", "steam — the air made visible"));
-      steamBeams.push(beam);
+      smoke.position.set(vx + (b - 2) * 0.36, 1.1 + (b % 3) * 0.45, vz + (b % 2 ? 0.24 : -0.24));
+      smoke.userData.phase = b * 0.44 + vz + vx;
+      smoke.userData.baseY = 1.1 + (b % 3) * 0.45;
+      scene.add(tag(smoke, "air", "smoke — the air made soft"));
+      steamBeams.push(smoke);
     }
 
     const fixture = mesh(new THREE.CylinderGeometry(0.16, 0.22, 0.09, 12), new THREE.MeshStandardMaterial({ color: "#d9c9a8", emissive: airColor, emissiveIntensity: 0.2 }), vx + (vx < 0 ? 0.95 : -0.95), 0.05, vz);
@@ -663,6 +692,20 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const fireCone = mesh(new THREE.ConeGeometry(0.62, 1.15, 8), new THREE.MeshStandardMaterial({ color: "#ff8a2e", emissive: "#ff6a1f", emissiveIntensity: 2.3 }), 0, 1.05, 0);
   firePit.add(fireCone);
   firePit.add(mesh(new THREE.ConeGeometry(0.34, 0.7, 7), new THREE.MeshStandardMaterial({ color: "#ffc46b", emissive: "#ffb03a", emissiveIntensity: 2.8 }), 0.35, 0.9, -0.2));
+  // fire detail: logs + embers + inner flame + a soft glow shell
+  for (const [lx, lz, lr] of [[-0.45, 0.15, 0.4], [0.35, -0.35, -0.7], [0.1, 0.5, 1.2], [-0.2, -0.55, 2.1]] as Array<[number, number, number]>) {
+    const log = mesh(new THREE.CylinderGeometry(0.13, 0.17, 1.35, 7), new THREE.MeshStandardMaterial({ color: "#3a2a1c", roughness: 1 }), lx, 0.82, lz);
+    log.rotation.set(Math.PI / 2, 0, lr);
+    firePit.add(log);
+    firePit.add(mesh(new THREE.SphereGeometry(0.09, 6, 5), new THREE.MeshStandardMaterial({ color: "#ff7a2a", emissive: "#ff5a12", emissiveIntensity: 2.2 }), lx + 0.1, 0.98, lz));
+  }
+  const innerFlame = mesh(new THREE.ConeGeometry(0.32, 0.95, 7), new THREE.MeshStandardMaterial({ color: "#ffe6a8", emissive: "#ffd46b", emissiveIntensity: 3.2 }), -0.12, 1.15, 0.12);
+  firePit.add(innerFlame);
+  const glowCone = mesh(new THREE.ConeGeometry(0.95, 1.7, 10, 1, true), new THREE.MeshBasicMaterial({ color: "#ff8a2e", transparent: true, opacity: 0.14, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending }), 0, 1.25, 0);
+  firePit.add(glowCone);
+  for (let e = 0; e < 6; e++) {
+    firePit.add(mesh(new THREE.SphereGeometry(0.05 + Math.random() * 0.04, 5, 4), new THREE.MeshStandardMaterial({ color: "#ffb03a", emissive: "#ff8a2e", emissiveIntensity: 2.4 }), (Math.random() - 0.5) * 1.1, 1.15 + Math.random() * 0.6, (Math.random() - 0.5) * 1.1));
+  }
   firePit.position.set(-1.6, 0.35, -11.6); // no big base circle — the fire sits on the ground
   scene.add(tag(firePit, "fire", "the fire pit — warmth under the sky"));
 
@@ -766,5 +809,5 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   );
   scene.add(tag(yogaMat, "space", "the yoga mat — silence, sun, breath"));
 
-  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams };
+  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams, waterWheel };
 }
