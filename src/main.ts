@@ -285,12 +285,13 @@ function animate(): void {
   const ventColor = ventMode === 1 ? "#ff6a4a" : "#6ab8ff";
   const ventOn = ventMode > 0;
   objects.floorLights.forEach((l) => {
-    l.intensity = ventOn ? 4 + nightMix * 11 : 0;
+    const pulse = 0.9 + Math.sin(t * 1.5 + ((l.userData.phase as number) ?? 0)) * 0.1;
+    l.intensity = ventOn ? (2.4 + nightMix * 6) * pulse : 0;
     l.color.set(ventColor);
     const fm = l.userData.fixtureMat as THREE.MeshStandardMaterial | undefined;
     if (fm) {
       fm.emissive.set(ventOn ? ventColor : "#d9c9a8");
-      fm.emissiveIntensity = ventOn ? 0.35 : 0.08;
+      fm.emissiveIntensity = ventOn ? 0.22 * pulse : 0.06;
     }
   });
   // the gill fins rotate UP when the air breathes, lie flat when it rests
@@ -393,8 +394,13 @@ function animate(): void {
   objects.fireCone.scale.setScalar(0.92 + Math.sin(t * 11) * 0.07 + Math.sin(t * 6.3) * 0.05);
   objects.fireCone.rotation.y = t * 0.4;
   objects.water.position.y = 1.18 + Math.sin(t * 1.6) * 0.012;
-  objects.lamp.intensity = (5 + Math.sin(t * 2.2) * 0.35 + Math.sin(t * 7.1) * 0.25) * warmth;
-  objects.lampFlame.scale.setScalar(0.92 + Math.sin(t * 13) * 0.09 + Math.sin(t * 7.3) * 0.05);
+  const lampFlicker = 0.9 + Math.sin(t * 13) * 0.09 + Math.sin(t * 7.3) * 0.05 + Math.sin(t * 23) * 0.035;
+  objects.lamp.intensity = (3.4 + lampFlicker * 1.4 + Math.sin(t * 2.2) * 0.3) * warmth;
+  objects.lampFlame.scale.set(0.92 + Math.sin(t * 15) * 0.1, lampFlicker, 0.92 + Math.sin(t * 11) * 0.1);
+  objects.lampFlame.rotation.z = Math.sin(t * 9) * 0.12;
+  objects.lampFlame.rotation.x = Math.sin(t * 6.2) * 0.08;
+  const lfMat = objects.lampFlame.material as THREE.MeshStandardMaterial;
+  lfMat.emissiveIntensity = 1.4 + lampFlicker * 0.9;
 
   const target = pick();
   if (target !== hovered) {

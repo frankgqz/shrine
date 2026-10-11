@@ -394,6 +394,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   gheeLamp.add(mesh(new THREE.CylinderGeometry(0.26, 0.3, 0.12, 12), new THREE.MeshStandardMaterial({ color: "#f2e0b8", roughness: 0.4 }), 0, 0.24, 0));
   const wickFlame = mesh(new THREE.ConeGeometry(0.1, 0.34, 7), new THREE.MeshStandardMaterial({ color: "#ffb03a", emissive: "#ff9420", emissiveIntensity: 1.7 }), 0, 0.52, 0);
   gheeLamp.add(wickFlame);
+  const wickGlow = mesh(new THREE.ConeGeometry(0.22, 0.52, 8, 1, true), new THREE.MeshBasicMaterial({ color: "#ff9a3a", transparent: true, opacity: 0.28, depthWrite: false, side: THREE.FrontSide, blending: THREE.AdditiveBlending }), 0, 0.58, 0);
+  gheeLamp.add(wickGlow);
   gheeLamp.position.set(-8.1, 2.8, 1.2);
   scene.add(tag(gheeLamp, "fire", "the ghee lamp — a steady little flame"));
   const lampLight = new THREE.PointLight("#ffd489", 3.5, 8, 2);
@@ -549,7 +551,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // a faint light ray toward the wall — clearest at night
   const lightRay = new THREE.Mesh(
     new THREE.ConeGeometry(1.75, 3.9, 4, 1, true),
-    new THREE.MeshBasicMaterial({ color: "#cfe4ff", transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide })
+    new THREE.MeshBasicMaterial({ color: "#cfe4ff", transparent: true, opacity: 0, depthWrite: false, side: THREE.FrontSide })
   );
   lightRay.position.set(-9.75, 2.35, -3.8);
   lightRay.rotation.set(Math.PI, 0, -0.45); // apex at the unit, top angled BEHIND the wall
@@ -667,6 +669,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     const uplight = new THREE.PointLight(airColor, 0, 11, 2);
     uplight.position.set(vx + (vx < 0 ? 0.95 : -0.95), 0.4, vz);
     uplight.userData.fixtureMat = fixture.material;
+    uplight.userData.phase = vx + vz;
     scene.add(uplight);
     floorLights.push(uplight);
   }
@@ -710,8 +713,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // (the stray standing water body is gone — the fountain tray holds the water now)
 
   const glass = new THREE.Group();
-  glass.add(mesh(new THREE.CylinderGeometry(0.32, 0.26, 0.85, 14), new THREE.MeshPhysicalMaterial({ color: "#dff2f7", transparent: true, opacity: 0.35, roughness: 0.05, transmission: 0.6 }), 0, 0.43, 0));
-  glass.add(mesh(new THREE.CylinderGeometry(0.28, 0.24, 0.42, 14), new THREE.MeshStandardMaterial({ color: "#3d9fd4", transparent: true, opacity: 0.92, emissive: "#1f6f9e", emissiveIntensity: 0.3 }), 0, 0.21, 0));
+  glass.add(mesh(new THREE.CylinderGeometry(0.32, 0.26, 0.85, 14), new THREE.MeshStandardMaterial({ color: "#dff2f7", transparent: true, opacity: 0.22, roughness: 0.08 }), 0, 0.43, 0));
+  glass.add(mesh(new THREE.CylinderGeometry(0.26, 0.23, 0.42, 14), new THREE.MeshStandardMaterial({ color: "#3d9fd4", transparent: true, opacity: 0.95, emissive: "#1f6f9e", emissiveIntensity: 0.45 }), 0, 0.21, 0));
   glass.position.set(-8.1, 2.8, 6.6);
   scene.add(tag(glass, "water", "a glass of water — small and complete"));
 

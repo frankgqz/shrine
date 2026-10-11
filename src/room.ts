@@ -215,16 +215,18 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   // glass balustrade across slots 7-8, standing at the ground's edge
   const glassRailMat = new THREE.MeshStandardMaterial({ color: "#cfe8f2", transparent: true, opacity: 0.22, roughness: 0.05, side: THREE.DoubleSide });
   for (let i = 0; i < 7; i++) {
-    const gx = -2.8 + i * 2.25;
-    const pane = new THREE.Mesh(new THREE.BoxGeometry(2.15, 2.9, 0.08), glassRailMat);
-    pane.position.set(gx, 1.65, -16.95);
-    scene.add(pane);
+    const gx = -5.28 + i * 2.6; // posts land on the glass-wall mullions
     const post = new THREE.Mesh(new THREE.BoxGeometry(0.1, 3.2, 0.1), metalPostMat);
-    post.position.set(gx - 1.15, 1.6, -16.95);
+    post.position.set(gx, 1.6, -16.95);
     scene.add(post);
+    if (i < 6) {
+      const pane = new THREE.Mesh(new THREE.BoxGeometry(2.45, 2.9, 0.08), glassRailMat);
+      pane.position.set(gx + 1.3, 1.65, -16.95);
+      scene.add(pane);
+    }
   }
-  const handrail = new THREE.Mesh(new THREE.BoxGeometry(16.4, 0.16, 0.22), beamMat);
-  handrail.position.set(3.1, 3.2, -16.95);
+  const handrail = new THREE.Mesh(new THREE.BoxGeometry(16.0, 0.16, 0.22), beamMat);
+  handrail.position.set(2.52, 3.2, -16.95);
   scene.add(handrail);
   // (the cliff edges at slot 9 carry no wooden poles — the drop is the point)
 
@@ -482,11 +484,13 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   // near range with snow caps
   for (let i = 0; i < 7; i++) {
     const h = 12 + Math.random() * 18;
-    const m = new THREE.Mesh(new THREE.ConeGeometry(10 + Math.random() * 8, h, 5), mountainMat);
+    const r = 10 + Math.random() * 8;
+    const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 5), mountainMat);
     m.position.set(-55 + i * 18 + Math.random() * 6, h / 2 - 7, -105 - Math.random() * 25);
     scene.add(m);
-    const cap = new THREE.Mesh(new THREE.ConeGeometry(3.2 + Math.random() * 1.6, h * 0.22, 5), snowMat);
-    cap.position.set(m.position.x, m.position.y + h / 2 - h * 0.09, m.position.z);
+    // snow matched to the cone taper — it hugs the peak (no hats)
+    const cap = new THREE.Mesh(new THREE.ConeGeometry(r * 0.25, h * 0.25, 5), snowMat);
+    cap.position.set(m.position.x, m.position.y + h / 2 - h * 0.125, m.position.z);
     scene.add(cap);
   }
   // the sun — low and warm over the lake
