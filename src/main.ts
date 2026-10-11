@@ -253,7 +253,7 @@ function animate(): void {
   cloth.emissiveIntensity += (shimmer - cloth.emissiveIntensity) * 0.08;
   // floating rocks drift and turn
   objects.floatRocks.forEach((r, i) => {
-    r.position.y = (r.userData.baseY as number) + Math.sin(t * 0.55 + (r.userData.phase as number)) * 0.28;
+    r.position.y = (r.userData.baseY as number) + Math.sin(t * 0.55 + (r.userData.phase as number)) * ((r.userData.amp as number) ?? 0.28);
     r.rotation.y += 0.0018 + i * 0.0004;
     r.rotation.x = Math.sin(t * 0.22 + (r.userData.phase as number)) * 0.1;
   });

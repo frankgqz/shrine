@@ -39,15 +39,15 @@ export function nightSkyTexture(): THREE.Texture {
   return tex;
 }
 
-function rock(size: number, color = "#8d7a66"): THREE.Mesh {
-  const geo = new THREE.DodecahedronGeometry(size, 0);
+function rock(size: number, color = "#8a8279"): THREE.Mesh {
+  const geo = new THREE.DodecahedronGeometry(size, 1);
   const pos = geo.getAttribute("position");
   for (let i = 0; i < pos.count; i++) {
     pos.setXYZ(
       i,
-      pos.getX(i) * (0.85 + Math.random() * 0.3),
-      pos.getY(i) * (0.85 + Math.random() * 0.3),
-      pos.getZ(i) * (0.85 + Math.random() * 0.3)
+      pos.getX(i) * (0.92 + Math.random() * 0.16),
+      pos.getY(i) * (0.88 + Math.random() * 0.18),
+      pos.getZ(i) * (0.92 + Math.random() * 0.16)
     );
   }
   geo.computeVertexNormals();
@@ -113,7 +113,7 @@ export function buildRoom(scene: THREE.Scene): void {
     r.position.set(
       nearFall ? -9.5 + Math.random() * 5 : -2 + Math.random() * 12,
       0.06,
-      nearFall ? -12.6 + Math.random() * 3.8 : -17.5 + Math.random() * 8.4
+      nearFall ? -12.6 + Math.random() * 3.8 : -15.8 + Math.random() * 6.5
     );
     r.rotation.y = Math.random() * Math.PI;
     r.castShadow = true;
@@ -127,7 +127,7 @@ export function buildRoom(scene: THREE.Scene): void {
     );
     patch.rotation.x = -Math.PI / 2;
     // outdoors only — balcony side of the glass
-    patch.position.set(-9 + Math.random() * 18, 0.015, -17.5 + Math.random() * 8.4);
+    patch.position.set(-9 + Math.random() * 18, 0.015, -15.8 + Math.random() * 6.5);
     scene.add(patch);
   }
 
@@ -137,13 +137,13 @@ export function buildRoom(scene: THREE.Scene): void {
   const metalPostMat = new THREE.MeshStandardMaterial({ color: "#4a4a52", roughness: 0.45, metalness: 0.6 });
   const stoneChannelMat = new THREE.MeshStandardMaterial({ color: "#8d7a66", roughness: 0.95 });
 
-  const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 9.6, 17), plaster);
-  leftWall.position.set(-10.5, 4.8, -0.2);
+  const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 11.5, 17), plaster);
+  leftWall.position.set(-10.5, 5.75, -0.2);
   leftWall.receiveShadow = true;
   scene.add(leftWall);
 
-  const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 9.6, 17), plaster);
-  rightWall.position.set(10.5, 4.8, -0.2);
+  const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.4, 11.5, 17), plaster);
+  rightWall.position.set(10.5, 5.75, -0.2);
   rightWall.receiveShadow = true;
   scene.add(rightWall);
 
@@ -168,75 +168,57 @@ export function buildRoom(scene: THREE.Scene): void {
       scene.add(post);
     }
   };
-  // the glass walkway — you stand on air above the missing ground
-  const walkwayGlass = new THREE.MeshStandardMaterial({ color: "#cfe8f2", transparent: true, opacity: 0.24, roughness: 0.05, side: THREE.DoubleSide });
-  const walkway = new THREE.Mesh(new THREE.BoxGeometry(14.2, 0.12, 3.1), walkwayGlass);
-  walkway.position.set(3.6, 0.02, -16.75);
-  scene.add(walkway);
-  for (let i = 0; i < 6; i++) {
-    const rib = new THREE.Mesh(new THREE.BoxGeometry(14.2, 0.08, 0.12), metalPostMat);
-    rib.position.set(3.6, 0.08, -15.35 - i * 0.56);
-    scene.add(rib);
-  }
+  // (the glass walkway is gone — it read as a striped carpet along the rail)
 
-  // glass balustrade across slots 7-8 (thin metal handrail + glass panels)
+  // glass balustrade across slots 7-8, standing at the ground's edge
   const glassRailMat = new THREE.MeshStandardMaterial({ color: "#cfe8f2", transparent: true, opacity: 0.22, roughness: 0.05, side: THREE.DoubleSide });
   for (let i = 0; i < 7; i++) {
     const gx = -2.8 + i * 2.25;
     const pane = new THREE.Mesh(new THREE.BoxGeometry(2.15, 2.9, 0.08), glassRailMat);
-    pane.position.set(gx, 1.65, -18.6);
+    pane.position.set(gx, 1.65, -15.65);
     scene.add(pane);
     const post = new THREE.Mesh(new THREE.BoxGeometry(0.1, 3.2, 0.1), metalPostMat);
-    post.position.set(gx - 1.15, 1.6, -18.6);
+    post.position.set(gx - 1.15, 1.6, -15.65);
     scene.add(post);
   }
   const handrail = new THREE.Mesh(new THREE.BoxGeometry(16.4, 0.16, 0.22), beamMat);
-  handrail.position.set(3.1, 3.2, -18.6);
+  handrail.position.set(3.1, 3.2, -15.65);
   scene.add(handrail);
   // (the cliff edges at slot 9 carry no wooden poles — the drop is the point)
 
-  // ---- Zone 9: BIG ROCKS with a dry channel stepping down between them.
-  // The waterfall itself is parked (Frank 2026-10-12) — this is where water
-  // will run down between the rocks, into the plunge pool. ----
-  for (let i = 0; i < 5; i++) {
-    const t = i / 4;
-    const slab = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.32, 3.1), stoneChannelMat);
-    slab.position.set(-7, 4.9 - t * 12.6, -11.9 - t * 2.4);
-    slab.rotation.x = -0.42 - t * 0.55;
-    slab.receiveShadow = true;
-    scene.add(slab);
-  }
-  for (let i = 0; i < 11; i++) {
-    const t = i / 10;
+  // ---- Zone 9: granite boulders ON THE GROUND with a shallow channel
+  // running between them (waterfall parked 2026-10-12 — water runs here later).
+  const channelBed = new THREE.Mesh(new THREE.BoxGeometry(1.55, 0.2, 8.2), stoneChannelMat);
+  channelBed.position.set(-7.4, 0.11, -12.6);
+  channelBed.rotation.x = 0.045;
+  channelBed.receiveShadow = true;
+  scene.add(channelBed);
+  for (let i = 0; i < 13; i++) {
+    const t = i / 12;
     const side = i % 2 ? 1 : -1;
-    const r = rock(1.35 + Math.random() * 1.15, i % 2 ? "#77624e" : "#8d7a66");
-    r.position.set(-7 + side * (1.7 + Math.random() * 0.85), 4.7 - t * 12.4 + Math.random() * 0.7, -11.9 - t * 2.4 + (Math.random() - 0.5) * 1.1);
+    const r = rock(0.85 + Math.random() * 1.0, i % 2 ? "#8a8279" : "#948c82");
+    r.position.set(-7.4 + side * (1.45 + Math.random() * 0.8), 0.45 + Math.random() * 0.3, -8.9 - t * 7.3 + (Math.random() - 0.5) * 1.1);
     r.rotation.y = Math.random() * Math.PI;
     r.castShadow = true;
+    r.receiveShadow = true;
     scene.add(r);
   }
 
   // rocks and shrubs around the water
   for (let i = 0; i < 9; i++) {
-    const r = rock(0.35 + Math.random() * 0.75, i % 2 ? "#8d7a66" : "#77624e");
-    r.position.set(-9.4 + Math.random() * 4.8, 0.25 + Math.random() * 4.2, -12.9 + Math.random() * 8.6);
+    const r = rock(0.35 + Math.random() * 0.75, i % 2 ? "#8a8279" : "#948c82");
+    r.position.set(-9.4 + Math.random() * 4.8, 0.3 + Math.random() * 0.35, -12.9 + Math.random() * 6.6);
     r.castShadow = true;
     scene.add(r);
     if (i % 2 === 0) {
       const shrub = new THREE.Mesh(new THREE.SphereGeometry(0.5 + Math.random() * 0.4, 8, 6), new THREE.MeshStandardMaterial({ color: "#57713c", roughness: 1 }));
       shrub.scale.y = 0.75;
-      shrub.position.set(-9.2 + Math.random() * 4.4, 0.45 + Math.random() * 3.6, -12.6 + Math.random() * 8.2);
+      shrub.position.set(-9.2 + Math.random() * 4.4, 0.5 + Math.random() * 0.3, -12.6 + Math.random() * 6.2);
       scene.add(shrub);
     }
   }
 
-  // the cliff face at zone 9: rock ledges from low to high
-  for (let i = 0; i < 10; i++) {
-    const crag = rock(1.1 + Math.random() * 1.6, i % 2 ? "#77624e" : "#6b5744");
-    crag.position.set(-9.6 + Math.random() * 4.4, -13 + i * 2.1, -13.6 - Math.random() * 1.4);
-    crag.castShadow = true;
-    scene.add(crag);
-  }
+  // (the floating crag tower is gone — rocks live on the ground now)
 
   // ---- Into the distance: mountains, lake, clouds, stars ----
   const mountainMat = new THREE.MeshStandardMaterial({ color: "#93a7b4", roughness: 1, flatShading: true });
