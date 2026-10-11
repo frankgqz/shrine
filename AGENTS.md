@@ -49,3 +49,23 @@ behaviours grow from here — stoke the fire, ripple the water, open the portal)
 Vite + TypeScript + three.js. Scene lives in `src/`:
 `room.ts` (shell + distance), `objects.ts` (everything in it, element-tagged),
 `lighting.ts` (sun + warmth), `main.ts` (camera, interactivity, life).
+
+## The placement language (Frank 2026-10-11) — how we talk about the room
+The room is a 3x3x3 cube; 27 named slots. Numbering runs 1-9 within each
+layer: 1 = the close right corner (away from the balcony, away from the
+computer) -> 3 = toward the computer; 4-6 = the middle band (the roller wall);
+7-9 = outside on the balcony. Layers: bottom = floor, mid = standing/eye,
+top = high. Say "mid-5" and the position is unambiguous (src/slots.ts maps
+slot names to coordinates; press G in the app to see the grid overlaid).
+
+Camera is composed, NOT free-360 (the inspiration's feel): keys 1/2/3 jump
+between three views — 1 front-on facing out, 2 from the right, 3 from the top —
+each with a clamped orbit around it. New objects should be placed by slot name
+in code comments (e.g. "lantern at top-5").
+
+## Interactive objects so far
+- the roller (mid-4..6 band): floor-to-ceiling blind between room and balcony,
+  click to roll open/closed (air).
+- everything else: hover shows element label; click logs activation (hooks for
+  per-element behaviours still to come).
+

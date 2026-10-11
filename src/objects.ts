@@ -33,6 +33,7 @@ export interface SceneObjects {
   lamp: THREE.PointLight;
   fireCone: THREE.Mesh;
   water: THREE.Mesh;
+  rollerPanel: THREE.Mesh;
 }
 
 export function buildObjects(scene: THREE.Scene): SceneObjects {
@@ -172,5 +173,25 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   shrine.position.set(3.1, 0, 3.4);
   scene.add(tag(shrine, "space", "pooja shrine — the still point"));
 
-  return { fire, lamp: lampLight, fireCone, water };
+  // ================= AIR · the roller between room and balcony =================
+  // (mid-4..6 band — "a full floor to ceiling roller that can roll open")
+  const roller = new THREE.Group();
+  const rollerTube = mesh(new THREE.CylinderGeometry(0.32, 0.32, 19.2, 14), darkWood, 0, 7.6, 0);
+  rollerTube.rotation.z = Math.PI / 2;
+  roller.add(rollerTube);
+  const rollerPanel = mesh(
+    new THREE.BoxGeometry(19.2, 7.2, 0.12),
+    new THREE.MeshStandardMaterial({ color: "#d8c49a", roughness: 0.92, side: THREE.DoubleSide }),
+    0, 3.85, 0
+  );
+  rollerPanel.userData.action = "toggle-roller";
+  roller.add(rollerPanel);
+  roller.position.set(0, 0, 8.4);
+  roller.userData = { element: "air", label: "the roller — click to open the balcony" };
+  roller.traverse((c) => {
+    if (!c.userData?.action) c.userData = { ...c.userData, element: "air", label: "the roller — click to open the balcony" };
+  });
+  scene.add(roller);
+
+  return { fire, lamp: lampLight, fireCone, water, rollerPanel };
 }
