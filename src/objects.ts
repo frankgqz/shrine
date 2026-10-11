@@ -497,7 +497,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     rockFeature.add(st);
   }
   rockFeature.add(mesh(new THREE.CylinderGeometry(1.08, 1.16, 0.22, 18), brassSoft2, 0, 1.08, 0)); // the tray — collects the falling water
-  const water = mesh(new THREE.CylinderGeometry(0.92, 0.92, 0.05, 18), new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.15, transparent: true, opacity: 0.8, emissive: "#2f7fa0", emissiveIntensity: 0.25 }), 0, 1.18, 0);
+  const water = mesh(new THREE.CylinderGeometry(0.92, 0.92, 0.08, 18), new THREE.MeshStandardMaterial({ color: "#3d9fd4", roughness: 0.15, transparent: true, opacity: 0.92, emissive: "#1f6f9e", emissiveIntensity: 0.35 }), 0, 1.19, 0);
   rockFeature.add(water);
   rockFeature.add(mesh(new THREE.CylinderGeometry(0.05, 0.07, 1.9, 8), new THREE.MeshStandardMaterial({ color: "#aee4f5", transparent: true, opacity: 0.75, roughness: 0.1 }), 0.1, 2.0, -0.02));
   // a splash ring where the thread lands
@@ -711,7 +711,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
 
   const glass = new THREE.Group();
   glass.add(mesh(new THREE.CylinderGeometry(0.32, 0.26, 0.85, 14), new THREE.MeshPhysicalMaterial({ color: "#dff2f7", transparent: true, opacity: 0.35, roughness: 0.05, transmission: 0.6 }), 0, 0.43, 0));
-  glass.add(mesh(new THREE.CylinderGeometry(0.28, 0.24, 0.42, 14), new THREE.MeshStandardMaterial({ color: "#8fd2e8", transparent: true, opacity: 0.65 }), 0, 0.21, 0));
+  glass.add(mesh(new THREE.CylinderGeometry(0.28, 0.24, 0.42, 14), new THREE.MeshStandardMaterial({ color: "#3d9fd4", transparent: true, opacity: 0.92, emissive: "#1f6f9e", emissiveIntensity: 0.3 }), 0, 0.21, 0));
   glass.position.set(-8.1, 2.8, 6.6);
   scene.add(tag(glass, "water", "a glass of water — small and complete"));
 
@@ -828,7 +828,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   veilB.position.z = 0.12;
   veilB.scale.set(0.85, 1.25, 1);
   portal.add(veilB);
-  portal.position.set(9.55, 3.1, -5.885); // inside the shelf's open bay
+  portal.position.set(9.55, 3.1, -4.985); // inside the shelf's open bay (moved with it)
   portal.rotation.y = -Math.PI / 2; // faces the room
   scene.add(tag(portal, "space", "the portal — a way to another reality"));
   const veilD = new THREE.Mesh(

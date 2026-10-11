@@ -434,7 +434,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     rr.castShadow = true;
     scene.add(rr);
   }
-  const pool = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.08, 20), new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.12, transparent: true, opacity: 0.8, emissive: "#2f7fa0", emissiveIntensity: 0.3 }));
+  const pool = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.11, 20), new THREE.MeshStandardMaterial({ color: "#3d9fd4", roughness: 0.12, transparent: true, opacity: 0.92, emissive: "#1f6f9e", emissiveIntensity: 0.4 }));
   pool.position.set(-8.55, 0.28, -9.9);
   scene.add(pool);
 
@@ -455,20 +455,47 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   }
 
   // tiny CATCHMENTS between the rocks — where the water trickles down to
-  for (const [cx, cy, cz, cr] of [[-8.55, 2.42, -9.9, 0.4], [-9.45, 1.62, -10.05, 0.32], [-8.32, 4.35, -9.72, 0.28]] as Array<[number, number, number, number]>) {
-    const pocket = new THREE.Mesh(new THREE.CylinderGeometry(cr, cr, 0.05, 14), new THREE.MeshStandardMaterial({ color: "#79cbe8", roughness: 0.12, transparent: true, opacity: 0.8, emissive: "#2f7fa0", emissiveIntensity: 0.3 }));
+  for (const [cx, cy, cz, cr] of [[-8.55, 2.56, -9.9, 0.48], [-9.45, 1.76, -10.05, 0.38], [-8.32, 4.49, -9.72, 0.34]] as Array<[number, number, number, number]>) {
+    const pocket = new THREE.Mesh(new THREE.CylinderGeometry(cr, cr, 0.08, 14), new THREE.MeshStandardMaterial({ color: "#3d9fd4", roughness: 0.12, transparent: true, opacity: 0.92, emissive: "#1f6f9e", emissiveIntensity: 0.4 }));
     pocket.position.set(cx, cy, cz);
     scene.add(pocket);
   }
 
-  // ---- Into the distance: mountains, lake, clouds, stars ----
-  const mountainMat = new THREE.MeshStandardMaterial({ color: "#93a7b4", roughness: 1, flatShading: true });
+  // a thin blue water layer where the rocks meet the soil (far 9 toward the corner)
+  const wetLayer = new THREE.Mesh(new THREE.CircleGeometry(2.8, 18), new THREE.MeshStandardMaterial({ color: "#3d9fd4", roughness: 0.1, transparent: true, opacity: 0.75, emissive: "#1f6f9e", emissiveIntensity: 0.35 }));
+  wetLayer.rotation.x = -Math.PI / 2;
+  wetLayer.scale.set(1, 0.62, 1);
+  wetLayer.position.set(-9.0, 0.12, -11.9);
+  scene.add(wetLayer);
+
+  // ---- Into the distance: sun, two ranges, snow caps, lake, clouds, stars ----
+  const mountainMat = new THREE.MeshStandardMaterial({ color: "#7c8fa0", roughness: 1, flatShading: true });
+  const farMountainMat = new THREE.MeshStandardMaterial({ color: "#a8b8c6", roughness: 1, flatShading: true });
+  const snowMat = new THREE.MeshStandardMaterial({ color: "#f2f6f8", roughness: 0.9, flatShading: true });
+  // far, hazier range
+  for (let i = 0; i < 9; i++) {
+    const h = 14 + Math.random() * 16;
+    const m = new THREE.Mesh(new THREE.ConeGeometry(12 + Math.random() * 9, h, 5), farMountainMat);
+    m.position.set(-85 + i * 20 + Math.random() * 7, h / 2 - 8, -135 - Math.random() * 20);
+    scene.add(m);
+  }
+  // near range with snow caps
   for (let i = 0; i < 7; i++) {
     const h = 12 + Math.random() * 18;
     const m = new THREE.Mesh(new THREE.ConeGeometry(10 + Math.random() * 8, h, 5), mountainMat);
     m.position.set(-55 + i * 18 + Math.random() * 6, h / 2 - 7, -105 - Math.random() * 25);
     scene.add(m);
+    const cap = new THREE.Mesh(new THREE.ConeGeometry(3.2 + Math.random() * 1.6, h * 0.22, 5), snowMat);
+    cap.position.set(m.position.x, m.position.y + h / 2 - h * 0.09, m.position.z);
+    scene.add(cap);
   }
+  // the sun — low and warm over the lake
+  const sun = new THREE.Mesh(new THREE.SphereGeometry(9, 18, 14), new THREE.MeshBasicMaterial({ color: "#fff2c8" }));
+  sun.position.set(58, 14, -128);
+  scene.add(sun);
+  const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(15, 18, 14), new THREE.MeshBasicMaterial({ color: "#ffe9b0", transparent: true, opacity: 0.22, depthWrite: false, blending: THREE.AdditiveBlending }));
+  sunGlow.position.copy(sun.position);
+  scene.add(sunGlow);
   const lake = new THREE.Mesh(
     new THREE.PlaneGeometry(280, 140),
     new THREE.MeshStandardMaterial({ color: "#5b93b8", roughness: 0.25, metalness: 0.1 })
@@ -476,9 +503,13 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   lake.rotation.x = -Math.PI / 2;
   lake.position.set(0, -8.5, -95);
   scene.add(lake);
+  const lakeGlow = new THREE.Mesh(new THREE.PlaneGeometry(280, 34), new THREE.MeshBasicMaterial({ color: "#cfe4ef", transparent: true, opacity: 0.32, depthWrite: false }));
+  lakeGlow.rotation.x = -Math.PI / 2;
+  lakeGlow.position.set(0, -8.35, -138);
+  scene.add(lakeGlow);
 
   const cloudMat = new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 1, transparent: true, opacity: 0.85 });
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 9; i++) {
     const cloud = new THREE.Group();
     for (let j = 0; j < 3; j++) {
       const s = new THREE.Mesh(new THREE.SphereGeometry(3 + Math.random() * 2.5, 10, 8), cloudMat);
