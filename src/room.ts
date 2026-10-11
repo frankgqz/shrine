@@ -23,6 +23,22 @@ export function skyTexture(): THREE.Texture {
   return tex;
 }
 
+export function nightSkyTexture(): THREE.Texture {
+  const c = document.createElement("canvas");
+  c.width = 2;
+  c.height = 256;
+  const ctx = c.getContext("2d")!;
+  const g = ctx.createLinearGradient(0, 0, 0, 256);
+  g.addColorStop(0, "#0a1226");
+  g.addColorStop(0.55, "#1b2c4d");
+  g.addColorStop(1, "#3a4468");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 2, 256);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+
 function rock(size: number, color = "#8d7a66"): THREE.Mesh {
   const geo = new THREE.DodecahedronGeometry(size, 0);
   const pos = geo.getAttribute("position");

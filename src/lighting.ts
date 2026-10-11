@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 // Sun (fire, into the distance) + warm interior bounce.
 
-export function buildLights(scene: THREE.Scene): THREE.DirectionalLight {
+export function buildLights(scene: THREE.Scene): { sun: THREE.DirectionalLight; hemi: THREE.HemisphereLight; bounce: THREE.AmbientLight } {
   const hemi = new THREE.HemisphereLight("#bfe0f2", "#6b5138", 0.85);
   scene.add(hemi);
 
@@ -30,5 +30,5 @@ export function buildLights(scene: THREE.Scene): THREE.DirectionalLight {
   const bounce = new THREE.AmbientLight("#e8c9a2", 0.22);
   scene.add(bounce);
 
-  return sun;
+  return { sun, hemi, bounce };
 }

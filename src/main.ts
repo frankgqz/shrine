@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { buildRoom } from "./room";
+import { buildRoom, skyTexture, nightSkyTexture } from "./room";
 import { buildObjects, type ElementName } from "./objects";
 import { buildLights } from "./lighting";
 import { buildSlotGrid } from "./slots";
@@ -35,7 +35,7 @@ controls.update();
 
 buildRoom(scene);
 const objects = buildObjects(scene);
-buildLights(scene);
+const lights = buildLights(scene);
 
 // ---- placement grid (key G) + composed views (keys 1/2/3) ----
 const slotGrid = buildSlotGrid();
@@ -51,6 +51,7 @@ let desired: View | null = null;
 
 window.addEventListener("keydown", (e) => {
   if (e.key === "g" || e.key === "G") slotGrid.visible = !slotGrid.visible;
+  if (e.key === "l" || e.key === "L") night = !night;
   const v = views[e.key];
   if (v) desired = v;
 });
@@ -113,8 +114,30 @@ window.addEventListener("resize", () => {
 
 // ---------- life ----------
 const clock = new THREE.Clock();
+let night = false;
+let nightMix = 0;
+const daySky = skyTexture();
+const darkSky = nightSkyTexture();
+const dayHorizon = new THREE.Color("#f6e2c2");
+const nightHorizon = new THREE.Color("#22304f");
 function animate(): void {
   const t = clock.getElapsedTime();
+
+  // day/night mix (key L) — floor lights + wisps wake at night
+  nightMix += ((night ? 1 : 0) - nightMix) * 0.045;
+  lights.sun.intensity = 2.6 * (1 - nightMix * 0.88);
+  lights.hemi.intensity = 0.85 - 0.62 * nightMix;
+  lights.bounce.intensity = 0.22 - 0.12 * nightMix;
+  renderer.toneMappingExposure = 1.12 - 0.26 * nightMix;
+  scene.background = nightMix > 0.5 ? darkSky : daySky;
+  (scene.fog as THREE.Fog).color.lerpColors(dayHorizon, nightHorizon, nightMix);
+  objects.floorLights.forEach((l) => (l.intensity = nightMix * 15));
+  const warmth = 1 + nightMix * 0.45;
+  objects.wisps.forEach((w) => {
+    const phase = (t * 0.5 + (w.userData.phase as number)) % 2.6;
+    w.position.y = 1.2 + phase;
+    (w.material as THREE.MeshBasicMaterial).opacity = (0.06 + nightMix * 0.13) * (1 - phase / 2.6);
+  });
 
   if (desired) {
     camera.position.lerp(desired.pos, 0.055);
@@ -130,10 +153,10 @@ function animate(): void {
   });
 
   const flicker = 0.82 + Math.sin(t * 9.3) * 0.09 + Math.sin(t * 23.7) * 0.06;
-  objects.fire.intensity = 22 * flicker;
+  objects.fire.intensity = 22 * flicker * warmth;
   objects.fireCone.scale.setScalar(0.94 + Math.sin(t * 11) * 0.07);
   objects.water.position.y = 0.82 + Math.sin(t * 1.6) * 0.012;
-  objects.lamp.intensity = 14 + Math.sin(t * 2.2) * 0.5;
+  objects.lamp.intensity = (14 + Math.sin(t * 2.2) * 0.5) * warmth;
 
   const target = pick();
   if (target !== hovered) {
