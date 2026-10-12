@@ -245,141 +245,109 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   psky.addColorStop(1, "#7a4a52");
   pctx.fillStyle = psky;
   pctx.fillRect(0, 0, 384, 288);
-  // ANIME house — clean shapes, cel color, ink outlines
-  const OL = "#4a2c1e"; // the outline
-  pctx.fillStyle = "#ffe9b8";
+  // a soft landscape in the scene's own language — a small house lives in the corner
+  const psun2 = pctx.createRadialGradient(268, 92, 8, 268, 92, 74);
+  psun2.addColorStop(0, "rgba(255,244,214,0.95)");
+  psun2.addColorStop(1, "rgba(255,232,180,0)");
+  pctx.fillStyle = psun2;
+  pctx.fillRect(190, 14, 160, 160);
+  pctx.fillStyle = "#fff2d2";
   pctx.beginPath();
-  pctx.arc(300, 66, 46, 0, Math.PI * 2);
+  pctx.arc(268, 92, 34, 0, Math.PI * 2);
   pctx.fill();
-  pctx.fillStyle = "#fff4d8";
+  // far range with snow
+  pctx.fillStyle = "#b7c2cc";
   pctx.beginPath();
-  pctx.arc(300, 66, 30, 0, Math.PI * 2);
-  pctx.fill();
-  const cloud = (cx: number, cy: number, s: number) => {
-    for (const [ox2, oy2, rr2] of [[0, 0, 0.5], [0.55, -0.22, 0.4], [1.02, 0, 0.34]] as Array<[number, number, number]>) {
-      pctx.fillStyle = OL;
-      pctx.beginPath();
-      pctx.arc(cx + ox2 * s, cy + oy2 * s, rr2 * s + 3, 0, Math.PI * 2);
-      pctx.fill();
-    }
-    for (const [ox2, oy2, rr2] of [[0, 0, 0.5], [0.55, -0.22, 0.4], [1.02, 0, 0.34]] as Array<[number, number, number]>) {
-      pctx.fillStyle = "#fffaf2";
-      pctx.beginPath();
-      pctx.arc(cx + ox2 * s, cy + oy2 * s, rr2 * s, 0, Math.PI * 2);
-      pctx.fill();
-    }
-  };
-  cloud(52, 84, 54);
-  cloud(208, 56, 40);
-  pctx.fillStyle = "#8fbf6a";
-  pctx.fillRect(0, 196, 384, 92);
-  pctx.fillStyle = "#7cad58";
-  pctx.fillRect(0, 196, 384, 12);
-  pctx.fillStyle = "#e8d5a8";
-  pctx.beginPath();
-  pctx.moveTo(146, 288);
-  pctx.lineTo(116, 288);
-  pctx.lineTo(158, 210);
-  pctx.lineTo(186, 210);
+  pctx.moveTo(0, 168);
+  pctx.lineTo(70, 96);
+  pctx.lineTo(128, 152);
+  pctx.lineTo(196, 84);
+  pctx.lineTo(268, 156);
+  pctx.lineTo(330, 112);
+  pctx.lineTo(384, 164);
+  pctx.lineTo(384, 196);
+  pctx.lineTo(0, 196);
   pctx.closePath();
   pctx.fill();
-  pctx.fillStyle = "rgba(80,50,30,0.16)";
+  pctx.fillStyle = "#eef2f5";
+  for (const [mx, my] of [[70, 96], [196, 84], [330, 112]]) {
+    pctx.beginPath();
+    pctx.moveTo(mx - 16, my + 22);
+    pctx.lineTo(mx, my);
+    pctx.lineTo(mx + 16, my + 22);
+    pctx.lineTo(mx + 6, my + 16);
+    pctx.lineTo(mx - 4, my + 21);
+    pctx.closePath();
+    pctx.fill();
+  }
+  // near hills
+  pctx.fillStyle = "#93a97e";
   pctx.beginPath();
-  pctx.ellipse(190, 216, 118, 12, 0, 0, Math.PI * 2);
+  pctx.moveTo(0, 190);
+  pctx.quadraticCurveTo(96, 156, 210, 188);
+  pctx.quadraticCurveTo(310, 212, 384, 182);
+  pctx.lineTo(384, 236);
+  pctx.lineTo(0, 236);
+  pctx.closePath();
   pctx.fill();
-  pctx.lineWidth = 4;
-  pctx.strokeStyle = OL;
-  pctx.fillStyle = "#f7ecd8";
+  // the lake — soft band with a sheen
+  pctx.fillStyle = "#86b2c8";
+  pctx.fillRect(0, 216, 384, 34);
+  pctx.fillStyle = "rgba(240,248,252,0.5)";
+  pctx.fillRect(40, 226, 130, 3);
+  pctx.fillRect(210, 234, 150, 3);
+  // the meadow
+  pctx.fillStyle = "#c9b98a";
   pctx.beginPath();
-  pctx.rect(112, 128, 150, 84);
+  pctx.moveTo(0, 244);
+  pctx.quadraticCurveTo(120, 232, 250, 246);
+  pctx.quadraticCurveTo(330, 254, 384, 244);
+  pctx.lineTo(384, 288);
+  pctx.lineTo(0, 288);
+  pctx.closePath();
   pctx.fill();
-  pctx.stroke();
+  pctx.fillStyle = "#a8b478";
+  for (let i = 0; i < 7; i++) {
+    pctx.beginPath();
+    pctx.ellipse(20 + i * 58, 258 + (i % 2) * 14, 34, 7, 0, 0, Math.PI * 2);
+    pctx.fill();
+  }
+  // two soft trees on the meadow
+  for (const [tx3, ty3] of [[86, 252], [316, 258]]) {
+    pctx.fillStyle = "#6e4a32";
+    pctx.fillRect(tx3 - 3, ty3 - 16, 6, 22);
+    pctx.fillStyle = "#5d8a48";
+    pctx.beginPath();
+    pctx.arc(tx3, ty3 - 30, 20, 0, Math.PI * 2);
+    pctx.fill();
+    pctx.fillStyle = "#6fa257";
+    pctx.beginPath();
+    pctx.arc(tx3 - 6, ty3 - 36, 12, 0, Math.PI * 2);
+    pctx.fill();
+  }
+  // the small house, in the corner — quiet, tiny, with one warm window
+  pctx.fillStyle = "#f2e6cf";
+  pctx.fillRect(318, 246, 44, 30);
   pctx.fillStyle = "#c9603f";
   pctx.beginPath();
-  pctx.moveTo(94, 132);
-  pctx.quadraticCurveTo(187, 54, 280, 132);
+  pctx.moveTo(310, 248);
+  pctx.lineTo(340, 226);
+  pctx.lineTo(370, 248);
   pctx.closePath();
   pctx.fill();
-  pctx.stroke();
   pctx.fillStyle = "#ffd98a";
-  pctx.beginPath();
-  pctx.arc(187, 102, 15, 0, Math.PI * 2);
-  pctx.fill();
-  pctx.stroke();
-  pctx.lineWidth = 2.5;
-  pctx.beginPath();
-  pctx.moveTo(172, 102);
-  pctx.lineTo(202, 102);
-  pctx.moveTo(187, 87);
-  pctx.lineTo(187, 117);
-  pctx.stroke();
-  pctx.lineWidth = 4;
-  pctx.fillStyle = "#b0563a";
-  pctx.beginPath();
-  pctx.rect(236, 70, 26, 38);
-  pctx.fill();
-  pctx.stroke();
-  for (const wx of [140, 228]) {
-    const wg = pctx.createRadialGradient(wx, 168, 4, wx, 168, 34);
-    wg.addColorStop(0, "rgba(255,222,150,0.6)");
-    wg.addColorStop(1, "rgba(255,222,150,0)");
-    pctx.fillStyle = wg;
-    pctx.fillRect(wx - 32, 138, 64, 60);
-    pctx.fillStyle = "#ffd98a";
-    pctx.beginPath();
-    pctx.rect(wx - 21, 148, 42, 40);
-    pctx.fill();
-    pctx.stroke();
-    pctx.lineWidth = 2.5;
-    pctx.beginPath();
-    pctx.moveTo(wx, 148);
-    pctx.lineTo(wx, 188);
-    pctx.moveTo(wx - 21, 168);
-    pctx.lineTo(wx + 21, 168);
-    pctx.stroke();
-    pctx.lineWidth = 4;
-  }
+  pctx.fillRect(326, 254, 10, 9);
+  pctx.fillRect(344, 254, 10, 9);
   pctx.fillStyle = "#8a5236";
-  pctx.beginPath();
-  pctx.moveTo(168, 212);
-  pctx.lineTo(168, 184);
-  pctx.arc(187, 184, 19, Math.PI, 0);
-  pctx.lineTo(206, 212);
-  pctx.closePath();
-  pctx.fill();
-  pctx.stroke();
-  pctx.fillStyle = "#ffd98a";
-  pctx.beginPath();
-  pctx.arc(199, 198, 3.2, 0, Math.PI * 2);
-  pctx.fill();
-  pctx.fillStyle = "#7a4a2c";
-  pctx.beginPath();
-  pctx.rect(322, 148, 16, 58);
-  pctx.fill();
-  pctx.stroke();
-  for (const [tx2, ty2, tr2, tc] of [[330, 116, 42, "#4e8a46"], [300, 140, 27, "#4e8a46"], [362, 140, 27, "#4e8a46"], [318, 108, 22, "#63a458"]] as Array<[number, number, number, string]>) {
-    pctx.fillStyle = tc;
+  pctx.fillRect(336, 262, 9, 14);
+  // soft birds
+  pctx.strokeStyle = "rgba(74,44,30,0.5)";
+  pctx.lineWidth = 2;
+  for (const [bx3, by3] of [[120, 70], [148, 58], [172, 76]]) {
     pctx.beginPath();
-    pctx.arc(tx2, ty2, tr2, 0, Math.PI * 2);
-    pctx.fill();
+    pctx.moveTo(bx3 - 7, by3);
+    pctx.quadraticCurveTo(bx3, by3 - 6, bx3 + 7, by3);
     pctx.stroke();
-  }
-  for (let f = 0; f < 9; f++) {
-    const fx = 30 + ((f * 41) % 330);
-    const fy = 232 + ((f * 23) % 46);
-    pctx.lineWidth = 2;
-    pctx.fillStyle = ["#f28a7a", "#f2d27a", "#e8e4da"][f % 3];
-    for (let pt = 0; pt < 5; pt++) {
-      const pa2 = (pt / 5) * Math.PI * 2;
-      pctx.beginPath();
-      pctx.arc(fx + Math.cos(pa2) * 6, fy + Math.sin(pa2) * 6, 5, 0, Math.PI * 2);
-      pctx.fill();
-    }
-    pctx.fillStyle = "#e8a23a";
-    pctx.beginPath();
-    pctx.arc(fx, fy, 4, 0, Math.PI * 2);
-    pctx.fill();
-    pctx.lineWidth = 4;
   }
   const paintingTex = new THREE.CanvasTexture(paintCanvas);
   paintingTex.colorSpace = THREE.SRGBColorSpace;

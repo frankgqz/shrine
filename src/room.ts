@@ -129,13 +129,13 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     for (let g = 0; g < 4; g++) {
       const gx = tx + (Math.random() - 0.5) * 4.2;
       const gz = Math.min(tz + (Math.random() - 0.5) * 4.2, -9.3); // pruned back from the glass (it crept in by the bookshelf)
-      const mound = new THREE.Mesh(new THREE.SphereGeometry(0.8 + Math.random() * 0.7, 10, 8), new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 }));
+      const mound = new THREE.Mesh(new THREE.SphereGeometry(0.6 + Math.random() * 0.5, 10, 8), new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 }));
       mound.scale.y = 0.28;
       mound.position.set(gx, 0.16, gz);
       mound.receiveShadow = true;
       scene.add(mound);
       for (let b = 0; b < 7; b++) {
-        const blade = new THREE.Mesh(new THREE.ConeGeometry(0.12 + Math.random() * 0.1, 0.85 + Math.random() * 0.55, 5), b % 2 ? grassBlade : grassBlade2);
+        const blade = new THREE.Mesh(new THREE.ConeGeometry(0.09 + Math.random() * 0.07, 0.55 + Math.random() * 0.35, 5), b % 2 ? grassBlade : grassBlade2);
         blade.position.set(gx + (Math.random() - 0.5) * 1.25, 0.55 + Math.random() * 0.3, gz + (Math.random() - 0.5) * 1.25);
         blade.rotation.set((Math.random() - 0.5) * 0.5, Math.random() * Math.PI, (Math.random() - 0.5) * 0.5);
         blade.castShadow = true;
