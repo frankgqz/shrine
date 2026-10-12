@@ -500,47 +500,68 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   shelf.position.set(9.5, 0, -4.5);
   scene.add(tag(shelf, "space", "the bookshelf — quiet company between glass and couch"));
 
-  // ============ DIGITAL PIANO — Z-stand against the left windows ============
+  // ============ DIGITAL PIANO — modern Z-stand by the left windows ============
   const piano = new THREE.Group();
-  const pianoBlack = new THREE.MeshStandardMaterial({ color: "#17161a", roughness: 0.35, metalness: 0.2 });
-  const pianoTrim = new THREE.MeshStandardMaterial({ color: "#2a282e", roughness: 0.5 });
-  // the Z-stand: two Z sides + cross brace + wheels — open underneath, sits over things
+  const pianoBlack = new THREE.MeshStandardMaterial({ color: "#17161a", roughness: 0.32, metalness: 0.25 });
+  const pianoTrim = new THREE.MeshStandardMaterial({ color: "#2a282e", roughness: 0.45 });
+  const pianoSilver = new THREE.MeshStandardMaterial({ color: "#8a8a92", roughness: 0.35, metalness: 0.6 });
+  // the Z-stand — round tubes, modern
   for (const sx2 of [-0.58, 0.58]) {
-    piano.add(mesh(new THREE.BoxGeometry(0.06, 0.05, 0.42), pianoTrim, sx2, 0.66, -0.02)); // the top bar
-    const diag = mesh(new THREE.BoxGeometry(0.055, 0.82, 0.06), pianoTrim, sx2, 0.36, 0.12); // the diagonal
+    const topBar = mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.44, 12), pianoTrim, sx2, 0.66, -0.02);
+    topBar.rotation.x = Math.PI / 2;
+    piano.add(topBar);
+    const diag = mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.86, 12), pianoTrim, sx2, 0.36, 0.12);
     diag.rotation.x = 0.34;
     piano.add(diag);
-    piano.add(mesh(new THREE.BoxGeometry(0.06, 0.05, 0.82), pianoTrim, sx2, 0.05, 0.16)); // the foot bar
-    for (const fz2 of [-0.2, 0.52]) {
-      const wheel = mesh(new THREE.CylinderGeometry(0.038, 0.038, 0.05, 10), pianoBlack, sx2, 0.038, fz2);
+    const footBar = mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.86, 12), pianoTrim, sx2, 0.05, 0.16);
+    footBar.rotation.x = Math.PI / 2;
+    piano.add(footBar);
+    for (const fz2 of [-0.22, 0.54]) {
+      const wheel = mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.055, 12), pianoBlack, sx2, 0.04, fz2);
       wheel.rotation.z = Math.PI / 2;
       piano.add(wheel);
     }
-    piano.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.03, 10), pianoBlack, sx2, 0.52, 0.245)); // the knobs
-    piano.add(mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.03, 10), pianoBlack, sx2, 0.3, 0.245));
+    for (const ky of [0.52, 0.3]) {
+      const knob = mesh(new THREE.CylinderGeometry(0.048, 0.048, 0.035, 12), pianoSilver, sx2, ky, 0.185);
+      knob.rotation.x = Math.PI / 2;
+      piano.add(knob);
+    }
   }
-  piano.add(mesh(new THREE.CylinderGeometry(0.022, 0.022, 1.18, 10), pianoTrim, 0, 0.26, 0.16)); // the cross brace
-  // the keyboard slab on top
-  piano.add(mesh(new RoundedBoxGeometry(1.35, 0.09, 0.42, 3, 0.025), pianoBlack, 0, 0.72, -0.02)); // the slab
+  const brace = mesh(new THREE.CylinderGeometry(0.024, 0.024, 1.2, 12), pianoTrim, 0, 0.26, 0.16);
+  brace.rotation.z = Math.PI / 2; // HORIZONTAL — it was standing up like a mystery pole
+  piano.add(brace);
+  const braceKnob = mesh(new THREE.CylinderGeometry(0.042, 0.042, 0.04, 12), pianoSilver, 0, 0.26, 0.16);
+  braceKnob.rotation.z = Math.PI / 2;
+  piano.add(braceKnob);
+  // the keyboard slab — modern, silver front lip
+  piano.add(mesh(new RoundedBoxGeometry(1.35, 0.09, 0.42, 3, 0.025), pianoBlack, 0, 0.72, -0.02));
+  piano.add(mesh(new THREE.BoxGeometry(1.33, 0.018, 0.03), pianoSilver, 0, 0.715, 0.195)); // the front lip
   piano.add(mesh(new THREE.BoxGeometry(1.22, 0.035, 0.16), new THREE.MeshStandardMaterial({ color: "#f2efe8", roughness: 0.4 }), 0, 0.775, 0.11)); // the white keys
   const blackKeyMat = new THREE.MeshStandardMaterial({ color: "#141216", roughness: 0.35 });
   for (let k = 0; k < 15; k++) {
     piano.add(mesh(new THREE.BoxGeometry(0.032, 0.035, 0.09), blackKeyMat, -0.56 + k * 0.08, 0.8, 0.06));
   }
-  // the top control panel — screen + knobs, like the photo
+  // the control panel — screen, sliders, buttons
   piano.add(mesh(new THREE.BoxGeometry(1.3, 0.035, 0.15), pianoTrim, 0, 0.785, -0.14));
-  piano.add(mesh(new THREE.BoxGeometry(0.16, 0.012, 0.08), new THREE.MeshStandardMaterial({ color: "#7fb8d8", emissive: "#2f6f9e", emissiveIntensity: 0.6 }), -0.3, 0.805, -0.14));
-  for (let k3 = 0; k3 < 7; k3++) {
-    piano.add(mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.025, 10), pianoBlack, -0.08 + k3 * 0.11, 0.812, -0.14));
+  piano.add(mesh(new THREE.BoxGeometry(0.18, 0.012, 0.09), new THREE.MeshStandardMaterial({ color: "#7fb8d8", emissive: "#2f6f9e", emissiveIntensity: 0.7 }), -0.3, 0.805, -0.14));
+  for (let k3 = 0; k3 < 4; k3++) {
+    piano.add(mesh(new THREE.BoxGeometry(0.05, 0.012, 0.07), pianoSilver, -0.06 + k3 * 0.13, 0.806, -0.14)); // sliders
   }
-  // the bench — re-proportioned so it stays a real seat at the bigger scale
-  piano.add(mesh(new RoundedBoxGeometry(0.52, 0.07, 0.26, 3, 0.025), pianoTrim, 0, 0.32, 0.52));
-  for (const bx of [-0.16, 0.16]) {
-    piano.add(mesh(new THREE.BoxGeometry(0.05, 0.31, 0.05), pianoTrim, bx, 0.155, 0.44));
-    piano.add(mesh(new THREE.BoxGeometry(0.05, 0.31, 0.05), pianoTrim, bx, 0.155, 0.6));
+  for (let k4 = 0; k4 < 8; k4++) {
+    piano.add(mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.02, 10), pianoBlack, 0.22 + (k4 % 4) * 0.09, 0.812, -0.16 + Math.floor(k4 / 4) * 0.08)); // buttons
   }
-  piano.scale.setScalar(3.5); // the keyboard rides ABOVE the desk line
-  piano.position.set(-6.6, 0, -7.55);
+  // the three-pedal unit on the floor
+  piano.add(mesh(new THREE.BoxGeometry(0.17, 0.055, 0.11), pianoTrim, -0.5, 0.03, 0.34));
+  for (let pd = 0; pd < 3; pd++) {
+    piano.add(mesh(new THREE.BoxGeometry(0.035, 0.02, 0.07), pianoSilver, -0.56 + pd * 0.055, 0.065, 0.36));
+  }
+  // a modern pedestal stool — round seat, column, wide base
+  piano.add(mesh(new THREE.CylinderGeometry(0.135, 0.135, 0.07, 16), pianoTrim, 0, 0.4, 0.52));
+  piano.add(mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.3, 12), pianoSilver, 0, 0.235, 0.52));
+  piano.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.03, 12), pianoSilver, 0, 0.115, 0.52)); // the height collar
+  piano.add(mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.05, 16), pianoTrim, 0, 0.065, 0.52)); // the base
+  piano.scale.setScalar(3.7);
+  piano.position.set(-6.85, 0, -7.55); // left leg right beside the plant, over the vent
   scene.add(tag(piano, "space", "the digital piano — a chord by the window"));
   piano.traverse((c) => (c.userData.action = "play-piano")); // AFTER the tag
 
