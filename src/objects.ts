@@ -431,34 +431,48 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   shelf.position.set(9.5, 0, -4.5);
   scene.add(tag(shelf, "space", "the bookshelf — quiet company between glass and couch"));
 
-  // ============ PICKLEBALL BAG — between the corner plant and the yoga mat ============
+  // ============ PICKLEBALL BAG — teardrop, upright against the window ============
   const bag = new THREE.Group();
-  const bagBlack = new THREE.MeshStandardMaterial({ color: "#1d1d20", roughness: 0.6 });
+  const bagBlack = new THREE.MeshStandardMaterial({ color: "#1d1d20", roughness: 0.62 });
   const bagTrim = new THREE.MeshStandardMaterial({ color: "#2c2c30", roughness: 0.5 });
-  bag.add(mesh(new RoundedBoxGeometry(1.75, 0.82, 0.85, 4, 0.28), bagBlack, 0, 0.48, 0)); // the duffel body
-  for (const ex of [-0.88, 0.88]) {
-    const cap = mesh(new THREE.CylinderGeometry(0.41, 0.41, 0.1, 14), bagTrim, ex, 0.48, 0); // rounded end caps
-    cap.rotation.z = Math.PI / 2;
-    bag.add(cap);
+  const bagWhite = new THREE.MeshStandardMaterial({ color: "#e8e4da", roughness: 0.55 });
+  // the teardrop body — wide soft bottom tapering to a rounded top (like the photo)
+  const bpts: Array<[number, number]> = [
+    [0.04, 0.0], [0.36, 0.03], [0.55, 0.14], [0.66, 0.36], [0.68, 0.62],
+    [0.6, 0.92], [0.47, 1.18], [0.33, 1.38], [0.19, 1.52], [0.08, 1.6], [0.0, 1.64]
+  ];
+  const bagBody = new THREE.Mesh(new THREE.LatheGeometry(bpts.map(([r, y]) => new THREE.Vector2(r, y)), 26), bagBlack);
+  bagBody.scale.z = 0.62; // flattened like the photo
+  bagBody.castShadow = true;
+  bag.add(bagBody);
+  // the white side panel + zipper lines — the photo's accents
+  const bagPanel = mesh(new RoundedBoxGeometry(0.5, 0.92, 0.06, 3, 0.08), bagWhite, 0.32, 0.8, 0.34);
+  bagPanel.rotation.set(0, -0.5, 0.12);
+  bag.add(bagPanel);
+  for (const zz of [-0.18, 0.12]) {
+    const zip = mesh(new THREE.BoxGeometry(0.05, 1.05, 0.05), bagWhite, -0.08 + zz * 0.5, 0.86, 0.4 - Math.abs(zz) * 0.3);
+    zip.rotation.set(0.1, 0, 0.18 + zz);
+    bag.add(zip);
   }
-  bag.add(mesh(new THREE.BoxGeometry(1.5, 0.035, 0.035), new THREE.MeshStandardMaterial({ color: "#3c3c42", roughness: 0.4, metalness: 0.3 }), 0, 0.89, 0.14)); // top zipper
-  bag.add(mesh(new THREE.BoxGeometry(0.1, 0.06, 0.12), bagTrim, 0.45, 0.9, 0.14)); // zipper pull
-  for (const sx of [-0.42, 0.42]) {
-    const strap = mesh(new THREE.TorusGeometry(0.5, 0.055, 8, 16, Math.PI), bagTrim, sx, 0.62, 0); // the straps
-    strap.rotation.y = Math.PI / 2;
-    bag.add(strap);
+  // carry handles arcing from the top
+  for (const hx of [-0.2, 0.2]) {
+    const handle = mesh(new THREE.TorusGeometry(0.3, 0.05, 8, 18, Math.PI), bagTrim, hx, 1.42, 0);
+    handle.rotation.y = Math.PI / 2;
+    bag.add(handle);
   }
-  bag.add(mesh(new THREE.BoxGeometry(0.42, 0.07, 0.12), bagTrim, 0, 1.12, 0)); // joined handles
-  bag.add(mesh(new RoundedBoxGeometry(0.8, 0.42, 0.12, 3, 0.05), bagTrim, 0, 0.42, 0.47)); // side pocket
-  bag.add(mesh(new THREE.BoxGeometry(0.32, 0.12, 0.02), new THREE.MeshStandardMaterial({ color: "#e8e4da", roughness: 0.6 }), -0.35, 0.55, 0.485)); // a small patch
+  // a shoulder strap hanging down the side
+  const shoulderStrap = mesh(new THREE.TorusGeometry(0.85, 0.055, 8, 22, Math.PI * 0.62), bagTrim, -0.5, 0.95, -0.04);
+  shoulderStrap.rotation.set(Math.PI / 2, 0, 2.5);
+  bag.add(shoulderStrap);
+  // the edge of a paddle, hanging out of the top
   const paddle = new THREE.Group();
-  paddle.add(mesh(new RoundedBoxGeometry(0.56, 0.72, 0.07, 3, 0.12), new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.45 }), 0, 0, 0)); // the face
-  paddle.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.52, 10), new THREE.MeshStandardMaterial({ color: "#141216", roughness: 0.6 }), 0, -0.55, 0)); // the handle
-  paddle.position.set(0.28, 1.18, -0.02);
-  paddle.rotation.set(0.42, 0.5, -0.38); // the edge of the paddle, hanging out of the open top
+  paddle.add(mesh(new RoundedBoxGeometry(0.52, 0.68, 0.07, 3, 0.12), new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.45 }), 0, 0, 0));
+  paddle.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.5, 10), new THREE.MeshStandardMaterial({ color: "#141216", roughness: 0.6 }), 0, -0.52, 0));
+  paddle.position.set(0.16, 1.62, -0.02);
+  paddle.rotation.set(0.35, 0.55, -0.42);
   bag.add(paddle);
-  bag.position.set(-6.6, 0, -7.2);
-  bag.rotation.y = 0.45;
+  bag.position.set(-6.6, 0, -7.78); // upright, right against the window
+  bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — a game waits inside"));
 
   // ============ GHEE LAMP on the desk (fire) ============
