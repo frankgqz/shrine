@@ -506,22 +506,22 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const pianoTrim = new THREE.MeshStandardMaterial({ color: "#2a282e", roughness: 0.45 });
   const pianoSilver = new THREE.MeshStandardMaterial({ color: "#8a8a92", roughness: 0.35, metalness: 0.6 });
   for (const sx2 of [-0.58, 0.58]) {
-    const topBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.34, 12), pianoTrim, sx2, 0.62, -0.04);
+    const topBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.36, 12), pianoTrim, sx2, 0.62, 0.05); // holds the diagonal's top (z 0.2)
     topBar.rotation.x = Math.PI / 2;
     piano.add(topBar);
-    const diag = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.62, 12), pianoTrim, sx2, 0.32, 0.08); // tops stay BELOW the slab
-    diag.rotation.x = 0.34;
+    const diag = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.66, 12), pianoTrim, sx2, 0.33, 0.01); // top (0.6, 0.2) -> bottom (0.06, -0.18)
+    diag.rotation.x = 0.61;
     piano.add(diag);
-    const footBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.55, 12), pianoTrim, sx2, 0.05, 0.1);
+    const footBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.55, 12), pianoTrim, sx2, 0.05, -0.16); // catches the diagonal's bottom — toward the window
     footBar.rotation.x = Math.PI / 2;
     piano.add(footBar);
-    for (const fz2 of [-0.14, 0.36]) {
+    for (const fz2 of [-0.42, 0.09]) {
       const wheel = mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.05, 12), pianoBlack, sx2, 0.036, fz2);
       wheel.rotation.z = Math.PI / 2;
       piano.add(wheel);
     }
-    for (const ky of [0.5, 0.29]) {
-      const knob = mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.03, 12), pianoSilver, sx2, ky, 0.125);
+    for (const [kz2, ky2] of [[0.19, 0.58], [-0.16, 0.1]] as Array<[number, number]>) {
+      const knob = mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.03, 12), pianoSilver, sx2, ky2, kz2); // knobs AT the joints
       knob.rotation.x = Math.PI / 2;
       piano.add(knob);
     }
@@ -530,10 +530,10 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // the slab — thin, close to the window, keys to the ends
   piano.add(mesh(new RoundedBoxGeometry(1.35, 0.075, 0.3, 3, 0.022), pianoBlack, 0, 0.665, -0.085));
   piano.add(mesh(new THREE.BoxGeometry(1.33, 0.015, 0.024), pianoSilver, 0, 0.66, 0.065)); // the front lip
-  piano.add(mesh(new THREE.BoxGeometry(1.32, 0.03, 0.13), new THREE.MeshStandardMaterial({ color: "#f2efe8", roughness: 0.4 }), 0, 0.712, 0)); // FULL-width white keys
+  piano.add(mesh(new THREE.BoxGeometry(1.12, 0.03, 0.13), new THREE.MeshStandardMaterial({ color: "#f2efe8", roughness: 0.4 }), 0, 0.712, 0)); // the white keys
   const blackKeyMat = new THREE.MeshStandardMaterial({ color: "#141216", roughness: 0.35 });
-  for (let k = 0; k < 17; k++) {
-    piano.add(mesh(new THREE.BoxGeometry(0.03, 0.03, 0.075), blackKeyMat, -0.62 + k * 0.077, 0.733, -0.035));
+  for (let k = 0; k < 15; k++) {
+    piano.add(mesh(new THREE.BoxGeometry(0.03, 0.03, 0.075), blackKeyMat, -0.515 + k * 0.0735, 0.733, -0.035));
   }
   // the control panel — a thin strip at the window edge
   piano.add(mesh(new THREE.BoxGeometry(1.3, 0.02, 0.1), pianoTrim, 0, 0.722, -0.125));
@@ -646,7 +646,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bagBall.add(mesh(new THREE.SphereGeometry(0.3, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0, 0)); // hit target
   bagBall.position.set(0, 0.95, 0.02); // deep inside — invisible when packed
   bag.add(bagBall);
-  bag.position.set(-8.0, 0, -7.0); // under the Z-stand, off the wall
+  bag.position.set(-8.0, 0, -6.88); // under the Z-stand, a touch more out
   bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — click to take out the game"));
   bag.traverse((c) => (c.userData.action = "bag-game")); // AFTER the tag — tag() replaces userData
