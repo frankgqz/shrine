@@ -195,6 +195,13 @@ canvas.addEventListener("click", () => {
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
     return;
   }
+  if (act === "open-gqz") {
+    window.open("https://gqz.app", "_blank");
+    labelEl.textContent = "gqz.app";
+    labelEl.style.opacity = "1";
+    window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
+    return;
+  }
   if (act === "roll-mat") {
     matRollTarget = matRollTarget > 0.5 ? 0 : 1;
     labelEl.textContent = matRollTarget > 0.5 ? "the yoga mat rolls up" : "the yoga mat unrolls";

@@ -264,21 +264,55 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   psky.addColorStop(1, "#7a4a52");
   pctx.fillStyle = psky;
   pctx.fillRect(0, 0, 256, 192);
-  pctx.fillStyle = "#ffd9a0";
+  pctx.fillStyle = "#ffd9a0"; // a soft sun behind the home
   pctx.beginPath();
-  pctx.arc(172, 74, 26, 0, Math.PI * 2);
+  pctx.arc(198, 56, 22, 0, Math.PI * 2);
   pctx.fill();
-  pctx.fillStyle = "#5a3a4a";
+  pctx.fillStyle = "#6e8f4e"; // the garden
+  pctx.fillRect(0, 150, 256, 42);
+  pctx.fillStyle = "#5d7a3f";
+  pctx.fillRect(0, 150, 256, 8);
+  pctx.fillStyle = "#f2e6d0"; // the little house
+  pctx.fillRect(74, 84, 112, 68);
+  pctx.fillStyle = "#b0563a"; // roof
   pctx.beginPath();
-  pctx.moveTo(0, 192);
-  for (let x = 0; x <= 256; x += 16) {
-    pctx.lineTo(x, 126 + Math.sin(x * 0.028) * 18 + (x % 64 === 0 ? 12 : 0));
-  }
-  pctx.lineTo(256, 192);
+  pctx.moveTo(58, 86);
+  pctx.lineTo(130, 36);
+  pctx.lineTo(202, 86);
   pctx.closePath();
   pctx.fill();
-  pctx.fillStyle = "#3a2a3a";
-  pctx.fillRect(0, 160, 256, 32);
+  pctx.fillStyle = "#8a4230"; // chimney
+  pctx.fillRect(168, 42, 14, 28);
+  pctx.fillStyle = "#7a4a32"; // door
+  pctx.fillRect(120, 112, 24, 40);
+  pctx.fillStyle = "#ffd98a"; // warm windows
+  pctx.fillRect(88, 100, 22, 20);
+  pctx.fillRect(156, 100, 22, 20);
+  pctx.fillStyle = "#e8c99a";
+  pctx.fillRect(97, 100, 3, 20);
+  pctx.fillRect(165, 100, 3, 20);
+  pctx.fillStyle = "#6e4a32"; // the tree
+  pctx.fillRect(226, 116, 10, 38);
+  pctx.fillStyle = "#4e7a3e";
+  pctx.beginPath();
+  pctx.arc(231, 102, 26, 0, Math.PI * 2);
+  pctx.arc(217, 118, 17, 0, Math.PI * 2);
+  pctx.arc(245, 118, 17, 0, Math.PI * 2);
+  pctx.fill();
+  pctx.fillStyle = "#d9c2a0"; // the path home
+  pctx.beginPath();
+  pctx.moveTo(126, 152);
+  pctx.lineTo(142, 152);
+  pctx.lineTo(156, 192);
+  pctx.lineTo(110, 192);
+  pctx.closePath();
+  pctx.fill();
+  for (let f = 0; f < 7; f++) { // flowers along the garden
+    pctx.fillStyle = ["#e88a7a", "#f2d27a", "#c98fbf", "#f0e6c8"][f % 4];
+    pctx.beginPath();
+    pctx.arc(22 + f * 33, 163 + (f % 3) * 8, 4, 0, Math.PI * 2);
+    pctx.fill();
+  }
   const paintingTex = new THREE.CanvasTexture(paintCanvas);
   paintingTex.colorSpace = THREE.SRGBColorSpace;
   const painting = new THREE.Group();
@@ -287,7 +321,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   canvasPlane.rotation.y = -Math.PI / 2;
   painting.add(canvasPlane);
   painting.position.set(10.22, 5.6, 0.45);
-  scene.add(tag(painting, "space", "the painting — a warm dusk held on cloth"));
+  scene.add(tag(painting, "space", "the painting of a home — click to open gqz.app"));
+  painting.traverse((c) => (c.userData.action = "open-gqz")); // after the tag — tag() replaces userData
 
   // ============ BOOKSHELF — right wall, between the glass and the couch ============
   const shelf = new THREE.Group();
