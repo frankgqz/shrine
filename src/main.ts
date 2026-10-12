@@ -396,7 +396,7 @@ function animate(): void {
   if (shimmerT) shimmerT.offset.set(t * 0.012, t * 0.021);
 
   const cloudM = scene.userData.cloudMat as THREE.MeshStandardMaterial | undefined;
-  if (cloudM) cloudM.opacity = 0.85 - nightMix * 0.62;
+  if (cloudM) cloudM.opacity = 0.85 - nightMix * 0.8; // nearly gone at night — the near puff was staying bright
 
   // heat motes rise from the vents, swell, and fade at the top
   objects.heatMotes.forEach((mo) => {

@@ -576,6 +576,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     for (let j = 0; j < 3; j++) {
       const s = new THREE.Mesh(new THREE.SphereGeometry(3 + Math.random() * 2.5, 10, 8), cloudMat);
       s.position.set(j * 3.4 - 3.4, Math.random() * 1.2, Math.random() * 1.6);
+      s.scale.y = 0.55; // flat puffs — never a clean ball
       cloud.add(s);
     }
     cloud.position.set(-60 + Math.random() * 120, 30 + Math.random() * 12, -95 - Math.random() * 30);
