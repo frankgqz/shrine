@@ -395,7 +395,7 @@ function animate(): void {
     const seg = (bagOutT - 0.5) * 2;
     objects.bagPaddle.position.set(seg * 0.85, 2.15 - seg * 1.43, 0.02 + seg * 0.28);
     objects.bagPaddle.rotation.set(seg * 0.12, seg * -0.5, seg * -0.36);
-    objects.bagBall.position.set(seg * 1.25, 1.95 - seg * 1.82, 0.2 + seg * 0.3);
+    objects.bagBall.position.set(seg * 1.42, 1.95 - seg * 1.82, 0.2 + seg * 1.78); // rolls to the projector wedge
     objects.bagBall.rotation.set(seg * 2.2, seg * 1.4, 0);
   }
 

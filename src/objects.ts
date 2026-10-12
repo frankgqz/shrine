@@ -524,10 +524,10 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const faceShape = new THREE.Shape();
   faceShape.moveTo(0, 0.35);
   faceShape.bezierCurveTo(0.21, 0.35, 0.27, 0.27, 0.27, 0.12);   // the right shoulder
-  faceShape.bezierCurveTo(0.27, -0.02, 0.21, -0.15, 0.1, -0.23); // taper in toward the throat
-  faceShape.bezierCurveTo(0.07, -0.26, 0.05, -0.28, 0, -0.29);   // the narrow bottom
-  faceShape.bezierCurveTo(-0.05, -0.28, -0.07, -0.26, -0.1, -0.23);
-  faceShape.bezierCurveTo(-0.21, -0.15, -0.27, -0.02, -0.27, 0.12);
+  faceShape.bezierCurveTo(0.28, -0.04, 0.255, -0.18, 0.17, -0.26); // fuller toward the handle
+  faceShape.bezierCurveTo(0.12, -0.3, 0.06, -0.3, 0, -0.3);       // the wider bottom
+  faceShape.bezierCurveTo(-0.06, -0.3, -0.12, -0.3, -0.17, -0.26);
+  faceShape.bezierCurveTo(-0.255, -0.18, -0.28, -0.04, -0.27, 0.12);
   faceShape.bezierCurveTo(-0.27, 0.27, -0.21, 0.35, 0, 0.35);
   const faceMesh = new THREE.Mesh(new THREE.ExtrudeGeometry(faceShape, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.018, bevelSize: 0.018, bevelSegments: 3 }), paddleFace);
   faceMesh.position.set(0, 0.5, -0.025); // the almost-oval face
@@ -548,6 +548,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     const hy = ((hh % 3) - 1) * 0.45;
     bagBall.add(mesh(new THREE.SphereGeometry(0.03, 6, 5), new THREE.MeshStandardMaterial({ color: "#4a5d1f", roughness: 0.85 }), Math.cos(ha) * 0.105 * Math.cos(hy), Math.sin(hy) * 0.105, Math.sin(ha) * 0.105 * Math.cos(hy))); // carved dimples
   }
+  bagBall.add(mesh(new THREE.SphereGeometry(0.36, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0, 0)); // hit target
   bagBall.position.set(0, 0.95, 0.02); // deep inside — invisible when packed
   bag.add(bagBall);
   bag.position.set(-8.65, 0, -7.55); // upright, right against the window — very close to the pot
@@ -636,9 +637,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // proper armrests at the two outer ends
   couch.add(mesh(new THREE.BoxGeometry(1.75, 1.25, 0.7), fluffy, 7.22, 1.58, -1.45)); // arm at the new far end
   // a head cushion at the corner end of the right run
-  const headCushion = new THREE.Mesh(new RoundedBoxGeometry(0.42, 1.05, 1.25, 4, 0.15), fluffy);
-  headCushion.position.set(8.3, 2.12, 4.62);
-  headCushion.rotation.x = -0.14;
+  const headCushion = new THREE.Mesh(new RoundedBoxGeometry(0.4, 0.42, 1.2, 4, 0.2), fluffy);
+  headCushion.position.set(8.3, 2.6, 4.58);
+  headCushion.rotation.x = -0.1;
   headCushion.castShadow = true;
   headCushion.receiveShadow = true;
   couch.add(headCushion);
