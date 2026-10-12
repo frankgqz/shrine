@@ -128,7 +128,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   for (const [tx, tz] of treeSpots) {
     for (let g = 0; g < 4; g++) {
       const gx = tx + (Math.random() - 0.5) * 4.2;
-      const gz = tz + (Math.random() - 0.5) * 4.2;
+      const gz = Math.min(tz + (Math.random() - 0.5) * 4.2, -9.3); // pruned back from the glass (it crept in by the bookshelf)
       const mound = new THREE.Mesh(new THREE.SphereGeometry(0.8 + Math.random() * 0.7, 10, 8), new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 }));
       mound.scale.y = 0.28;
       mound.position.set(gx, 0.16, gz);
