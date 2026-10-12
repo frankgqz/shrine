@@ -436,7 +436,29 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     rr.castShadow = true;
     scene.add(rr);
   }
-  const pool = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.11, 20), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.12, transparent: true, opacity: 0.6, emissive: "#1f6f9e", emissiveIntensity: 0.18 }));
+  const shimCanvas = document.createElement("canvas");
+  shimCanvas.width = shimCanvas.height = 128;
+  const sctx = shimCanvas.getContext("2d")!;
+  sctx.fillStyle = "#0a2a3a";
+  sctx.fillRect(0, 0, 128, 128);
+  for (let i = 0; i < 26; i++) {
+    const sx = Math.random() * 128;
+    const sy = Math.random() * 128;
+    const sl = 10 + Math.random() * 26;
+    sctx.strokeStyle = "rgba(200,235,255," + (0.25 + Math.random() * 0.5).toFixed(2) + ")";
+    sctx.lineWidth = 1 + Math.random() * 2;
+    sctx.beginPath();
+    sctx.moveTo(sx, sy);
+    sctx.lineTo(sx + sl, sy + sl * 0.35);
+    sctx.stroke();
+  }
+  const shimmerTex = new THREE.CanvasTexture(shimCanvas);
+  shimmerTex.colorSpace = THREE.SRGBColorSpace;
+  shimmerTex.wrapS = shimmerTex.wrapT = THREE.RepeatWrapping;
+  shimmerTex.repeat.set(1.6, 1.6);
+  scene.userData.shimmerTex = shimmerTex;
+
+  const pool = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.11, 20), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.12, transparent: true, opacity: 0.6, emissive: "#8fd0ee", emissiveIntensity: 0.3, emissiveMap: shimmerTex }));
   pool.position.set(-8.55, 0.28, -9.9);
   scene.add(pool);
   (scene.userData.ripples ??= []).push({ mesh: pool, base: pool.geometry.attributes.position.array.slice(0) as Float32Array, amp: 0.035, freq: 2.4, speed: 1.6 });
@@ -459,7 +481,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
 
   // tiny CATCHMENTS between the rocks — where the water trickles down to
   for (const [cx, cy, cz, cr] of [[-8.55, 2.56, -9.9, 0.48], [-9.45, 1.76, -10.05, 0.38], [-8.32, 4.49, -9.72, 0.34]] as Array<[number, number, number, number]>) {
-    const pocket = new THREE.Mesh(new THREE.CylinderGeometry(cr, cr, 0.08, 14), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.12, transparent: true, opacity: 0.6, emissive: "#1f6f9e", emissiveIntensity: 0.18 }));
+    const pocket = new THREE.Mesh(new THREE.CylinderGeometry(cr, cr, 0.08, 14), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.12, transparent: true, opacity: 0.6, emissive: "#8fd0ee", emissiveIntensity: 0.3, emissiveMap: shimmerTex }));
     pocket.position.set(cx, cy, cz);
     scene.add(pocket);
     (scene.userData.ripples ??= []).push({ mesh: pocket, base: pocket.geometry.attributes.position.array.slice(0) as Float32Array, amp: 0.018, freq: 3.2, speed: 1.9 });
@@ -471,6 +493,37 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   wetLayer.scale.set(1, 0.62, 1);
   wetLayer.position.set(-9.0, 0.12, -11.9);
   scene.add(wetLayer);
+
+  // soil mixed in around the rock pile
+  for (const [sx2, sz2, sr2] of [[-8.1, -10.7, 1.15], [-9.7, -11.6, 0.95], [-7.6, -12.5, 0.8], [-9.9, -9.7, 0.7], [-8.9, -13.4, 0.9]] as Array<[number, number, number]>) {
+    const soil = new THREE.Mesh(new THREE.CircleGeometry(sr2, 12), new THREE.MeshStandardMaterial({ color: "#6b5236", roughness: 1 }));
+    soil.rotation.x = -Math.PI / 2;
+    soil.scale.y = 0.68;
+    soil.position.set(sx2, 0.045, sz2);
+    scene.add(soil);
+  }
+
+  // a sunken corner on the very far left — where outward water would drain
+  const pitWall = new THREE.Mesh(new THREE.CylinderGeometry(1.35, 1.05, 0.6, 16), new THREE.MeshStandardMaterial({ color: "#4e3a26", roughness: 1 }));
+  pitWall.position.set(-9.75, -0.26, -13.15);
+  scene.add(pitWall);
+  const pitDark = new THREE.Mesh(new THREE.CylinderGeometry(1.02, 1.02, 0.08, 16), new THREE.MeshStandardMaterial({ color: "#241a10", roughness: 1 }));
+  pitDark.position.set(-9.75, -0.42, -13.15);
+  scene.add(pitDark);
+  const pitWater = new THREE.Mesh(new THREE.CylinderGeometry(0.82, 0.82, 0.06, 14), new THREE.MeshStandardMaterial({ color: "#3a5a66", roughness: 0.15, transparent: true, opacity: 0.75, emissive: "#8fd0ee", emissiveIntensity: 0.22, emissiveMap: shimmerTex }));
+  pitWater.position.set(-9.75, -0.3, -13.15);
+  scene.add(pitWater);
+  for (const [mz, mr] of [[-0.95, 0.42], [0.85, 0.38], [0.25, 0.34]] as Array<[number, number]>) {
+    const mound = new THREE.Mesh(new THREE.SphereGeometry(mr, 10, 8), new THREE.MeshStandardMaterial({ color: "#5c452c", roughness: 1 }));
+    mound.scale.y = 0.45;
+    mound.position.set(-9.75 + Math.cos(mz * 3) * 1.25, 0.06, -13.15 + mz);
+    scene.add(mound);
+  }
+  // the runnel the water would take out of the rocks toward the pit
+  const runnel = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.06, 3.1), new THREE.MeshStandardMaterial({ color: "#57412c", roughness: 1 }));
+  runnel.position.set(-9.15, 0.035, -11.75);
+  runnel.rotation.y = 0.42;
+  scene.add(runnel);
 
   // ---- Into the distance: sun, two ranges, snow caps, lake, clouds, stars ----
   const mountainMat = new THREE.MeshStandardMaterial({ color: "#7c8fa0", roughness: 1, flatShading: true });

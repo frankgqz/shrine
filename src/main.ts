@@ -196,7 +196,7 @@ canvas.addEventListener("click", () => {
     return;
   }
   if (act === "open-gqz") {
-    window.open("https://gqz.app", "_blank");
+    window.location.href = "https://gqz.app";
     labelEl.textContent = "gqz.app";
     labelEl.style.opacity = "1";
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
@@ -387,8 +387,12 @@ function animate(): void {
     const hm = s.material as THREE.MeshBasicMaterial;
     hm.color.set(ventColor);
     const strobe = 0.5 + 0.5 * Math.sin(t * 1.7 - ((s.userData.phase as number) ?? 0));
-    hm.opacity = ventOn ? 0.015 + strobe * 0.075 : 0; // 0 -> very very low
+    const rise = 0.35 + (((s.userData.segIdx as number) ?? 3) as number) * 0.22; // low -> high
+    hm.opacity = ventOn ? (0.015 + strobe * 0.075) * rise : 0; // 0 -> very very low
   });
+
+  const shimmerT = scene.userData.shimmerTex as THREE.CanvasTexture | undefined;
+  if (shimmerT) shimmerT.offset.set(t * 0.012, t * 0.021);
 
   const cloudM = scene.userData.cloudMat as THREE.MeshStandardMaterial | undefined;
   if (cloudM) cloudM.opacity = 0.85 - nightMix * 0.62;

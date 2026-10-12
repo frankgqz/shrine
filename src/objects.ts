@@ -573,7 +573,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     rockFeature.add(st);
   }
   rockFeature.add(mesh(new THREE.CylinderGeometry(1.08, 1.16, 0.22, 18), brassSoft2, 0, 1.08, 0)); // the tray — collects the falling water
-  const water = mesh(new THREE.CylinderGeometry(0.92, 0.92, 0.08, 18), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.15, transparent: true, opacity: 0.62, emissive: "#1f6f9e", emissiveIntensity: 0.18 }), 0, 1.19, 0);
+  const shimA = scene.userData.shimmerTex as THREE.CanvasTexture | undefined;
+  const water = mesh(new THREE.CylinderGeometry(0.92, 0.92, 0.08, 18), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.15, transparent: true, opacity: 0.62, emissive: "#8fd0ee", emissiveIntensity: 0.3, emissiveMap: shimA ?? null }), 0, 1.19, 0);
   (scene.userData.ripples ??= []).push({ mesh: water, base: water.geometry.attributes.position.array.slice(0) as Float32Array, amp: 0.018, freq: 3.4, speed: 1.9 });
   rockFeature.add(water);
   rockFeature.add(mesh(new THREE.CylinderGeometry(0.05, 0.07, 1.9, 8), new THREE.MeshStandardMaterial({ color: "#aee4f5", transparent: true, opacity: 0.75, roughness: 0.1 }), 0.1, 2.0, -0.02));
@@ -751,6 +752,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
         const squiggle = new THREE.Mesh(new THREE.TubeGeometry(hcurve, 10, 0.03, 6, false), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }));
         squiggle.position.set(vx + (hc - 1) * 0.42, 0.32 + hc * 0.2, vz + (hc % 2 ? 0.16 : -0.16));
         squiggle.userData.phase = seg * 1.9 + hc * 0.22; // the wave climbs the curve — slow enough to see
+        squiggle.userData.segIdx = seg;
         scene.add(tag(squiggle, "air", "heat — the breath of the stones"));
         heatCurves.push(squiggle);
       }
@@ -808,7 +810,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
 
   const glass = new THREE.Group();
   glass.add(mesh(new THREE.CylinderGeometry(0.32, 0.26, 0.85, 14), new THREE.MeshStandardMaterial({ color: "#dff2f7", transparent: true, opacity: 0.22, roughness: 0.08 }), 0, 0.43, 0));
-  const cupWater = mesh(new THREE.CylinderGeometry(0.26, 0.23, 0.42, 14), new THREE.MeshStandardMaterial({ color: "#58b0dd", transparent: true, opacity: 0.62, emissive: "#1f6f9e", emissiveIntensity: 0.18 }), 0, 0.21, 0);
+  const cupWater = mesh(new THREE.CylinderGeometry(0.26, 0.23, 0.42, 14), new THREE.MeshStandardMaterial({ color: "#58b0dd", transparent: true, opacity: 0.62, emissive: "#8fd0ee", emissiveIntensity: 0.3, emissiveMap: shimA ?? null }), 0, 0.21, 0);
   (scene.userData.ripples ??= []).push({ mesh: cupWater, base: cupWater.geometry.attributes.position.array.slice(0) as Float32Array, amp: 0.008, freq: 4.2, speed: 2.2 });
   glass.add(cupWater);
   glass.add(mesh(new THREE.SphereGeometry(0.55, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0.45, 0)); // hit target
