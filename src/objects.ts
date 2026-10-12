@@ -186,7 +186,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   scene.add(tag(chair, "air", "the chair — leather, tall, facing the work"));
 
   // ============ INDOOR PLANTS — slot 6, right of + below the projection ============
-  for (const [px, pz, s, prot] of [[-7.2, -0.35, 0.8, 0.6], [-8.85, -0.35, 1.0, -0.5], [-9.75, -7.4, 0.95, -1.3]] as Array<[number, number, number, number]>) {
+  for (const [px, pz, s, prot] of [[-7.2, -0.35, 0.8, 0.6], [-8.85, -0.35, 1.0, -0.5], [-9.6, -7.1, 0.95, -1.3]] as Array<[number, number, number, number]>) {
     const pot = new THREE.Group();
     pot.add(mesh(new THREE.CylinderGeometry(0.62 * s, 0.48 * s, 0.85 * s, 12), new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.85 }), 0, 0.42 * s, 0));
     // soil visible at the top of the pot
@@ -506,22 +506,22 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const pianoTrim = new THREE.MeshStandardMaterial({ color: "#2a282e", roughness: 0.45 });
   const pianoSilver = new THREE.MeshStandardMaterial({ color: "#8a8a92", roughness: 0.35, metalness: 0.6 });
   for (const sx2 of [-0.58, 0.58]) {
-    const topBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.42, 12), pianoTrim, sx2, 0.62, -0.03);
+    const topBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.34, 12), pianoTrim, sx2, 0.62, -0.04);
     topBar.rotation.x = Math.PI / 2;
     piano.add(topBar);
-    const diag = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.82, 12), pianoTrim, sx2, 0.35, 0.1);
+    const diag = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.62, 12), pianoTrim, sx2, 0.32, 0.08); // tops stay BELOW the slab
     diag.rotation.x = 0.34;
     piano.add(diag);
-    const footBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.82, 12), pianoTrim, sx2, 0.05, 0.14);
+    const footBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.55, 12), pianoTrim, sx2, 0.05, 0.1);
     footBar.rotation.x = Math.PI / 2;
     piano.add(footBar);
-    for (const fz2 of [-0.2, 0.5]) {
+    for (const fz2 of [-0.14, 0.36]) {
       const wheel = mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.05, 12), pianoBlack, sx2, 0.036, fz2);
       wheel.rotation.z = Math.PI / 2;
       piano.add(wheel);
     }
     for (const ky of [0.5, 0.29]) {
-      const knob = mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.03, 12), pianoSilver, sx2, ky, 0.145);
+      const knob = mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.03, 12), pianoSilver, sx2, ky, 0.125);
       knob.rotation.x = Math.PI / 2;
       piano.add(knob);
     }
@@ -536,13 +536,13 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     piano.add(mesh(new THREE.BoxGeometry(0.03, 0.03, 0.075), blackKeyMat, -0.62 + k * 0.077, 0.733, -0.035));
   }
   // the control panel — a thin strip at the window edge
-  piano.add(mesh(new THREE.BoxGeometry(1.3, 0.02, 0.1), pianoTrim, 0, 0.722, -0.175));
-  piano.add(mesh(new THREE.BoxGeometry(0.18, 0.01, 0.07), new THREE.MeshStandardMaterial({ color: "#7fb8d8", emissive: "#2f6f9e", emissiveIntensity: 0.7 }), -0.3, 0.735, -0.175));
+  piano.add(mesh(new THREE.BoxGeometry(1.3, 0.02, 0.1), pianoTrim, 0, 0.722, -0.125));
+  piano.add(mesh(new THREE.BoxGeometry(0.18, 0.01, 0.07), new THREE.MeshStandardMaterial({ color: "#7fb8d8", emissive: "#2f6f9e", emissiveIntensity: 0.7 }), -0.3, 0.735, -0.125));
   for (let k3 = 0; k3 < 4; k3++) {
-    piano.add(mesh(new THREE.BoxGeometry(0.05, 0.01, 0.05), pianoSilver, -0.06 + k3 * 0.13, 0.736, -0.175));
+    piano.add(mesh(new THREE.BoxGeometry(0.05, 0.01, 0.05), pianoSilver, -0.06 + k3 * 0.13, 0.736, -0.125));
   }
   for (let k4 = 0; k4 < 8; k4++) {
-    piano.add(mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.014, 10), pianoBlack, 0.22 + (k4 % 4) * 0.09, 0.74, -0.19 + Math.floor(k4 / 4) * 0.05));
+    piano.add(mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.014, 10), pianoBlack, 0.22 + (k4 % 4) * 0.09, 0.74, -0.14 + Math.floor(k4 / 4) * 0.05));
   }
   // the pedals — close to the window
   piano.add(mesh(new THREE.BoxGeometry(0.17, 0.05, 0.1), pianoTrim, 0, 0.03, -0.12));
@@ -550,14 +550,14 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     piano.add(mesh(new THREE.BoxGeometry(0.035, 0.02, 0.06), pianoSilver, -0.055 + pd * 0.055, 0.062, -0.1));
   }
   // a simple stool
-  piano.add(mesh(new RoundedBoxGeometry(0.5, 0.07, 0.26, 3, 0.02), pianoTrim, 0, 0.37, 0.52));
+  piano.add(mesh(new RoundedBoxGeometry(0.5, 0.07, 0.26, 3, 0.02), pianoTrim, 0, 0.37, 0.36));
   for (const bx of [-0.19, 0.19]) {
-    for (const bz of [0.42, 0.62]) {
+    for (const bz of [0.26, 0.46]) {
       piano.add(mesh(new THREE.BoxGeometry(0.05, 0.37, 0.05), pianoTrim, bx, 0.185, bz));
     }
   }
   piano.scale.setScalar(3.7);
-  piano.position.set(-6.85, 0, -7.55);
+  piano.position.set(-6.2, 0, -7.2); // off the wall, toward the bookshelf — off the vent
   scene.add(tag(piano, "space", "the digital piano — a chord by the window"));
   piano.traverse((c) => (c.userData.action = "play-piano")); // AFTER the tag
 
@@ -646,7 +646,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bagBall.add(mesh(new THREE.SphereGeometry(0.3, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0, 0)); // hit target
   bagBall.position.set(0, 0.95, 0.02); // deep inside — invisible when packed
   bag.add(bagBall);
-  bag.position.set(-8.35, 0, -7.3); // under the Z-stand, against the leg by the plant
+  bag.position.set(-8.0, 0, -7.0); // under the Z-stand, off the wall
   bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — click to take out the game"));
   bag.traverse((c) => (c.userData.action = "bag-game")); // AFTER the tag — tag() replaces userData
