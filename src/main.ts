@@ -197,6 +197,10 @@ canvas.addEventListener("click", () => {
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
     return;
   }
+  if (act === "open-pickleball") {
+    window.location.href = "https://pickleball.gqz.app"; // the ball takes you to the game
+    return;
+  }
   if (act === "open-gqz") {
     window.location.href = "https://gqz.app";
     labelEl.textContent = "gqz.app";

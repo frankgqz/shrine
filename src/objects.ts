@@ -236,63 +236,96 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
 
   // ============ A PAINTING on the right wall (a warm dusk) ============
   const paintCanvas = document.createElement("canvas");
-  paintCanvas.width = 256;
-  paintCanvas.height = 192;
+  paintCanvas.width = 384;
+  paintCanvas.height = 288;
   const pctx = paintCanvas.getContext("2d") as CanvasRenderingContext2D;
-  const psky = pctx.createLinearGradient(0, 0, 0, 192);
+  const psky = pctx.createLinearGradient(0, 0, 0, 288);
   psky.addColorStop(0, "#f2c98a");
   psky.addColorStop(0.55, "#e8a06a");
   psky.addColorStop(1, "#7a4a52");
   pctx.fillStyle = psky;
-  pctx.fillRect(0, 0, 256, 192);
-  pctx.fillStyle = "#ffd9a0"; // a soft sun behind the home
+  pctx.fillRect(0, 0, 384, 288);
+  // painterly brush helper — the house is PAINTED now, not drawn
+  const brush = (x: number, y: number, w: number, h: number, col: string, alpha: number, rot: number) => {
+    pctx.save();
+    pctx.translate(x, y);
+    pctx.rotate(rot);
+    pctx.globalAlpha = alpha;
+    pctx.fillStyle = col;
+    pctx.fillRect(-w / 2, -h / 2, w, h);
+    pctx.restore();
+    pctx.globalAlpha = 1;
+  };
+  // sky strokes — visible brushwork
+  for (let i = 0; i < 70; i++) {
+    brush(Math.random() * 384, Math.random() * 165, 30 + Math.random() * 60, 7 + Math.random() * 8,
+      ["#f6d69c", "#eeb983", "#e8a06a", "#dd8f68", "#c97f6b"][i % 5], 0.28 + Math.random() * 0.25, (Math.random() - 0.5) * 0.12);
+  }
+  // the sun — a soft glowing wash
+  const psun = pctx.createRadialGradient(292, 82, 6, 292, 82, 64);
+  psun.addColorStop(0, "rgba(255,238,196,0.95)");
+  psun.addColorStop(1, "rgba(255,220,160,0)");
+  pctx.fillStyle = psun;
   pctx.beginPath();
-  pctx.arc(198, 56, 22, 0, Math.PI * 2);
+  pctx.arc(292, 82, 64, 0, Math.PI * 2);
   pctx.fill();
-  pctx.fillStyle = "#6e8f4e"; // the garden
-  pctx.fillRect(0, 150, 256, 42);
-  pctx.fillStyle = "#5d7a3f";
-  pctx.fillRect(0, 150, 256, 8);
-  pctx.fillStyle = "#f2e6d0"; // the little house
-  pctx.fillRect(74, 84, 112, 68);
-  pctx.fillStyle = "#b0563a"; // roof
+  // the garden — long loose strokes
+  for (let i = 0; i < 60; i++) {
+    brush(Math.random() * 384, 212 + Math.random() * 76, 34 + Math.random() * 55, 9 + Math.random() * 9,
+      ["#7c9455", "#6c8448", "#8aa05e", "#5f7740"][i % 4], 0.3 + Math.random() * 0.28, (Math.random() - 0.5) * 0.16);
+  }
+  // the little house — slightly off-kilter, base first, then strokes
+  pctx.save();
+  pctx.translate(168, 152);
+  pctx.rotate(-0.02);
+  pctx.fillStyle = "#eddec0";
+  pctx.fillRect(-72, -22, 144, 68);
+  pctx.fillStyle = "#b25438";
   pctx.beginPath();
-  pctx.moveTo(58, 86);
-  pctx.lineTo(130, 36);
-  pctx.lineTo(202, 86);
+  pctx.moveTo(-88, -20);
+  pctx.lineTo(0, -74);
+  pctx.lineTo(88, -20);
   pctx.closePath();
   pctx.fill();
-  pctx.fillStyle = "#8a4230"; // chimney
-  pctx.fillRect(168, 42, 14, 28);
-  pctx.fillStyle = "#7a4a32"; // door
-  pctx.fillRect(120, 112, 24, 40);
-  pctx.fillStyle = "#ffd98a"; // warm windows
-  pctx.fillRect(88, 100, 22, 20);
-  pctx.fillRect(156, 100, 22, 20);
-  pctx.fillStyle = "#e8c99a";
-  pctx.fillRect(97, 100, 3, 20);
-  pctx.fillRect(165, 100, 3, 20);
-  pctx.fillStyle = "#6e4a32"; // the tree
-  pctx.fillRect(226, 116, 10, 38);
-  pctx.fillStyle = "#4e7a3e";
-  pctx.beginPath();
-  pctx.arc(231, 102, 26, 0, Math.PI * 2);
-  pctx.arc(217, 118, 17, 0, Math.PI * 2);
-  pctx.arc(245, 118, 17, 0, Math.PI * 2);
-  pctx.fill();
-  pctx.fillStyle = "#d9c2a0"; // the path home
-  pctx.beginPath();
-  pctx.moveTo(126, 152);
-  pctx.lineTo(142, 152);
-  pctx.lineTo(156, 192);
-  pctx.lineTo(110, 192);
-  pctx.closePath();
-  pctx.fill();
-  for (let f = 0; f < 7; f++) { // flowers along the garden
-    pctx.fillStyle = ["#e88a7a", "#f2d27a", "#c98fbf", "#f0e6c8"][f % 4];
-    pctx.beginPath();
-    pctx.arc(22 + f * 33, 163 + (f % 3) * 8, 4, 0, Math.PI * 2);
-    pctx.fill();
+  for (let i = 0; i < 26; i++) {
+    brush(-66 + Math.random() * 132, -16 + Math.random() * 58, 16 + Math.random() * 22, 9 + Math.random() * 8,
+      ["#f4e7cf", "#ead9bb", "#f7eeda", "#e2cda9"][i % 4], 0.5 + Math.random() * 0.35, (Math.random() - 0.5) * 0.1);
+  }
+  for (let i = 0; i < 30; i++) {
+    const rx = -82 + Math.random() * 164;
+    brush(rx, -22 - (1 - Math.abs(rx) / 88) * 42 + Math.random() * 10, 22 + Math.random() * 18, 8 + Math.random() * 7,
+      ["#c96a48", "#a84c31", "#b9583a", "#97422c"][i % 4], 0.55 + Math.random() * 0.35, (Math.random() - 0.5) * 0.22);
+  }
+  pctx.restore();
+  brush(238, 92, 16, 36, "#8a4230", 0.9, -0.02); // the chimney
+  for (const wx of [132, 198]) {
+    const wg = pctx.createRadialGradient(wx, 150, 2, wx, 150, 30);
+    wg.addColorStop(0, "rgba(255,222,150,0.95)");
+    wg.addColorStop(1, "rgba(255,200,120,0)");
+    pctx.fillStyle = wg;
+    pctx.fillRect(wx - 24, 128, 48, 46);
+    brush(wx, 150, 21, 24, "#ffd98a", 0.95, 0);
+    brush(wx, 150, 3, 24, "#e8c99a", 0.8, 0);
+    brush(wx, 150, 21, 3, "#e8c99a", 0.8, 0);
+  }
+  brush(166, 176, 27, 44, "#7a4a32", 0.92, -0.015); // the door
+  brush(166, 176, 20, 5, "#c98a5e", 0.6, -0.015);
+  for (let i = 0; i < 16; i++) {
+    brush(166 + (Math.random() - 0.5) * 32, 214 + i * 5, 16 + Math.random() * 12, 6, "#d9c2a0", 0.4 + Math.random() * 0.3, (Math.random() - 0.5) * 0.3);
+  }
+  brush(326, 172, 15, 60, "#6e4a32", 0.9, 0.06); // the tree
+  for (let i = 0; i < 26; i++) {
+    const ta = Math.random() * Math.PI * 2;
+    const tr = Math.random() * 31;
+    brush(326 + Math.cos(ta) * tr * 1.15, 132 + Math.sin(ta) * tr * 0.8, 26 + Math.random() * 20, 18 + Math.random() * 12,
+      ["#4e7a3e", "#5d8a48", "#416834", "#6c9a52"][i % 4], 0.4 + Math.random() * 0.35, (Math.random() - 0.5) * 0.5);
+  }
+  for (let f = 0; f < 16; f++) {
+    brush(20 + Math.random() * 340, 224 + Math.random() * 50, 9 + Math.random() * 7, 9 + Math.random() * 6,
+      ["#e88a7a", "#f2d27a", "#c98fbf", "#f0e6c8", "#e87a6a"][f % 5], 0.6 + Math.random() * 0.3, Math.random());
+  }
+  for (let g = 0; g < 260; g++) {
+    brush(Math.random() * 384, Math.random() * 288, 2.2, 2.2, g % 2 ? "#ffffff" : "#000000", 0.05, 0); // canvas grain
   }
   const paintingTex = new THREE.CanvasTexture(paintCanvas);
   paintingTex.colorSpace = THREE.SRGBColorSpace;
@@ -521,6 +554,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — click to take out the game"));
   bag.traverse((c) => (c.userData.action = "bag-game")); // AFTER the tag — tag() replaces userData
+  bagBall.traverse((c) => (c.userData.action = "open-pickleball")); // the ball invites you to play
 
   // ============ GHEE LAMP on the desk (fire) ============
   const gheeLamp = new THREE.Group();
