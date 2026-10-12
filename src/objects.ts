@@ -431,26 +431,38 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   shelf.position.set(9.5, 0, -4.5);
   scene.add(tag(shelf, "space", "the bookshelf — quiet company between glass and couch"));
 
-  // ============ PICKLEBALL BAG — soft and full, upright against the window ============
+  // ============ PICKLEBALL BAG — circle below, circle above, outsides joined ============
   const bag = new THREE.Group();
   const bagBlack = new THREE.MeshStandardMaterial({ color: "#1d1d20", roughness: 0.62 });
   const bagTrim = new THREE.MeshStandardMaterial({ color: "#2c2c30", roughness: 0.5 });
-  // a full soft-sided body — extruded volume that can actually hold stuff
-  bag.add(mesh(new RoundedBoxGeometry(1.5, 1.0, 0.92, 5, 0.3), bagBlack, 0, 0.55, 0)); // the packed base
-  bag.add(mesh(new RoundedBoxGeometry(1.28, 0.66, 0.82, 5, 0.3), bagBlack, 0, 1.3, 0)); // the softer crown
-  // one grab handle on top
-  const grabHandle = mesh(new THREE.TorusGeometry(0.27, 0.055, 8, 18, Math.PI), bagTrim, 0, 1.62, 0);
+  // the silhouette: a big bottom circle + a smaller top circle, their outside
+  // tangents joined -> a soft rounded triangle. Extrude it -> a container.
+  const r1 = 0.58;   // bottom circle
+  const r2 = 0.3;    // top circle
+  const y1 = 0.62;
+  const y2 = 1.42;
+  const phi = Math.asin((r1 - r2) / (y2 - y1)); // where the tangent lines touch
+  const bagShape = new THREE.Shape();
+  bagShape.moveTo(Math.cos(phi) * r1, y1 + Math.sin(phi) * r1);
+  bagShape.absarc(0, y1, r1, phi, Math.PI - phi, true); // around the big bottom
+  bagShape.lineTo(Math.cos(Math.PI - phi) * r2, y2 + Math.sin(Math.PI - phi) * r2);
+  bagShape.absarc(0, y2, r2, Math.PI - phi, phi, false); // over the small top
+  bagShape.closePath();
+  const bagBody = new THREE.Mesh(new THREE.ExtrudeGeometry(bagShape, { depth: 0.85, bevelEnabled: true, bevelThickness: 0.12, bevelSize: 0.12, bevelSegments: 4 }), bagBlack);
+  bagBody.position.z = -0.545;
+  bagBody.castShadow = true;
+  bag.add(bagBody);
+  // straps — long loops down both sides
+  for (const side of [-1, 1]) {
+    const strap = mesh(new THREE.TorusGeometry(0.62, 0.05, 8, 22, Math.PI * 0.62), bagTrim, side * 0.5, 1.08, 0);
+    strap.rotation.y = Math.PI / 2;
+    strap.rotation.z = 1.15 + (side < 0 ? Math.PI : 0);
+    bag.add(strap);
+  }
+  // a grab handle on the crown
+  const grabHandle = mesh(new THREE.TorusGeometry(0.22, 0.05, 8, 16, Math.PI), bagTrim, 0, 1.72, 0);
   grabHandle.rotation.y = Math.PI / 2;
   bag.add(grabHandle);
-  // a quiet side seam — the only trim
-  bag.add(mesh(new THREE.BoxGeometry(0.05, 0.85, 0.05), bagTrim, -0.2, 0.72, 0.47));
-  // the edge of a paddle, hanging out of the top
-  const paddle = new THREE.Group();
-  paddle.add(mesh(new RoundedBoxGeometry(0.52, 0.68, 0.07, 3, 0.12), new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.45 }), 0, 0, 0));
-  paddle.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.5, 10), new THREE.MeshStandardMaterial({ color: "#141216", roughness: 0.6 }), 0, -0.52, 0));
-  paddle.position.set(0.3, 1.66, -0.02);
-  paddle.rotation.set(0.35, 0.55, -0.42);
-  bag.add(paddle);
   bag.position.set(-6.6, 0, -7.78); // upright, right against the window
   bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — a game waits inside"));
