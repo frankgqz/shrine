@@ -437,19 +437,19 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const bagTrim = new THREE.MeshStandardMaterial({ color: "#2c2c30", roughness: 0.5 });
   // the silhouette: a big bottom circle + a smaller top circle, their outside
   // tangents joined -> a soft rounded triangle. Extrude it -> a container.
-  const r1 = 0.58;   // bottom circle
-  const r2 = 0.3;    // top circle
-  const y1 = 0.62;
-  const y2 = 1.42;
+  const r1 = 0.52;   // bottom circle
+  const r2 = 0.28;   // top circle
+  const y1 = 0.58;
+  const y2 = 1.32;
   const phi = Math.asin((r1 - r2) / (y2 - y1)); // where the tangent lines touch
   const bagShape = new THREE.Shape();
   bagShape.moveTo(Math.cos(phi) * r1, y1 + Math.sin(phi) * r1);
   bagShape.absarc(0, y1, r1, phi, Math.PI - phi, true); // around the big bottom
   bagShape.lineTo(Math.cos(Math.PI - phi) * r2, y2 + Math.sin(Math.PI - phi) * r2);
-  bagShape.absarc(0, y2, r2, Math.PI - phi, phi, false); // over the small top
+  bagShape.absarc(0, y2, r2, Math.PI - phi, phi, true); // over the small top — CLOCKWISE (the short way over 90°)
   bagShape.closePath();
-  const bagBody = new THREE.Mesh(new THREE.ExtrudeGeometry(bagShape, { depth: 0.85, bevelEnabled: true, bevelThickness: 0.12, bevelSize: 0.12, bevelSegments: 4 }), bagBlack);
-  bagBody.position.z = -0.545;
+  const bagBody = new THREE.Mesh(new THREE.ExtrudeGeometry(bagShape, { depth: 0.52, bevelEnabled: true, bevelThickness: 0.1, bevelSize: 0.1, bevelSegments: 4 }), bagBlack);
+  bagBody.position.z = -0.36;
   bagBody.castShadow = true;
   bag.add(bagBody);
   // straps — long loops down both sides
@@ -460,7 +460,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     bag.add(strap);
   }
   // a grab handle on the crown
-  const grabHandle = mesh(new THREE.TorusGeometry(0.22, 0.05, 8, 16, Math.PI), bagTrim, 0, 1.72, 0);
+  const grabHandle = mesh(new THREE.TorusGeometry(0.22, 0.05, 8, 16, Math.PI), bagTrim, 0, 1.6, 0);
   grabHandle.rotation.y = Math.PI / 2;
   bag.add(grabHandle);
   bag.position.set(-6.6, 0, -7.78); // upright, right against the window
