@@ -487,10 +487,15 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bag.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(seamPts), 24, 0.017, 6, false), bagTrim));
   // the game inside: a paddle and a green ball — click the bag and they come out
   const bagPaddle = new THREE.Group();
-  bagPaddle.add(mesh(new RoundedBoxGeometry(0.52, 0.62, 0.06, 4, 0.18), new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.45 }), 0, 0.5, 0)); // the rounded black face
-  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.125, 0.075, 0.22, 12), new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.45 }), 0, 0.11, 0)); // the rounded throat
-  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.052, 0.048, 0.34, 10), new THREE.MeshStandardMaterial({ color: "#e8e4da", roughness: 0.6 }), 0, -0.16, 0)); // the WHITE grip
-  bagPaddle.add(mesh(new THREE.BoxGeometry(0.1, 0.02, 0.065), new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.5 }), 0, 0.62, 0.035)); // a small mark
+  const paddleFace = new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.45 });
+  bagPaddle.add(mesh(new RoundedBoxGeometry(0.5, 0.64, 0.055, 4, 0.15), paddleFace, 0, 0.5, 0)); // the tall rounded face
+  bagPaddle.add(mesh(new RoundedBoxGeometry(0.15, 0.17, 0.05, 3, 0.045), paddleFace, 0, 0.1, 0)); // the flat throat tab
+  const gripWhite = new THREE.MeshStandardMaterial({ color: "#e8e4da", roughness: 0.65 });
+  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.05, 0.047, 0.34, 12), gripWhite, 0, -0.16, 0)); // the white grip
+  for (let w = 0; w < 5; w++) {
+    bagPaddle.add(mesh(new THREE.CylinderGeometry(0.056, 0.056, 0.018, 12), new THREE.MeshStandardMaterial({ color: "#d8d2c4", roughness: 0.7 }), 0, -0.03 - w * 0.065, 0)); // the wrap ridges
+  }
+  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.058, 0.05, 0.05, 12), gripWhite, 0, -0.355, 0)); // the butt cap
   bagPaddle.position.set(0, 0.55, 0.02); // tucked deep inside
   bag.add(bagPaddle);
   const bagBall = new THREE.Group();

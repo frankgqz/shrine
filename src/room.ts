@@ -297,7 +297,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     [-8.1, 4.75, -9.75, 0.68], [-7.45, 1.05, -10.0, 1.3], [-7.3, 2.35, -10.15, 0.95],
   ] as Array<[number, number, number, number]>) {
     const r = rock(os, ["#8a8279", "#948c82", "#7d7770"][Math.floor(Math.random() * 3)]);
-    r.position.set(ox, oy, oz);
+    r.position.set(ox, oy, Math.min(oz, -8.95 - os * 0.85)); // never through the window
     r.rotation.set(Math.random() * 0.6, Math.random() * Math.PI, Math.random() * 0.6);
     r.castShadow = true;
     r.receiveShadow = true;
@@ -430,8 +430,9 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   for (let i = 0; i < 8; i++) {
     const pa = (i / 8) * Math.PI * 2;
     const pr = 1.42 + Math.random() * 0.35;
-    const rr = rock(0.42 + Math.random() * 0.32, "#8a8279");
-    rr.position.set(-8.55 + Math.cos(pa) * pr, 0.32, -9.9 + Math.sin(pa) * pr * 0.72);
+    const rs3 = 0.42 + Math.random() * 0.32;
+    const rr = rock(rs3, "#8a8279");
+    rr.position.set(-8.55 + Math.cos(pa) * pr, 0.32, Math.min(-9.9 + Math.sin(pa) * pr * 0.72, -9.1 - rs3 * 0.85)); // never through the window
     rr.rotation.set(Math.random() * 0.5, Math.random() * Math.PI, Math.random() * 0.5);
     rr.castShadow = true;
     scene.add(rr);
