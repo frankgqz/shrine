@@ -130,6 +130,8 @@ let lampOn = true; // click the ghee lamp
 let matRoll = 0; // yoga mat roll state (click to roll)
 let matRollTarget = 0;
 let cupFill = 0.5; // glass of water: 0.5 half (default) -> 0 -> 1 -> ...
+let bagOut = false; // click the bag — the game slides out
+let bagOutT = 0;
 let ventMode = 1; // 0 = still, 1 = warm (red), 2 = cool (blue) — cycled by the switch
 
 const elementNote: Record<ElementName, string> = {
@@ -198,6 +200,13 @@ canvas.addEventListener("click", () => {
   if (act === "open-gqz") {
     window.location.href = "https://gqz.app";
     labelEl.textContent = "gqz.app";
+    labelEl.style.opacity = "1";
+    window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
+    return;
+  }
+  if (act === "bag-game") {
+    bagOut = !bagOut;
+    labelEl.textContent = bagOut ? "the game comes out" : "the game goes away";
     labelEl.style.opacity = "1";
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
     return;
@@ -369,6 +378,22 @@ function animate(): void {
     const m = v.material as THREE.MeshBasicMaterial;
     m.opacity = 0.05 + i * 0.03 + Math.sin(t * 0.6 + i * 2.1) * 0.045 + Math.sin(t * 1.5 + i) * 0.025;
   });
+
+  // the paddle and ball slide out of the bag — two phases: rise, then settle
+  bagOutT += ((bagOut ? 1 : 0) - bagOutT) * 0.07;
+  if (bagOutT < 0.5) {
+    const seg = bagOutT * 2;
+    objects.bagPaddle.position.set(0.05, 0.85 + seg * 1.2, 0);
+    objects.bagPaddle.rotation.set(0, 0, 0);
+    objects.bagBall.position.set(0.05, 1.35 + seg * 0.55, 0.1 + seg * 0.1);
+    objects.bagBall.rotation.set(0, 0, 0);
+  } else {
+    const seg = (bagOutT - 0.5) * 2;
+    objects.bagPaddle.position.set(0.05 + seg * 0.8, 2.05 - seg * 1.43, seg * 0.28);
+    objects.bagPaddle.rotation.set(seg * 0.12, seg * -0.5, seg * -0.36);
+    objects.bagBall.position.set(0.35 + seg * 0.9, 1.9 - seg * 1.77, 0.2 + seg * 0.3);
+    objects.bagBall.rotation.set(seg * 2.2, seg * 1.4, 0);
+  }
 
   // the yoga mat rolls and unrolls
   matRoll += (matRollTarget - matRoll) * 0.08;
