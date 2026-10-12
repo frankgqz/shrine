@@ -437,7 +437,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const bagTrim = new THREE.MeshStandardMaterial({ color: "#2c2c30", roughness: 0.5 });
   // the silhouette: a big bottom circle + a smaller top circle, their outside
   // tangents joined -> a soft rounded triangle. Extrude it -> a container.
-  const r1 = 0.52;   // bottom circle
+  const r1 = 0.48;   // bottom circle
   const r2 = 0.28;   // top circle
   const y1 = 0.58;
   const y2 = 1.32;
@@ -448,18 +448,16 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bagShape.lineTo(Math.cos(Math.PI - phi) * r2, y2 + Math.sin(Math.PI - phi) * r2);
   bagShape.absarc(0, y2, r2, Math.PI - phi, phi, true); // over the small top — CLOCKWISE (the short way over 90°)
   bagShape.closePath();
-  const bagBody = new THREE.Mesh(new THREE.ExtrudeGeometry(bagShape, { depth: 0.52, bevelEnabled: true, bevelThickness: 0.1, bevelSize: 0.1, bevelSegments: 4 }), bagBlack);
-  bagBody.position.z = -0.36;
+  const bagBody = new THREE.Mesh(new THREE.ExtrudeGeometry(bagShape, { depth: 0.42, bevelEnabled: true, bevelThickness: 0.09, bevelSize: 0.09, bevelSegments: 4 }), bagBlack);
+  bagBody.position.z = -0.3;
   bagBody.castShadow = true;
   bag.add(bagBody);
-  // straps — long loops down both sides
+  // zips running ALONG the extrude, on both sides
   for (const side of [-1, 1]) {
-    const strap = mesh(new THREE.TorusGeometry(0.62, 0.05, 8, 22, Math.PI * 0.62), bagTrim, side * 0.5, 1.08, 0);
-    strap.rotation.y = Math.PI / 2;
-    strap.rotation.z = 1.15 + (side < 0 ? Math.PI : 0);
-    bag.add(strap);
+    bag.add(mesh(new THREE.BoxGeometry(0.055, 0.055, 0.6), bagTrim, side * 0.43, 0.86, 0));
+    bag.add(mesh(new THREE.BoxGeometry(0.09, 0.14, 0.05), bagTrim, side * 0.43, 0.8, 0.3)); // zip pulls
   }
-  // a grab handle on the crown
+  // a handle, in the middle
   const grabHandle = mesh(new THREE.TorusGeometry(0.22, 0.05, 8, 16, Math.PI), bagTrim, 0, 1.6, 0);
   grabHandle.rotation.y = Math.PI / 2;
   bag.add(grabHandle);
