@@ -379,9 +379,28 @@ function animate(): void {
   objects.heatCurves.forEach((s, i) => {
     const hm = s.material as THREE.MeshBasicMaterial;
     hm.color.set(ventColor);
-    const strobe = 0.5 + 0.5 * Math.sin(t * 2.2 - ((s.userData.phase as number) ?? 0));
+    const strobe = 0.5 + 0.5 * Math.sin(t * 1.7 - ((s.userData.phase as number) ?? 0));
     hm.opacity = ventOn ? 0.015 + strobe * 0.075 : 0; // 0 -> very very low
   });
+
+  const cloudM = scene.userData.cloudMat as THREE.MeshStandardMaterial | undefined;
+  if (cloudM) cloudM.opacity = 0.85 - nightMix * 0.62;
+
+  // gentle vertex ripple on the water bodies (not the lake)
+  const ripples = (scene.userData.ripples ?? []) as Array<{ mesh: THREE.Mesh; base: Float32Array; amp: number; freq: number; speed: number }>;
+  for (const rr of ripples) {
+    const pos = rr.mesh.geometry.attributes.position as THREE.BufferAttribute;
+    const arr = pos.array as Float32Array;
+    for (let vi = 0; vi < arr.length; vi += 3) {
+      const by = rr.base[vi + 1];
+      if (by > 0.01) {
+        const dx = rr.base[vi];
+        const dz = rr.base[vi + 2];
+        arr[vi + 1] = by + Math.sin(Math.sqrt(dx * dx + dz * dz) * rr.freq - t * rr.speed) * rr.amp;
+      }
+    }
+    pos.needsUpdate = true;
+  }
 
   // celestial life: sun sinks, moon + stars rise
   const starM = scene.userData.starMat as THREE.PointsMaterial | undefined;

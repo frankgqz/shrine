@@ -439,6 +439,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   const pool = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.11, 20), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.12, transparent: true, opacity: 0.6, emissive: "#1f6f9e", emissiveIntensity: 0.18 }));
   pool.position.set(-8.55, 0.28, -9.9);
   scene.add(pool);
+  (scene.userData.ripples ??= []).push({ mesh: pool, base: pool.geometry.attributes.position.array.slice(0) as Float32Array, amp: 0.035, freq: 2.4, speed: 1.6 });
 
   // more moss and shrubs around the climb
   for (let i = 0; i < 7; i++) {
@@ -461,6 +462,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     const pocket = new THREE.Mesh(new THREE.CylinderGeometry(cr, cr, 0.08, 14), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.12, transparent: true, opacity: 0.6, emissive: "#1f6f9e", emissiveIntensity: 0.18 }));
     pocket.position.set(cx, cy, cz);
     scene.add(pocket);
+    (scene.userData.ripples ??= []).push({ mesh: pocket, base: pocket.geometry.attributes.position.array.slice(0) as Float32Array, amp: 0.018, freq: 3.2, speed: 1.9 });
   }
 
   // a thin blue water layer where the rocks meet the soil (far 9 toward the corner)
@@ -515,6 +517,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   scene.add(lakeGlow);
 
   const cloudMat = new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 1, transparent: true, opacity: 0.85 });
+  scene.userData.cloudMat = cloudMat; // the night fade lives in main.ts
   for (let i = 0; i < 9; i++) {
     const cloud = new THREE.Group();
     for (let j = 0; j < 3; j++) {
