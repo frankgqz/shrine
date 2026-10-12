@@ -120,7 +120,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   computer.add(mesh(new THREE.BoxGeometry(0.14, 1.5, 0.14), metal, -1.2, 3.65, -1.25));
   // keyboard + mouse on its right (toward -Z from the sitter)
   computer.add(mesh(new THREE.BoxGeometry(0.78, 0.06, 1.9), metal, -0.35, 2.86, -0.4)); // keyboard
-  computer.add(mesh(new THREE.SphereGeometry(0.17, 10, 8), metal, -0.32, 2.95, -1.75)); // mouse
+  const deskMouse = mesh(new THREE.SphereGeometry(0.17, 10, 8), metal, -0.32, 2.95, -1.75); // the mouse
+  deskMouse.scale.set(0.92, 0.42, 1.35);
+  computer.add(deskMouse);
   computer.position.set(-8.8, 0, 4.6);
   scene.add(tag(computer, "space", "the computer — two windows into the world"));
 
@@ -506,11 +508,11 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const pianoTrim = new THREE.MeshStandardMaterial({ color: "#2a282e", roughness: 0.45 });
   const pianoSilver = new THREE.MeshStandardMaterial({ color: "#8a8a92", roughness: 0.35, metalness: 0.6 });
   for (const sx2 of [-0.58, 0.58]) {
-    const topBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.36, 12), pianoTrim, sx2, 0.62, 0.05); // holds the diagonal's top (z 0.2)
+    const topBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.36, 12), pianoTrim, sx2, 0.62, -0.13); // the top of the Z, toward the window
     topBar.rotation.x = Math.PI / 2;
     piano.add(topBar);
-    const diag = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.66, 12), pianoTrim, sx2, 0.33, 0.01); // top (0.6, 0.2) -> bottom (0.06, -0.18)
-    diag.rotation.x = 0.61;
+    const diag = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.56, 12), pianoTrim, sx2, 0.33, -0.1); // thin letter: top (0.6, -0.02) -> bottom (0.06, -0.18)
+    diag.rotation.x = 0.288;
     piano.add(diag);
     const footBar = mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.55, 12), pianoTrim, sx2, 0.05, -0.16); // catches the diagonal's bottom — toward the window
     footBar.rotation.x = Math.PI / 2;
@@ -520,7 +522,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       wheel.rotation.z = Math.PI / 2;
       piano.add(wheel);
     }
-    for (const [kz2, ky2] of [[0.19, 0.58], [-0.16, 0.1]] as Array<[number, number]>) {
+    for (const [kz2, ky2] of [[-0.03, 0.58], [-0.17, 0.1]] as Array<[number, number]>) {
       const knob = mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.03, 12), pianoSilver, sx2, ky2, kz2); // knobs AT the joints
       knob.rotation.x = Math.PI / 2;
       piano.add(knob);
@@ -550,9 +552,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     piano.add(mesh(new THREE.BoxGeometry(0.035, 0.02, 0.06), pianoSilver, -0.055 + pd * 0.055, 0.062, -0.1));
   }
   // a simple stool
-  piano.add(mesh(new RoundedBoxGeometry(0.5, 0.07, 0.26, 3, 0.02), pianoTrim, 0, 0.37, 0.36));
+  piano.add(mesh(new RoundedBoxGeometry(0.5, 0.07, 0.26, 3, 0.02), pianoTrim, 0, 0.37, 0.26));
   for (const bx of [-0.19, 0.19]) {
-    for (const bz of [0.26, 0.46]) {
+    for (const bz of [0.16, 0.36]) {
       piano.add(mesh(new THREE.BoxGeometry(0.05, 0.37, 0.05), pianoTrim, bx, 0.185, bz));
     }
   }
@@ -646,7 +648,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bagBall.add(mesh(new THREE.SphereGeometry(0.3, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0, 0)); // hit target
   bagBall.position.set(0, 0.95, 0.02); // deep inside — invisible when packed
   bag.add(bagBall);
-  bag.position.set(-8.0, 0, -6.88); // under the Z-stand, a touch more out
+  bag.position.set(-8.0, 0, -7.25); // resting at the window, under the Z
   bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — click to take out the game"));
   bag.traverse((c) => (c.userData.action = "bag-game")); // AFTER the tag — tag() replaces userData
