@@ -211,27 +211,6 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     pot.rotation.y = prot; // leaves turned off the projection
     scene.add(tag(pot, "earth", "indoor plant — breathing beside the screen"));
   }
-
-  // a patch of grass near the bookshelf
-  const shelfGrass = mesh(new THREE.SphereGeometry(0.58, 10, 8), new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 }), 9.5, 0.1, -2.15);
-  shelfGrass.scale.y = 0.22;
-  scene.add(shelfGrass);
-  for (let g = 0; g < 8; g++) {
-    const blade = mesh(new THREE.ConeGeometry(0.09 + Math.random() * 0.05, 0.5 + Math.random() * 0.35, 5), new THREE.MeshStandardMaterial({ color: g % 2 ? "#5d7a3a" : "#6d8a45", roughness: 1 }), 9.5 + (Math.random() - 0.5) * 0.85, 0.3, -2.15 + (Math.random() - 0.5) * 0.85);
-    blade.rotation.set((Math.random() - 0.5) * 0.4, Math.random() * Math.PI, (Math.random() - 0.5) * 0.4);
-    scene.add(blade);
-  }
-
-  // a second grass patch in the wedge between bookshelf and sofa
-  const wedgeGrass = mesh(new THREE.SphereGeometry(0.45, 10, 8), new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 }), 8.5, 0.1, -1.95);
-  wedgeGrass.scale.y = 0.22;
-  scene.add(wedgeGrass);
-  for (let g = 0; g < 6; g++) {
-    const blade = mesh(new THREE.ConeGeometry(0.08 + Math.random() * 0.05, 0.42 + Math.random() * 0.3, 5), new THREE.MeshStandardMaterial({ color: g % 2 ? "#5d7a3a" : "#6d8a45", roughness: 1 }), 8.5 + (Math.random() - 0.5) * 0.7, 0.28, -1.95 + (Math.random() - 0.5) * 0.7);
-    blade.rotation.set((Math.random() - 0.5) * 0.4, Math.random() * Math.PI, (Math.random() - 0.5) * 0.4);
-    scene.add(blade);
-  }
-
   // ============ WALL SHELVES above the couch (empty for now) ============
   for (const [wy, wz] of [[3.4, 3.6], [4.8, 4.4]]) {
     const sz = wz + 0.14; // 10% shorter from the picture side — the far end stays
@@ -341,18 +320,20 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // books lying flat on the very bottom (feet) shelf
   for (const [bz, n] of [[-1.3, 3], [-0.72, 2], [1.18, 2]] as Array<[number, number]>) {
     for (let b = 0; b < n; b++) {
-      shelf.add(mesh(
+      const bk = mesh(
         new THREE.BoxGeometry(0.42, 0.14 + Math.random() * 0.08, 0.55),
         new THREE.MeshStandardMaterial({ color: ["#8a4b32", "#4b6a82", "#7a6a3c", "#5c4a66", "#9c6b45"][b % 5], roughness: 0.85 }),
-        0.05, 0.28 + b * 0.2, bz
-      ));
+        0.05 + (Math.random() - 0.5) * 0.14, 0.28 + b * 0.2, bz + (Math.random() - 0.5) * 0.2
+      );
+      bk.rotation.y = (Math.random() - 0.5) * 0.55; // staggered
+      shelf.add(bk);
     }
   }
   // ---- the pooja collection (consecrated objects) ----
   const brassSoft = new THREE.MeshStandardMaterial({ color: "#d9a94f", roughness: 0.45, metalness: 0.55 });
   // crystals
-  for (const [cy, cz, cs, col] of [[4.21, 1.42, 0.24, "#b58ce0"], [4.11, 1.22, 0.18, "#8ce0d4"], [4.14, 1.52, 0.2, "#e0c98c"]] as Array<[number, number, number, string]>) {
-    const crystal = mesh(new THREE.IcosahedronGeometry(cs, 0), new THREE.MeshStandardMaterial({ color: col, roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85 }), 0.35, cy, cz);
+  for (const [cy, cz, cs, col] of [[2.76, -1.15, 0.24, "#b58ce0"], [2.66, -0.75, 0.18, "#8ce0d4"], [2.69, -0.35, 0.2, "#e0c98c"]] as Array<[number, number, number, string]>) {
+    const crystal = mesh(new THREE.IcosahedronGeometry(cs, 0), new THREE.MeshStandardMaterial({ color: col, roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85 }), 0.3, cy, cz);
     crystal.scale.y = 1.7;
     shelf.add(crystal);
   }
@@ -746,9 +727,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       const mote = mesh(new THREE.SphereGeometry(0.075, 8, 6), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }), vx + (Math.random() - 0.5) * 1.15, 0.5, vz + (Math.random() - 0.5) * 1.15);
       mote.userData.phase = Math.random();
       mote.userData.drift = 1.5 + Math.random() * 1.0;
-      mote.userData.baseX = mote.position.x;
-      mote.userData.baseZ = mote.position.z;
       scene.add(tag(mote, "air", "heat motes — the breath of the stones"));
+      mote.userData.baseX = mote.position.x; // AFTER the tag — tag() replaces userData
+      mote.userData.baseZ = mote.position.z;
       heatMotes.push(mote);
     }
 

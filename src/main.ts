@@ -398,7 +398,7 @@ function animate(): void {
     // a slightly squiggly path up
     mo.position.x = ((mo.userData.baseX as number) ?? 0) + Math.sin(t * 2.1 + ph * 12) * 0.16;
     mo.position.z = ((mo.userData.baseZ as number) ?? 0) + Math.sin(t * 1.7 + ph * 9) * 0.13;
-    mm.opacity = ventOn ? Math.sin(Math.PI * cyc) * 0.17 : 0;
+    mm.opacity = ventOn ? Math.sin(Math.PI * cyc) * 0.11 : 0;
     mo.scale.setScalar(0.7 + cyc * 1.5);
   });
 
