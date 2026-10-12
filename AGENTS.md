@@ -80,15 +80,28 @@ in code comments (e.g. "lantern at top-5").
 - Keys: G slot grid, L day/night, 1/2/3 composed views.
 - Everything else: hover shows the element label.
 
+- The pickleball bag: click slides out the paddle + green ball (two-phase);
+  the BALL then goes to pickleball.gqz.app (gated — while packed, clicking
+  the ball opens the bag instead). The piano: click = a chord label. The
+  painting: click = gqz.app. BOTH outward links show a centered Go/Stay
+  popover first (askNavigate in main.ts).
+- Yoga mat: click rolls it up (toward the desk side). Glass of water: click
+  cycles half/empty/full.
+
 ## Scene map (2026-10-12, fast)
 Desk zone left wall (dual monitors w/ calm VS-Code code, luxury chair, ghee
-lamp, speakers, subwoofer, plants), projector wall left (screen + UST),
-white fluffy L-sofa right/close + rug + fountain table, bookshelf on the
+lamp, speakers, subwoofer, plants), projector wall left (screen + UST).
+PIANO CORNER at the left windows: a digital piano on a thin Z-stand (88-key
+scale, full keys + cheeks, pedals at the window, simple stool) with the
+PICKLEBALL BAG resting under it at the glass — paddle + ball inside, click
+the bag and the game slides out. Yoga mat toward the bookshelf.
+White fluffy L-sofa right/close + rug + fountain table, bookshelf on the
 right wall (open frame, portal bay = faint breathing circles, pooja items),
-balcony: wooden deck at the fire (semicircle seats), rock climb at far
-left with a water sheet + pool + catchments + moss/shrubs, trees + bushy
-grass + hanging herb planter, railing posts aligned to the glass mullions,
-distant world = sun, twin ranges w/ snow, lake, clouds, stars.
+the FIVE-ELEMENTS painting on the right wall (house at a random spot each
+load), balcony: wooden deck at the fire (semicircle seats), rock climb at
+far left with a water sheet + pool + catchments + moss/shrubs, trees +
+bushy grass + hanging herb planter, railing posts aligned to the glass
+mullions, distant world = sun, twin ranges w/ snow, lake, clouds, stars.
 
 ## Rendering lessons (photo-discovered — do not re-learn)
 - Textured alpha-map planes (radial-gradient puffs) DID NOT RENDER here;
@@ -105,6 +118,9 @@ distant world = sun, twin ranges w/ snow, lake, clouds, stars.
   there. (Bitten twice.)
 - BoxGeometry's long axis is X; `lookAt` aligns -Z — swap dims for
   rail/beam runs (a rail top ended up crosswise = overhanging plank).
+- Cylinders run along Y — ROTATE them for horizontal runs. A piano brace
+  stood up like a mystery pole through the keyboard (same class of bug as
+  the crosswise rail).
 - Rocks: Dodecahedron detail 0 + wide jitter = crystal shards; detail 1 +
   mild jitter = boulders. Granite colors #8a8279/#948c82/#7d7770.
 - Sofa cushions: check which dimension splits along the run — a swapped
@@ -116,17 +132,11 @@ distant world = sun, twin ranges w/ snow, lake, clouds, stars.
 - Random-scatter placement needs explicit clamps per concern: window line,
   fire clearance, deck footprint (rocks violated all three at some point).
 
-## Current open threads (2026-10-12)
--> Song in public/audio/ = a commercial remix; Frank's call: push, or
-   gitignore + CC-licensed stand-in for the live site.
+## Current open threads (2026-10-13)
+-> Song in public/audio/ = a commercial remix; pushed publicly — Frank's
+   call, effectively accepted (DMCA exposure noted once).
 -> Flowing water v2 (the waterfall is parked): method proven = draped
-   displaced sheet + scrolling canvas texture (the sheet over the rocks
-   uses it now).
--> gqz Shrine card (0d14f01) committed; push deploys gqz.app (Frank's).
-
-## Bringing in models (2026-10-12)
-`src/loader.ts` = the door: `loadModel(scene, "chair.glb", { position, scale,
-element, label })` with the file in `public/models/`. CC0 packs (no
-attribution): Kenney.nl, Quaternius, Poly Haven. Bespoke ritual pieces stay
-procedural; models are for furniture/plants/clutter.
-
+   displaced sheet + scrolling canvas texture.
+-> Vercel git builds lagged 2026-10-13: escape hatch = `npx vercel deploy
+   --prod` from the project folder (bypasses the webhook). Theme font =
+   Bellota; bubble = Shantell Sans (theme/AGENTS.md has the walk).
