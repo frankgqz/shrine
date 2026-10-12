@@ -233,7 +233,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
 
   // ============ WALL SHELVES above the couch (empty for now) ============
-  for (const [wy, wz] of [[3.95, 4.9], [5.35, 6.6]]) {
+  for (const [wy, wz] of [[3.4, 3.6], [4.8, 5.3]]) {
     const plank = mesh(new THREE.BoxGeometry(0.42, 0.12, 2.8), wood, 10.05, wy, wz);
     scene.add(tag(plank, "space", "a wall shelf — waiting"));
     for (const bz of [wz - 1.25, wz + 1.25]) {
@@ -249,7 +249,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     vase.add(mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.32, 5), new THREE.MeshStandardMaterial({ color: "#5d7a3a", roughness: 0.9 }), Math.sin(fang) * 0.05, 0.42, Math.cos(fang) * 0.05));
     vase.add(mesh(new THREE.SphereGeometry(0.055, 6, 5), new THREE.MeshStandardMaterial({ color: ["#e8a0b4", "#f2d27a", "#c98fbf", "#e88a7a", "#f0e6c8"][f], roughness: 0.85 }), Math.sin(fang) * 0.14, 0.62, Math.cos(fang) * 0.14));
   }
-  vase.position.set(10.05, 4.01, 5.6);
+  vase.position.set(10.05, 3.46, 4.3);
   scene.add(tag(vase, "earth", "flowers on the shelf — a small bright hello"));
 
   // ============ A PAINTING on the right wall (a warm dusk) ============
@@ -285,7 +285,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const canvasPlane = mesh(new THREE.PlaneGeometry(3.5, 2.6), new THREE.MeshStandardMaterial({ map: paintingTex, roughness: 0.8 }), -0.08, 0, 0);
   canvasPlane.rotation.y = -Math.PI / 2;
   painting.add(canvasPlane);
-  painting.position.set(10.22, 6.15, 1.3);
+  painting.position.set(10.22, 5.6, 0.15);
   scene.add(tag(painting, "space", "the painting — a warm dusk held on cloth"));
 
   // ============ BOOKSHELF — right wall, between the glass and the couch ============
@@ -418,9 +418,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const gheeLamp = new THREE.Group();
   gheeLamp.add(mesh(new THREE.CylinderGeometry(0.34, 0.46, 0.22, 14), brass, 0, 0.11, 0));
   gheeLamp.add(mesh(new THREE.CylinderGeometry(0.26, 0.3, 0.12, 12), new THREE.MeshStandardMaterial({ color: "#f2e0b8", roughness: 0.4 }), 0, 0.24, 0));
-  const wickFlame = mesh(new THREE.ConeGeometry(0.1, 0.34, 7), new THREE.MeshStandardMaterial({ color: "#ffb03a", emissive: "#ff9420", emissiveIntensity: 1.7 }), 0, 0.52, 0);
+  const wickFlame = mesh(new THREE.ConeGeometry(0.1, 0.34, 7), new THREE.MeshStandardMaterial({ color: "#ff8a22", emissive: "#ff6a08", emissiveIntensity: 1.7 }), 0, 0.52, 0);
   gheeLamp.add(wickFlame);
-  const wickGlow = mesh(new THREE.ConeGeometry(0.22, 0.52, 8, 1, true), new THREE.MeshBasicMaterial({ color: "#ff9a3a", transparent: true, opacity: 0.28, depthWrite: false, side: THREE.FrontSide, blending: THREE.AdditiveBlending }), 0, 0.58, 0);
+  const wickGlow = mesh(new THREE.ConeGeometry(0.22, 0.52, 8, 1, true), new THREE.MeshBasicMaterial({ color: "#ff7a18", transparent: true, opacity: 0.28, depthWrite: false, side: THREE.FrontSide, blending: THREE.AdditiveBlending }), 0, 0.58, 0);
   gheeLamp.add(wickGlow);
   const lampHit = mesh(new THREE.SphereGeometry(0.55, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0.45, 0);
   gheeLamp.add(lampHit);
@@ -494,10 +494,11 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // proper armrests at the two outer ends
   couch.add(mesh(new THREE.BoxGeometry(1.75, 1.25, 0.7), fluffy, 7.22, 1.58, -1.45)); // arm at the new far end
   // a head cushion at the corner end of the right run
-  const headCushion = new THREE.Mesh(new RoundedBoxGeometry(0.45, 0.62, 1.15, 4, 0.16), fluffy);
-  headCushion.position.set(8.35, 2.62, 4.7);
-  headCushion.rotation.x = -0.18;
+  const headCushion = new THREE.Mesh(new RoundedBoxGeometry(0.42, 1.05, 1.25, 4, 0.15), fluffy);
+  headCushion.position.set(8.3, 2.12, 4.62);
+  headCushion.rotation.x = -0.14;
   headCushion.castShadow = true;
+  headCushion.receiveShadow = true;
   couch.add(headCushion);
   couch.add(mesh(new THREE.BoxGeometry(0.7, 1.25, 1.95), fluffy, 0.05, 1.58, 5.5));
   // throw cushions — RELAXED on the seat, leaning into the backrest
@@ -515,6 +516,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     couch.add(throwCushion);
   }
   couch.position.set(0, 0, 0);
+  couch.scale.setScalar(1.05); // a small overall enlargement
+  couch.position.set(-0.285, -0.068, -0.143); // grown about the couch's own center
   scene.add(tag(couch, "air", "the white couch — soft, close, and deep"));
 
   // ============ COFFEE TABLE (bottom-5) ============
@@ -745,7 +748,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   nightSwitch.add(mesh(new THREE.BoxGeometry(0.5, 1.4, 1.0), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0, 0.15));
   const nightLever = mesh(new THREE.BoxGeometry(0.14, 0.34, 0.16), new THREE.MeshStandardMaterial({ color: "#f2efe8", roughness: 0.5 }), -0.09, 0.06, 0);
   nightSwitch.add(nightLever);
-  nightSwitch.position.set(10.18, 7.15, 6.9);
+  nightSwitch.position.set(10.18, 6.15, 6.9);
   nightSwitch.traverse((c) => {
     c.userData = { ...c.userData, element: "space", label: "the day/night switch — click to turn the sky", action: "toggle-night" };
   });
