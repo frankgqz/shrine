@@ -48,7 +48,6 @@ export interface SceneObjects {
   waterWheel: THREE.Group;
   lampFlame: THREE.Mesh;
   lampGlow: THREE.Mesh;
-  heatCurves: THREE.Mesh[];
   heatMotes: THREE.Mesh[];
   yogaMat: THREE.Mesh;
   matRollCyl: THREE.Mesh;
@@ -681,7 +680,6 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const floorLights: THREE.PointLight[] = [];
   const ventFins: THREE.Mesh[] = [];
   const steamBeams: THREE.Mesh[] = [];
-  const heatCurves: THREE.Mesh[] = [];
   const heatMotes: THREE.Mesh[] = [];
   // a soft cloud puff texture — this is what makes steam look like steam
   const steamCanvas = document.createElement("canvas");
@@ -743,26 +741,13 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       steamBeams.push(beam);
     }
 
-    // ♨️ heat squiggles — the breath materializes bottom -> mid -> top -> rests
-    for (let hc = 0; hc < 3; hc++) {
-      for (let seg = 0; seg < 4; seg++) {
-        const hpts: THREE.Vector3[] = [];
-        for (let k = seg * 2; k <= seg * 2 + 2; k++) {
-          hpts.push(new THREE.Vector3(Math.sin(k * 1.15 + hc * 1.7) * 0.18, k * 0.22, 0));
-        }
-        const hcurve = new THREE.CatmullRomCurve3(hpts);
-        const squiggle = new THREE.Mesh(new THREE.TubeGeometry(hcurve, 10, 0.03, 6, false), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }));
-        squiggle.position.set(vx + (hc - 1) * 0.42, 0.32 + hc * 0.2, vz + (hc % 2 ? 0.16 : -0.16));
-        squiggle.userData.phase = seg * 1.9 + hc * 0.22; // the wave climbs the curve — slow enough to see
-        squiggle.userData.segIdx = seg;
-        scene.add(tag(squiggle, "air", "heat — the breath of the stones"));
-        heatCurves.push(squiggle);
-      }
-    }
+    // ♨️ heat bubbles — rising, swaying, fading at the top
     for (let hm2 = 0; hm2 < 3; hm2++) {
-      const mote = mesh(new THREE.SphereGeometry(0.075, 8, 6), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }), vx + (Math.random() - 0.5) * 0.5, 0.5, vz + (Math.random() - 0.5) * 0.5);
+      const mote = mesh(new THREE.SphereGeometry(0.075, 8, 6), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }), vx + (Math.random() - 0.5) * 1.15, 0.5, vz + (Math.random() - 0.5) * 1.15);
       mote.userData.phase = Math.random();
       mote.userData.drift = 1.5 + Math.random() * 1.0;
+      mote.userData.baseX = mote.position.x;
+      mote.userData.baseZ = mote.position.z;
       scene.add(tag(mote, "air", "heat motes — the breath of the stones"));
       heatMotes.push(mote);
     }
@@ -970,5 +955,5 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   matRollCyl.scale.setScalar(0.015);
   scene.add(matRollCyl);
 
-  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams, waterWheel, lampFlame: wickFlame, lampGlow: wickGlow, heatCurves, heatMotes, yogaMat, matRollCyl, cupWater };
+  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams, waterWheel, lampFlame: wickFlame, lampGlow: wickGlow, heatMotes, yogaMat, matRollCyl, cupWater };
 }

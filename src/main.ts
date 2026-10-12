@@ -382,16 +382,6 @@ function animate(): void {
   objects.cupWater.scale.y = Math.max(0.01, cupFill * 2);
   objects.cupWater.position.y = 0.03 + cupFill * 0.39;
 
-  // ♨️ heat squiggles strobe bottom-up when the air breathes
-  objects.heatCurves.forEach((s, i) => {
-    const hm = s.material as THREE.MeshBasicMaterial;
-    hm.color.set(ventColor);
-    const strobe = 0.5 + 0.5 * Math.sin(t * 1.7 - ((s.userData.phase as number) ?? 0));
-    const rise = 0.35 + (((s.userData.segIdx as number) ?? 3) as number) * 0.22; // low -> high
-    hm.opacity = ventOn ? 0.028 * rise : 0; // hold low — no more whole-squiggle pulse
-    s.scale.y = 1 + strobe * 0.16; // motion instead of blinking // 0 -> very very low
-  });
-
   const shimmerT = scene.userData.shimmerTex as THREE.CanvasTexture | undefined;
   if (shimmerT) shimmerT.offset.set(t * 0.012, t * 0.021);
 
@@ -402,8 +392,12 @@ function animate(): void {
   objects.heatMotes.forEach((mo) => {
     const mm = mo.material as THREE.MeshBasicMaterial;
     mm.color.set(ventColor);
-    const cyc = (t * 0.3 + ((mo.userData.phase as number) ?? 0)) % 1;
+    const ph = (mo.userData.phase as number) ?? 0;
+    const cyc = (t * 0.3 + ph) % 1;
     mo.position.y = 0.45 + cyc * ((mo.userData.drift as number) ?? 1.6);
+    // a slightly squiggly path up
+    mo.position.x = ((mo.userData.baseX as number) ?? 0) + Math.sin(t * 2.1 + ph * 12) * 0.16;
+    mo.position.z = ((mo.userData.baseZ as number) ?? 0) + Math.sin(t * 1.7 + ph * 9) * 0.13;
     mm.opacity = ventOn ? Math.sin(Math.PI * cyc) * 0.17 : 0;
     mo.scale.setScalar(0.7 + cyc * 1.5);
   });
