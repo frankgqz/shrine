@@ -539,7 +539,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     piano.add(mesh(new THREE.BoxGeometry(0.055, 0.44, 0.055), pianoTrim, bx, 0.22, 0.62));
     piano.add(mesh(new THREE.BoxGeometry(0.055, 0.44, 0.055), pianoTrim, bx, 0.22, 0.82));
   }
-  piano.position.set(-7.1, 0, -7.85);
+  piano.scale.setScalar(2.5); // real 88-key scale, not a toy
+  piano.position.set(-7.2, 0, -7.75);
   scene.add(tag(piano, "space", "the digital piano — a chord by the window"));
   piano.traverse((c) => (c.userData.action = "play-piano")); // AFTER the tag
 
@@ -628,7 +629,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bagBall.add(mesh(new THREE.SphereGeometry(0.3, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0, 0)); // hit target
   bagBall.position.set(0, 0.95, 0.02); // deep inside — invisible when packed
   bag.add(bagBall);
-  bag.position.set(-8.65, 0, -7.55); // upright, right against the window — very close to the pot
+  bag.position.set(-7.5, 0, -7.3); // under the piano Z-stand
   bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — click to take out the game"));
   bag.traverse((c) => (c.userData.action = "bag-game")); // AFTER the tag — tag() replaces userData
@@ -1128,13 +1129,13 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // bookshelf pooja items first. Restore here when he says the word.)
 
   const yogaMat = mesh(
-    new THREE.BoxGeometry(8.8, 0.07, 3.0),
+    new THREE.BoxGeometry(8.0, 0.07, 2.75),
     new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.9 }),
     0, 0.06, -6.05
   );
   scene.add(tag(yogaMat, "space", "the yoga mat — click to roll it up"));
   yogaMat.traverse((c) => (c.userData.action = "roll-mat")); // after the tag — tag() replaces userData
-  const matRollCyl = mesh(new THREE.CylinderGeometry(1, 1, 3.0, 14), new THREE.MeshStandardMaterial({ color: "#a84f38", roughness: 0.9 }), -4.4, 0.1, -6.05);
+  const matRollCyl = mesh(new THREE.CylinderGeometry(1, 1, 2.75, 14), new THREE.MeshStandardMaterial({ color: "#a84f38", roughness: 0.9 }), -4.0, 0.1, -6.05);
   matRollCyl.rotation.x = Math.PI / 2;
   matRollCyl.scale.setScalar(0.015);
   scene.add(matRollCyl);

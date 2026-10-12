@@ -439,12 +439,12 @@ function animate(): void {
 
   // the yoga mat rolls and unrolls
   matRoll += (matRollTarget - matRoll) * 0.08;
-  const MAT_X = -1.0; // a little closer to the left wall
+  const MAT_X = 1.6; // closer to the bookshelf
   const rollR = 0.015 + matRoll * 0.34;
   objects.matRollCyl.scale.set(rollR, 1, rollR);
-  objects.matRollCyl.position.set(MAT_X + 4.4 - matRoll * 8.8, 0.1 + rollR, -6.05); // rolls away from the bookshelf, clear of the door
+  objects.matRollCyl.position.set(MAT_X + 4.0 - matRoll * 8.0, 0.1 + rollR, -6.05); // rolls away from the bookshelf, clear of the door
   objects.yogaMat.scale.x = Math.max(0.02, 1 - matRoll);
-  objects.yogaMat.position.x = MAT_X - 4.4 * matRoll;
+  objects.yogaMat.position.x = MAT_X - 4.0 * matRoll;
 
   // the glass of water: half, empty or full
   objects.cupWater.scale.y = Math.max(0.01, cupFill * 2);
