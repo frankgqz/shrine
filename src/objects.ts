@@ -500,6 +500,31 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   shelf.position.set(9.5, 0, -4.5);
   scene.add(tag(shelf, "space", "the bookshelf — quiet company between glass and couch"));
 
+  // ============ DIGITAL PIANO — against the left windows, playing toward the lake ============
+  const piano = new THREE.Group();
+  const pianoBlack = new THREE.MeshStandardMaterial({ color: "#17161a", roughness: 0.35, metalness: 0.2 });
+  const pianoTrim = new THREE.MeshStandardMaterial({ color: "#2a282e", roughness: 0.5 });
+  piano.add(mesh(new RoundedBoxGeometry(1.35, 0.26, 0.42, 3, 0.04), pianoBlack, 0, 0.74, 0)); // the keyboard housing
+  piano.add(mesh(new RoundedBoxGeometry(1.35, 0.9, 0.09, 3, 0.03), pianoBlack, 0, 1.22, -0.17)); // the back panel
+  for (const lx of [-0.62, 0.62]) {
+    piano.add(mesh(new THREE.BoxGeometry(0.07, 0.72, 0.36), pianoTrim, lx, 0.36, -0.02));
+  }
+  piano.add(mesh(new THREE.BoxGeometry(1.22, 0.045, 0.16), new THREE.MeshStandardMaterial({ color: "#f2efe8", roughness: 0.4 }), 0, 0.89, 0.13)); // the white keys
+  const blackKeyMat = new THREE.MeshStandardMaterial({ color: "#141216", roughness: 0.35 });
+  for (let k = 0; k < 15; k++) {
+    piano.add(mesh(new THREE.BoxGeometry(0.032, 0.04, 0.09), blackKeyMat, -0.56 + k * 0.08, 0.925, 0.075));
+  }
+  piano.add(mesh(new THREE.BoxGeometry(0.72, 0.34, 0.03), pianoTrim, 0, 1.42, -0.13)); // the music rest
+  piano.add(mesh(new THREE.BoxGeometry(0.5, 0.02, 0.08), new THREE.MeshStandardMaterial({ color: "#3a3840", roughness: 0.4 }), -0.36, 0.885, 0.24)); // controls
+  piano.add(mesh(new RoundedBoxGeometry(0.52, 0.09, 0.32, 3, 0.03), pianoTrim, 0, 0.46, 0.72)); // the bench
+  for (const bx of [-0.2, 0.2]) {
+    piano.add(mesh(new THREE.BoxGeometry(0.055, 0.44, 0.055), pianoTrim, bx, 0.22, 0.62));
+    piano.add(mesh(new THREE.BoxGeometry(0.055, 0.44, 0.055), pianoTrim, bx, 0.22, 0.82));
+  }
+  piano.position.set(-7.1, 0, -7.85); // against the glass, between the bag and the mat
+  scene.add(tag(piano, "space", "the digital piano — a chord by the window"));
+  piano.traverse((c) => (c.userData.action = "play-piano")); // AFTER the tag
+
   // ============ PICKLEBALL BAG — circle below, circle above, outsides joined ============
   const bag = new THREE.Group();
   const bagBlack = new THREE.MeshStandardMaterial({ color: "#1d1d20", roughness: 0.62 });
@@ -1087,11 +1112,11 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const yogaMat = mesh(
     new THREE.BoxGeometry(8.8, 0.07, 3.0),
     new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.9 }),
-    0, 0.06, -6.4
+    0, 0.06, -6.05
   );
   scene.add(tag(yogaMat, "space", "the yoga mat — click to roll it up"));
   yogaMat.traverse((c) => (c.userData.action = "roll-mat")); // after the tag — tag() replaces userData
-  const matRollCyl = mesh(new THREE.CylinderGeometry(1, 1, 3.0, 14), new THREE.MeshStandardMaterial({ color: "#a84f38", roughness: 0.9 }), -4.4, 0.1, -6.4);
+  const matRollCyl = mesh(new THREE.CylinderGeometry(1, 1, 3.0, 14), new THREE.MeshStandardMaterial({ color: "#a84f38", roughness: 0.9 }), -4.4, 0.1, -6.05);
   matRollCyl.rotation.x = Math.PI / 2;
   matRollCyl.scale.setScalar(0.015);
   scene.add(matRollCyl);
