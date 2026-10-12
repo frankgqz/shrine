@@ -453,28 +453,34 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bagBody.castShadow = true;
   bag.add(bagBody);
   // the main zip follows the silhouette EDGE all the way round (like the real bag)
+  // it rides the bevel curve: the outline at z 0.14 (the flat face is at 0.21, the edge turns at 0.12)
   const zipEdge: THREE.Vector3[] = [];
   for (const pt of bagShape.getPoints(64)) {
-    zipEdge.push(new THREE.Vector3(pt.x * 0.96, 0.95 + (pt.y - 0.95) * 0.97, 0.29));
+    zipEdge.push(new THREE.Vector3(pt.x, pt.y, 0.14));
   }
-  bag.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(zipEdge, true), 90, 0.024, 6, true), bagTrim));
+  bag.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(zipEdge, true), 90, 0.026, 6, true), bagTrim));
   // two sliders near the top of the zip
-  for (const sxx of [-0.1, 0.14]) {
-    bag.add(mesh(new THREE.BoxGeometry(0.05, 0.13, 0.05), bagTrim, sxx, 1.52, 0.31));
+  for (const sxx of [-0.1, 0.13]) {
+    bag.add(mesh(new THREE.BoxGeometry(0.05, 0.13, 0.05), bagTrim, sxx, 1.48, 0.16));
+  }
+  // side detail — a short side zip + pull on each flank
+  for (const side of [-1, 1]) {
+    bag.add(mesh(new THREE.BoxGeometry(0.045, 0.46, 0.045), bagTrim, side * 0.475, 0.66, 0));
+    bag.add(mesh(new THREE.BoxGeometry(0.06, 0.11, 0.04), bagTrim, side * 0.475, 0.42, 0));
   }
   // the flat webbing handle on the crown
   for (const hx of [-0.13, 0.13]) {
     bag.add(mesh(new THREE.BoxGeometry(0.09, 0.26, 0.05), bagTrim, hx, 1.66, 0));
   }
   bag.add(mesh(new THREE.BoxGeometry(0.38, 0.08, 0.055), bagTrim, 0, 1.79, 0)); // the grip
-  // a label tab on the upper face
-  bag.add(mesh(new RoundedBoxGeometry(0.3, 0.12, 0.05, 3, 0.025), bagTrim, 0.13, 1.18, 0.3));
-  // the diagonal front seam
+  // a label tab ON the face (the flat face sits at z 0.21)
+  bag.add(mesh(new RoundedBoxGeometry(0.3, 0.12, 0.05, 3, 0.025), bagTrim, 0.05, 1.12, 0.2));
+  // the diagonal front seam — drawn inside the flat face so it sits ON the bag
   const seamPts = [
-    new THREE.Vector3(-0.42, 0.3, 0.27),
-    new THREE.Vector3(-0.12, 0.5, 0.31),
-    new THREE.Vector3(0.22, 0.72, 0.3),
-    new THREE.Vector3(0.45, 0.98, 0.25)
+    new THREE.Vector3(-0.26, 0.42, 0.2),
+    new THREE.Vector3(-0.02, 0.6, 0.21),
+    new THREE.Vector3(0.16, 0.78, 0.205),
+    new THREE.Vector3(0.24, 0.95, 0.19)
   ];
   bag.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(seamPts), 24, 0.017, 6, false), bagTrim));
   bag.position.set(-6.6, 0, -7.78); // upright, right against the window
