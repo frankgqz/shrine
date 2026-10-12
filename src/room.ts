@@ -436,7 +436,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     rr.castShadow = true;
     scene.add(rr);
   }
-  const pool = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.11, 20), new THREE.MeshStandardMaterial({ color: "#3d9fd4", roughness: 0.12, transparent: true, opacity: 0.92, emissive: "#1f6f9e", emissiveIntensity: 0.4 }));
+  const pool = new THREE.Mesh(new THREE.CylinderGeometry(1.25, 1.25, 0.11, 20), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.12, transparent: true, opacity: 0.6, emissive: "#1f6f9e", emissiveIntensity: 0.18 }));
   pool.position.set(-8.55, 0.28, -9.9);
   scene.add(pool);
 
@@ -458,13 +458,13 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
 
   // tiny CATCHMENTS between the rocks — where the water trickles down to
   for (const [cx, cy, cz, cr] of [[-8.55, 2.56, -9.9, 0.48], [-9.45, 1.76, -10.05, 0.38], [-8.32, 4.49, -9.72, 0.34]] as Array<[number, number, number, number]>) {
-    const pocket = new THREE.Mesh(new THREE.CylinderGeometry(cr, cr, 0.08, 14), new THREE.MeshStandardMaterial({ color: "#3d9fd4", roughness: 0.12, transparent: true, opacity: 0.92, emissive: "#1f6f9e", emissiveIntensity: 0.4 }));
+    const pocket = new THREE.Mesh(new THREE.CylinderGeometry(cr, cr, 0.08, 14), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.12, transparent: true, opacity: 0.6, emissive: "#1f6f9e", emissiveIntensity: 0.18 }));
     pocket.position.set(cx, cy, cz);
     scene.add(pocket);
   }
 
   // a thin blue water layer where the rocks meet the soil (far 9 toward the corner)
-  const wetLayer = new THREE.Mesh(new THREE.CircleGeometry(2.8, 18), new THREE.MeshStandardMaterial({ color: "#3d9fd4", roughness: 0.1, transparent: true, opacity: 0.75, emissive: "#1f6f9e", emissiveIntensity: 0.35 }));
+  const wetLayer = new THREE.Mesh(new THREE.CircleGeometry(2.8, 18), new THREE.MeshStandardMaterial({ color: "#58b0dd", roughness: 0.1, transparent: true, opacity: 0.5, emissive: "#1f6f9e", emissiveIntensity: 0.15 }));
   wetLayer.rotation.x = -Math.PI / 2;
   wetLayer.scale.set(1, 0.62, 1);
   wetLayer.position.set(-9.0, 0.12, -11.9);
@@ -476,15 +476,15 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   const snowMat = new THREE.MeshStandardMaterial({ color: "#f2f6f8", roughness: 0.9, flatShading: true });
   // far, hazier range
   for (let i = 0; i < 9; i++) {
-    const h = 14 + Math.random() * 16;
-    const m = new THREE.Mesh(new THREE.ConeGeometry(12 + Math.random() * 9, h, 5), farMountainMat);
+    const h = 8 + Math.random() * 9;
+    const m = new THREE.Mesh(new THREE.ConeGeometry(14 + Math.random() * 10, h, 5), farMountainMat);
     m.position.set(-85 + i * 20 + Math.random() * 7, h / 2 - 8, -135 - Math.random() * 20);
     scene.add(m);
   }
   // near range with snow caps
   for (let i = 0; i < 7; i++) {
-    const h = 12 + Math.random() * 18;
-    const r = 10 + Math.random() * 8;
+    const h = 7 + Math.random() * 10;
+    const r = 12 + Math.random() * 9;
     const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 5), mountainMat);
     m.position.set(-55 + i * 18 + Math.random() * 6, h / 2 - 7, -105 - Math.random() * 25);
     scene.add(m);
@@ -494,12 +494,14 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     scene.add(cap);
   }
   // the sun — low and warm over the lake
-  const sun = new THREE.Mesh(new THREE.SphereGeometry(9, 18, 14), new THREE.MeshBasicMaterial({ color: "#fff2c8" }));
-  sun.position.set(58, 14, -128);
+  const sun = new THREE.Mesh(new THREE.SphereGeometry(9, 18, 14), new THREE.MeshBasicMaterial({ color: "#fff2c8", transparent: true, fog: false }));
+  sun.position.set(22, 26, -125);
   scene.add(sun);
-  const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(15, 18, 14), new THREE.MeshBasicMaterial({ color: "#ffe9b0", transparent: true, opacity: 0.22, depthWrite: false, blending: THREE.AdditiveBlending }));
+  const sunGlow = new THREE.Mesh(new THREE.SphereGeometry(15, 18, 14), new THREE.MeshBasicMaterial({ color: "#ffe9b0", transparent: true, opacity: 0.22, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
   sunGlow.position.copy(sun.position);
   scene.add(sunGlow);
+  scene.userData.sunMat = sun.material;
+  scene.userData.sunGlowMat = sunGlow.material;
   const lake = new THREE.Mesh(
     new THREE.PlaneGeometry(280, 140),
     new THREE.MeshStandardMaterial({ color: "#5b93b8", roughness: 0.25, metalness: 0.1 })
@@ -533,6 +535,17 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     starPts.push(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
   }
   starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPts, 3));
-  scene.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ color: "#fff7e0", size: 0.7, sizeAttenuation: true })));
+  const starMat = new THREE.PointsMaterial({ color: "#fff7e0", size: 0.7, sizeAttenuation: true, transparent: true, opacity: 0, fog: false });
+  scene.add(new THREE.Points(starGeo, starMat));
+  scene.userData.starMat = starMat;
+  // the moon and its halo — night things
+  const moon = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 12), new THREE.MeshBasicMaterial({ color: "#e8eef8", transparent: true, opacity: 0, fog: false }));
+  moon.position.set(-32, 30, -120);
+  scene.add(moon);
+  scene.userData.moonMat = moon.material;
+  const moonGlow = new THREE.Mesh(new THREE.SphereGeometry(10.5, 16, 12), new THREE.MeshBasicMaterial({ color: "#b8cce8", transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
+  moonGlow.position.copy(moon.position);
+  scene.add(moonGlow);
+  scene.userData.moonGlowMat = moonGlow.material;
   return waterSheet;
 }
