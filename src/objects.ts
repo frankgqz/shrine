@@ -452,15 +452,31 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bagBody.position.z = -0.3;
   bagBody.castShadow = true;
   bag.add(bagBody);
-  // zips running ALONG the extrude, on both sides
-  for (const side of [-1, 1]) {
-    bag.add(mesh(new THREE.BoxGeometry(0.055, 0.055, 0.6), bagTrim, side * 0.43, 0.86, 0));
-    bag.add(mesh(new THREE.BoxGeometry(0.09, 0.14, 0.05), bagTrim, side * 0.43, 0.8, 0.3)); // zip pulls
+  // the main zip follows the silhouette EDGE all the way round (like the real bag)
+  const zipEdge: THREE.Vector3[] = [];
+  for (const pt of bagShape.getPoints(64)) {
+    zipEdge.push(new THREE.Vector3(pt.x * 0.96, 0.95 + (pt.y - 0.95) * 0.97, 0.29));
   }
-  // a handle, in the middle
-  const grabHandle = mesh(new THREE.TorusGeometry(0.22, 0.05, 8, 16, Math.PI), bagTrim, 0, 1.6, 0);
-  grabHandle.rotation.y = Math.PI / 2;
-  bag.add(grabHandle);
+  bag.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(zipEdge, true), 90, 0.024, 6, true), bagTrim));
+  // two sliders near the top of the zip
+  for (const sxx of [-0.1, 0.14]) {
+    bag.add(mesh(new THREE.BoxGeometry(0.05, 0.13, 0.05), bagTrim, sxx, 1.52, 0.31));
+  }
+  // the flat webbing handle on the crown
+  for (const hx of [-0.13, 0.13]) {
+    bag.add(mesh(new THREE.BoxGeometry(0.09, 0.26, 0.05), bagTrim, hx, 1.66, 0));
+  }
+  bag.add(mesh(new THREE.BoxGeometry(0.38, 0.08, 0.055), bagTrim, 0, 1.79, 0)); // the grip
+  // a label tab on the upper face
+  bag.add(mesh(new RoundedBoxGeometry(0.3, 0.12, 0.05, 3, 0.025), bagTrim, 0.13, 1.18, 0.3));
+  // the diagonal front seam
+  const seamPts = [
+    new THREE.Vector3(-0.42, 0.3, 0.27),
+    new THREE.Vector3(-0.12, 0.5, 0.31),
+    new THREE.Vector3(0.22, 0.72, 0.3),
+    new THREE.Vector3(0.45, 0.98, 0.25)
+  ];
+  bag.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(seamPts), 24, 0.017, 6, false), bagTrim));
   bag.position.set(-6.6, 0, -7.78); // upright, right against the window
   bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — a game waits inside"));
