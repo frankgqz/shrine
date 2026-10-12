@@ -245,109 +245,121 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   psky.addColorStop(1, "#7a4a52");
   pctx.fillStyle = psky;
   pctx.fillRect(0, 0, 384, 288);
-  // a soft landscape in the scene's own language — a small house lives in the corner
-  const psun2 = pctx.createRadialGradient(268, 92, 8, 268, 92, 74);
-  psun2.addColorStop(0, "rgba(255,244,214,0.95)");
-  psun2.addColorStop(1, "rgba(255,232,180,0)");
-  pctx.fillStyle = psun2;
-  pctx.fillRect(190, 14, 160, 160);
-  pctx.fillStyle = "#fff2d2";
+  // THE FIVE ELEMENTS — space, air, fire, water, earth — and a house, wherever it lands
+  // SPACE: the deep sky, fading warm at the horizon
+  const spaceGrad = pctx.createLinearGradient(0, 0, 0, 200);
+  spaceGrad.addColorStop(0, "#3a4462");
+  spaceGrad.addColorStop(0.55, "#9a7a7e");
+  spaceGrad.addColorStop(1, "#e8a878");
+  pctx.fillStyle = spaceGrad;
+  pctx.fillRect(0, 0, 384, 200);
+  for (let s2 = 0; s2 < 16; s2++) {
+    pctx.fillStyle = "rgba(255,244,220," + (0.35 + (s2 % 3) * 0.2).toFixed(2) + ")";
+    pctx.beginPath();
+    pctx.arc(12 + ((s2 * 67) % 370), 10 + ((s2 * 41) % 84), 1.6 + (s2 % 2), 0, Math.PI * 2);
+    pctx.fill();
+  }
+  // AIR: soft clouds + a whisper of wind
+  for (const [cx3, cy3, cs3] of [[58, 62, 30], [186, 44, 22], [312, 66, 26]] as Array<[number, number, number]>) {
+    pctx.fillStyle = "rgba(250,244,236,0.82)";
+    pctx.beginPath();
+    pctx.arc(cx3, cy3, cs3 * 0.5, 0, Math.PI * 2);
+    pctx.arc(cx3 + cs3 * 0.55, cy3 - cs3 * 0.2, cs3 * 0.38, 0, Math.PI * 2);
+    pctx.arc(cx3 + cs3, cy3, cs3 * 0.3, 0, Math.PI * 2);
+    pctx.fill();
+  }
+  pctx.strokeStyle = "rgba(255,246,232,0.4)";
+  pctx.lineWidth = 2;
+  for (const [wx3, wy3] of [[96, 118], [222, 104]]) {
+    pctx.beginPath();
+    pctx.moveTo(wx3, wy3);
+    pctx.quadraticCurveTo(wx3 + 26, wy3 - 8, wx3 + 54, wy3);
+    pctx.stroke();
+  }
+  // FIRE: the sun, low and warm
+  const fireGlow = pctx.createRadialGradient(286, 108, 8, 286, 108, 82);
+  fireGlow.addColorStop(0, "rgba(255,214,150,0.95)");
+  fireGlow.addColorStop(1, "rgba(255,190,120,0)");
+  pctx.fillStyle = fireGlow;
+  pctx.fillRect(200, 24, 176, 172);
+  pctx.fillStyle = "#ffe3ae";
   pctx.beginPath();
-  pctx.arc(268, 92, 34, 0, Math.PI * 2);
+  pctx.arc(286, 108, 32, 0, Math.PI * 2);
   pctx.fill();
-  // far range with snow
-  pctx.fillStyle = "#b7c2cc";
+  // EARTH: the ranges, with snow
+  pctx.fillStyle = "#8e8a92";
   pctx.beginPath();
-  pctx.moveTo(0, 168);
-  pctx.lineTo(70, 96);
-  pctx.lineTo(128, 152);
-  pctx.lineTo(196, 84);
-  pctx.lineTo(268, 156);
-  pctx.lineTo(330, 112);
-  pctx.lineTo(384, 164);
-  pctx.lineTo(384, 196);
-  pctx.lineTo(0, 196);
+  pctx.moveTo(0, 186);
+  pctx.lineTo(64, 118);
+  pctx.lineTo(130, 172);
+  pctx.lineTo(202, 108);
+  pctx.lineTo(272, 176);
+  pctx.lineTo(332, 132);
+  pctx.lineTo(384, 178);
+  pctx.lineTo(384, 214);
+  pctx.lineTo(0, 214);
   pctx.closePath();
   pctx.fill();
-  pctx.fillStyle = "#eef2f5";
-  for (const [mx, my] of [[70, 96], [196, 84], [330, 112]]) {
+  pctx.fillStyle = "#e8ecf0";
+  for (const [mx3, my3] of [[64, 118], [202, 108], [332, 132]]) {
     pctx.beginPath();
-    pctx.moveTo(mx - 16, my + 22);
-    pctx.lineTo(mx, my);
-    pctx.lineTo(mx + 16, my + 22);
-    pctx.lineTo(mx + 6, my + 16);
-    pctx.lineTo(mx - 4, my + 21);
+    pctx.moveTo(mx3 - 15, my3 + 21);
+    pctx.lineTo(mx3, my3);
+    pctx.lineTo(mx3 + 15, my3 + 21);
+    pctx.lineTo(mx3 + 5, my3 + 15);
+    pctx.lineTo(mx3 - 5, my3 + 20);
     pctx.closePath();
     pctx.fill();
   }
-  // near hills
-  pctx.fillStyle = "#93a97e";
+  pctx.fillStyle = "#7d8a68";
   pctx.beginPath();
-  pctx.moveTo(0, 190);
-  pctx.quadraticCurveTo(96, 156, 210, 188);
-  pctx.quadraticCurveTo(310, 212, 384, 182);
-  pctx.lineTo(384, 236);
-  pctx.lineTo(0, 236);
+  pctx.moveTo(0, 206);
+  pctx.quadraticCurveTo(110, 182, 226, 208);
+  pctx.quadraticCurveTo(320, 224, 384, 202);
+  pctx.lineTo(384, 242);
+  pctx.lineTo(0, 242);
   pctx.closePath();
   pctx.fill();
-  // the lake — soft band with a sheen
-  pctx.fillStyle = "#86b2c8";
-  pctx.fillRect(0, 216, 384, 34);
-  pctx.fillStyle = "rgba(240,248,252,0.5)";
-  pctx.fillRect(40, 226, 130, 3);
-  pctx.fillRect(210, 234, 150, 3);
-  // the meadow
-  pctx.fillStyle = "#c9b98a";
+  // WATER: the lake, a fall feeding it, sheen + ripples
+  pctx.fillStyle = "#6f9db8";
+  pctx.fillRect(0, 226, 384, 34);
+  pctx.fillStyle = "rgba(226,240,248,0.65)";
+  pctx.fillRect(206, 196, 9, 32); // the fall
+  pctx.fillRect(40, 236, 120, 2.5);
+  pctx.fillRect(232, 242, 130, 2.5);
+  pctx.fillRect(150, 250, 74, 2.5);
+  // EARTH again: the meadow
+  pctx.fillStyle = "#b8a878";
   pctx.beginPath();
-  pctx.moveTo(0, 244);
-  pctx.quadraticCurveTo(120, 232, 250, 246);
-  pctx.quadraticCurveTo(330, 254, 384, 244);
+  pctx.moveTo(0, 252);
+  pctx.quadraticCurveTo(120, 242, 250, 254);
+  pctx.quadraticCurveTo(330, 260, 384, 252);
   pctx.lineTo(384, 288);
   pctx.lineTo(0, 288);
   pctx.closePath();
   pctx.fill();
-  pctx.fillStyle = "#a8b478";
-  for (let i = 0; i < 7; i++) {
-    pctx.beginPath();
-    pctx.ellipse(20 + i * 58, 258 + (i % 2) * 14, 34, 7, 0, 0, Math.PI * 2);
-    pctx.fill();
-  }
-  // two soft trees on the meadow
-  for (const [tx3, ty3] of [[86, 252], [316, 258]]) {
-    pctx.fillStyle = "#6e4a32";
-    pctx.fillRect(tx3 - 3, ty3 - 16, 6, 22);
-    pctx.fillStyle = "#5d8a48";
-    pctx.beginPath();
-    pctx.arc(tx3, ty3 - 30, 20, 0, Math.PI * 2);
-    pctx.fill();
-    pctx.fillStyle = "#6fa257";
-    pctx.beginPath();
-    pctx.arc(tx3 - 6, ty3 - 36, 12, 0, Math.PI * 2);
-    pctx.fill();
-  }
-  // the small house, in the corner — quiet, tiny, with one warm window
+  // the house — wherever it lands today
+  const hx3 = 36 + Math.random() * 286;
   pctx.fillStyle = "#f2e6cf";
-  pctx.fillRect(318, 246, 44, 30);
+  pctx.fillRect(hx3, 238, 40, 27);
   pctx.fillStyle = "#c9603f";
   pctx.beginPath();
-  pctx.moveTo(310, 248);
-  pctx.lineTo(340, 226);
-  pctx.lineTo(370, 248);
+  pctx.moveTo(hx3 - 8, 240);
+  pctx.lineTo(hx3 + 20, 220);
+  pctx.lineTo(hx3 + 48, 240);
   pctx.closePath();
   pctx.fill();
   pctx.fillStyle = "#ffd98a";
-  pctx.fillRect(326, 254, 10, 9);
-  pctx.fillRect(344, 254, 10, 9);
+  pctx.fillRect(hx3 + 7, 245, 9, 8);
+  pctx.fillRect(hx3 + 24, 245, 9, 8);
   pctx.fillStyle = "#8a5236";
-  pctx.fillRect(336, 262, 9, 14);
-  // soft birds
-  pctx.strokeStyle = "rgba(74,44,30,0.5)";
-  pctx.lineWidth = 2;
-  for (const [bx3, by3] of [[120, 70], [148, 58], [172, 76]]) {
+  pctx.fillRect(hx3 + 16, 251, 8, 14);
+  // the five elements as stones along the frame
+  for (const [ix3, ic] of [[64, "#4a4260"], [128, "#d8dde2"], [192, "#d0664a"], [256, "#5a92b8"], [320, "#7a8a52"]] as Array<[number, string]>) {
+    pctx.fillStyle = ic;
     pctx.beginPath();
-    pctx.moveTo(bx3 - 7, by3);
-    pctx.quadraticCurveTo(bx3, by3 - 6, bx3 + 7, by3);
-    pctx.stroke();
+    pctx.ellipse(ix3, 276, 17, 9, 0, 0, Math.PI * 2);
+    pctx.fill();
   }
   const paintingTex = new THREE.CanvasTexture(paintCanvas);
   paintingTex.colorSpace = THREE.SRGBColorSpace;
