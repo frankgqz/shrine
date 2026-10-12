@@ -383,15 +383,15 @@ function animate(): void {
   bagOutT += ((bagOut ? 1 : 0) - bagOutT) * 0.07;
   if (bagOutT < 0.5) {
     const seg = bagOutT * 2;
-    objects.bagPaddle.position.set(0.05, 0.85 + seg * 1.2, 0);
+    objects.bagPaddle.position.set(0, 0.55 + seg * 1.6, 0.02);
     objects.bagPaddle.rotation.set(0, 0, 0);
-    objects.bagBall.position.set(0.05, 1.35 + seg * 0.55, 0.1 + seg * 0.1);
+    objects.bagBall.position.set(0, 0.95 + seg * 1.0, 0.02 + seg * 0.18);
     objects.bagBall.rotation.set(0, 0, 0);
   } else {
     const seg = (bagOutT - 0.5) * 2;
-    objects.bagPaddle.position.set(0.05 + seg * 0.8, 2.05 - seg * 1.43, seg * 0.28);
+    objects.bagPaddle.position.set(seg * 0.85, 2.15 - seg * 1.43, 0.02 + seg * 0.28);
     objects.bagPaddle.rotation.set(seg * 0.12, seg * -0.5, seg * -0.36);
-    objects.bagBall.position.set(0.35 + seg * 0.9, 1.9 - seg * 1.77, 0.2 + seg * 0.3);
+    objects.bagBall.position.set(seg * 1.25, 1.95 - seg * 1.82, 0.2 + seg * 0.3);
     objects.bagBall.rotation.set(seg * 2.2, seg * 1.4, 0);
   }
 

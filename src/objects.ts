@@ -487,22 +487,22 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bag.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(seamPts), 24, 0.017, 6, false), bagTrim));
   // the game inside: a paddle and a green ball — click the bag and they come out
   const bagPaddle = new THREE.Group();
-  bagPaddle.add(mesh(new RoundedBoxGeometry(0.52, 0.64, 0.06, 3, 0.12), new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.45 }), 0, 0.42, 0)); // the face
-  bagPaddle.add(mesh(new THREE.BoxGeometry(0.13, 0.18, 0.05), new THREE.MeshStandardMaterial({ color: "#141216", roughness: 0.6 }), 0, 0.05, 0)); // the neck
-  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.055, 0.05, 0.36, 10), new THREE.MeshStandardMaterial({ color: "#3a3a42", roughness: 0.7 }), 0, -0.2, 0)); // the grip
-  bagPaddle.add(mesh(new THREE.BoxGeometry(0.1, 0.02, 0.065), new THREE.MeshStandardMaterial({ color: "#e8e4da", roughness: 0.5 }), 0, 0.52, 0.035)); // a small mark
-  bagPaddle.position.set(0.05, 0.85, 0);
+  bagPaddle.add(mesh(new RoundedBoxGeometry(0.52, 0.62, 0.06, 4, 0.18), new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.45 }), 0, 0.5, 0)); // the rounded black face
+  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.125, 0.075, 0.22, 12), new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.45 }), 0, 0.11, 0)); // the rounded throat
+  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.052, 0.048, 0.34, 10), new THREE.MeshStandardMaterial({ color: "#e8e4da", roughness: 0.6 }), 0, -0.16, 0)); // the WHITE grip
+  bagPaddle.add(mesh(new THREE.BoxGeometry(0.1, 0.02, 0.065), new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.5 }), 0, 0.62, 0.035)); // a small mark
+  bagPaddle.position.set(0, 0.55, 0.02); // tucked deep inside
   bag.add(bagPaddle);
   const bagBall = new THREE.Group();
   bagBall.add(mesh(new THREE.SphereGeometry(0.13, 14, 12), new THREE.MeshStandardMaterial({ color: "#b8d94a", roughness: 0.65 }), 0, 0, 0));
   for (let hh = 0; hh < 9; hh++) {
     const ha = (hh / 9) * Math.PI * 2;
     const hy = ((hh % 3) - 1) * 0.45;
-    bagBall.add(mesh(new THREE.SphereGeometry(0.028, 6, 5), new THREE.MeshStandardMaterial({ color: "#26290f", roughness: 0.8 }), Math.cos(ha) * 0.115 * Math.cos(hy), Math.sin(hy) * 0.115, Math.sin(ha) * 0.115 * Math.cos(hy)));
+    bagBall.add(mesh(new THREE.SphereGeometry(0.03, 6, 5), new THREE.MeshStandardMaterial({ color: "#4a5d1f", roughness: 0.85 }), Math.cos(ha) * 0.105 * Math.cos(hy), Math.sin(hy) * 0.105, Math.sin(ha) * 0.105 * Math.cos(hy))); // carved dimples
   }
-  bagBall.position.set(0.05, 1.35, 0.1);
+  bagBall.position.set(0, 0.95, 0.02); // deep inside — invisible when packed
   bag.add(bagBall);
-  bag.position.set(-7.75, 0, -7.7); // upright, right against the window
+  bag.position.set(-8.65, 0, -7.55); // upright, right against the window — very close to the pot
   bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — click to take out the game"));
   bag.traverse((c) => (c.userData.action = "bag-game")); // AFTER the tag — tag() replaces userData

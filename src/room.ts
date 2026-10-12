@@ -236,12 +236,12 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
 
   // TWO ROCKS STACKED at the head of the channel — the water follows the rock
   const stackLow = rock(1.3, "#8a8279");
-  stackLow.position.set(-7.45, 1.05, -9.7);
+  stackLow.position.set(-7.45, 1.05, -10.35); // pushed back — it reached through the glass
   stackLow.rotation.set(0.15, 0.9, 0.1);
   stackLow.castShadow = true;
   scene.add(stackLow);
   const stackHigh = rock(0.95, "#948c82");
-  stackHigh.position.set(-7.3, 2.35, -9.85);
+  stackHigh.position.set(-7.3, 2.35, -10.45);
   stackHigh.rotation.set(0.42, 1.6, 0.18);
   stackHigh.castShadow = true;
   scene.add(stackHigh);
