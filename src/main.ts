@@ -431,9 +431,9 @@ function animate(): void {
     objects.bagBall.rotation.set(0, 0, 0);
   } else {
     const seg = (bagOutT - 0.5) * 2;
-    objects.bagPaddle.position.set(seg * 1.05, 2.15 - seg * 2.09, 0.02 + seg * 0.6); // lays down beside the bag
+    objects.bagPaddle.position.set(seg * 1.37, 2.15 - seg * 2.08, 0.02 + seg * 3.36); // lays out in the open floor
     objects.bagPaddle.rotation.set(seg * (-Math.PI / 2 + 0.15), seg * -0.55, 0);
-    objects.bagBall.position.set(seg * 1.14, 1.95 - seg * 1.7, 0.2 + seg * 2.2); // rolls to the projector wedge, above the floor
+    objects.bagBall.position.set(seg * 2.36, 1.95 - seg * 1.7, 0.2 + seg * 3.11); // rolls out to the open floor
     objects.bagBall.rotation.set(seg * 2.2, seg * 1.4, 0);
   }
 
