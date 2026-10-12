@@ -336,8 +336,6 @@ function drawLandscape(t: number): void {
     actx.closePath();
     actx.fill();
   }
-  actx.fillStyle = "rgba(220,240,255,0.7)";
-  actx.fillRect(w * 0.22, h * 0.62, 11, h * 0.25);
   actx.fillStyle = "rgba(255,255,255,0.85)";
   for (let i = 0; i < 4; i++) {
     const cx = ((t * 18 + i * 230) % (w + 180)) - 90;
