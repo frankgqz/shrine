@@ -127,6 +127,9 @@ let hovered: THREE.Object3D | null = null;
 let glassState = 2; // the scene opens with the glass stacked left — balcony breathing
 let projectorOn = false; // starts off — click the unit
 let lampOn = true; // click the ghee lamp
+let matRoll = 0; // yoga mat roll state (click to roll)
+let matRollTarget = 0;
+let cupFill = 0.5; // glass of water: 0.5 half (default) -> 0 -> 1 -> ...
 let ventMode = 1; // 0 = still, 1 = warm (red), 2 = cool (blue) — cycled by the switch
 
 const elementNote: Record<ElementName, string> = {
@@ -188,6 +191,20 @@ canvas.addEventListener("click", () => {
       song.pause();
       labelEl.textContent = "the speakers rest";
     }
+    labelEl.style.opacity = "1";
+    window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
+    return;
+  }
+  if (act === "roll-mat") {
+    matRollTarget = matRollTarget > 0.5 ? 0 : 1;
+    labelEl.textContent = matRollTarget > 0.5 ? "the yoga mat rolls up" : "the yoga mat unrolls";
+    labelEl.style.opacity = "1";
+    window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
+    return;
+  }
+  if (act === "glass-water") {
+    cupFill = cupFill === 0.5 ? 0 : cupFill === 0 ? 1 : 0.5; // half -> empty -> full -> half
+    labelEl.textContent = cupFill === 1 ? "the glass is full" : cupFill === 0 ? "the glass is empty" : "half a glass";
     labelEl.style.opacity = "1";
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
     return;
@@ -346,6 +363,25 @@ function animate(): void {
     m.opacity = 0.05 + i * 0.03 + Math.sin(t * 0.6 + i * 2.1) * 0.045 + Math.sin(t * 1.5 + i) * 0.025;
   });
 
+  // the yoga mat rolls and unrolls
+  matRoll += (matRollTarget - matRoll) * 0.08;
+  objects.matRollCyl.scale.set(0.015 + matRoll * 0.6, 1, 0.015 + matRoll * 0.6);
+  objects.matRollCyl.position.set(-4.4 + matRoll * 8.8, 0.1 + (0.015 + matRoll * 0.6), -6.4);
+  objects.yogaMat.scale.x = Math.max(0.02, 1 - matRoll);
+  objects.yogaMat.position.x = 4.4 * matRoll;
+
+  // the glass of water: half, empty or full
+  objects.cupWater.scale.y = Math.max(0.01, cupFill * 2);
+  objects.cupWater.position.y = 0.03 + cupFill * 0.39;
+
+  // ♨️ heat squiggles strobe bottom-up when the air breathes
+  objects.heatCurves.forEach((s, i) => {
+    const hm = s.material as THREE.MeshBasicMaterial;
+    hm.color.set(ventColor);
+    const strobe = 0.5 + 0.5 * Math.sin(t * 3 - i * 0.9);
+    hm.opacity = ventOn ? 0.12 + strobe * 0.4 : 0;
+  });
+
   // celestial life: sun sinks, moon + stars rise
   const starM = scene.userData.starMat as THREE.PointsMaterial | undefined;
   if (starM) starM.opacity = nightMix * 0.95;
@@ -353,10 +389,15 @@ function animate(): void {
   if (moonM) moonM.opacity = nightMix * 0.92;
   const moonGM = scene.userData.moonGlowMat as THREE.MeshBasicMaterial | undefined;
   if (moonGM) moonGM.opacity = nightMix * 0.22;
+  const moonSM = scene.userData.moonShadowMat as THREE.MeshBasicMaterial | undefined;
+  if (moonSM) moonSM.opacity = nightMix * 0.92;
   const sunM = scene.userData.sunMat as THREE.MeshBasicMaterial | undefined;
-  if (sunM) sunM.opacity = 1 - nightMix * 0.95;
+  if (sunM) {
+    sunM.opacity = Math.max(0, 1 - nightMix * 1.4); // gone well before full night
+    sunM.visible = nightMix < 0.85;
+  }
   const sunGM = scene.userData.sunGlowMat as THREE.MeshBasicMaterial | undefined;
-  if (sunGM) sunGM.opacity = 0.22 * (1 - nightMix);
+  if (sunGM) sunGM.opacity = 0.22 * Math.max(0, 1 - nightMix * 1.4);
 
   // the UST light ray — faint, clearest at night
   const ray = objects.lightRay.material as THREE.MeshBasicMaterial;
@@ -415,7 +456,7 @@ function animate(): void {
   objects.fireCone.rotation.y = t * 0.4;
   objects.water.position.y = 1.18 + Math.sin(t * 1.6) * 0.012;
   const lampFlicker = 0.9 + Math.sin(t * 13) * 0.09 + Math.sin(t * 7.3) * 0.05 + Math.sin(t * 23) * 0.035;
-  objects.lamp.intensity = lampOn ? (2.2 + lampFlicker * 1.1 + Math.sin(t * 2.2) * 0.25) * warmth : 0;
+  objects.lamp.intensity = lampOn ? (1.3 + lampFlicker * 0.8 + Math.sin(t * 2.2) * 0.2) * warmth : 0;
   objects.lampFlame.visible = lampOn;
   objects.lampGlow.visible = lampOn;
   objects.lampFlame.scale.set(0.92 + Math.sin(t * 15) * 0.1, lampFlicker, 0.92 + Math.sin(t * 11) * 0.1);

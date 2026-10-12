@@ -48,6 +48,10 @@ export interface SceneObjects {
   waterWheel: THREE.Group;
   lampFlame: THREE.Mesh;
   lampGlow: THREE.Mesh;
+  heatCurves: THREE.Mesh[];
+  yogaMat: THREE.Mesh;
+  matRollCyl: THREE.Mesh;
+  cupWater: THREE.Mesh;
 }
 
 export function buildObjects(scene: THREE.Scene): SceneObjects {
@@ -214,6 +218,16 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   scene.add(shelfGrass);
   for (let g = 0; g < 8; g++) {
     const blade = mesh(new THREE.ConeGeometry(0.09 + Math.random() * 0.05, 0.5 + Math.random() * 0.35, 5), new THREE.MeshStandardMaterial({ color: g % 2 ? "#5d7a3a" : "#6d8a45", roughness: 1 }), 9.5 + (Math.random() - 0.5) * 0.85, 0.3, -2.15 + (Math.random() - 0.5) * 0.85);
+    blade.rotation.set((Math.random() - 0.5) * 0.4, Math.random() * Math.PI, (Math.random() - 0.5) * 0.4);
+    scene.add(blade);
+  }
+
+  // a second grass patch in the wedge between bookshelf and sofa
+  const wedgeGrass = mesh(new THREE.SphereGeometry(0.45, 10, 8), new THREE.MeshStandardMaterial({ color: "#5e6b3c", roughness: 1 }), 8.5, 0.1, -1.95);
+  wedgeGrass.scale.y = 0.22;
+  scene.add(wedgeGrass);
+  for (let g = 0; g < 6; g++) {
+    const blade = mesh(new THREE.ConeGeometry(0.08 + Math.random() * 0.05, 0.42 + Math.random() * 0.3, 5), new THREE.MeshStandardMaterial({ color: g % 2 ? "#5d7a3a" : "#6d8a45", roughness: 1 }), 8.5 + (Math.random() - 0.5) * 0.7, 0.28, -1.95 + (Math.random() - 0.5) * 0.7);
     blade.rotation.set((Math.random() - 0.5) * 0.4, Math.random() * Math.PI, (Math.random() - 0.5) * 0.4);
     scene.add(blade);
   }
@@ -479,6 +493,12 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
   // proper armrests at the two outer ends
   couch.add(mesh(new THREE.BoxGeometry(1.75, 1.25, 0.7), fluffy, 7.22, 1.58, -1.45)); // arm at the new far end
+  // a head cushion at the corner end of the right run
+  const headCushion = new THREE.Mesh(new RoundedBoxGeometry(0.45, 0.62, 1.15, 4, 0.16), fluffy);
+  headCushion.position.set(8.35, 2.62, 4.7);
+  headCushion.rotation.x = -0.18;
+  headCushion.castShadow = true;
+  couch.add(headCushion);
   couch.add(mesh(new THREE.BoxGeometry(0.7, 1.25, 1.95), fluffy, 0.05, 1.58, 5.5));
   // throw cushions — RELAXED on the seat, leaning into the backrest
   for (const [cx, cz, cc, side] of [[7.95, 1.1, "#c98f6b", "x"], [7.95, 3.4, "#8fa8b8", "x"], [5.2, 6.15, "#c98f6b", "z"], [2.4, 6.15, "#a8b894", "z"]] as Array<[number, number, string, string]>) {
@@ -619,6 +639,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const floorLights: THREE.PointLight[] = [];
   const ventFins: THREE.Mesh[] = [];
   const steamBeams: THREE.Mesh[] = [];
+  const heatCurves: THREE.Mesh[] = [];
   // a soft cloud puff texture — this is what makes steam look like steam
   const steamCanvas = document.createElement("canvas");
   steamCanvas.width = 64;
@@ -679,6 +700,20 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       steamBeams.push(beam);
     }
 
+    // ♨️ heat squiggles — invisible at rest, strobing bottom-up when the air breathes
+    for (let hc = 0; hc < 3; hc++) {
+      const hpts: THREE.Vector3[] = [];
+      for (let k = 0; k < 9; k++) {
+        hpts.push(new THREE.Vector3(Math.sin(k * 1.15 + hc * 1.7) * 0.22, k * 0.3, 0));
+      }
+      const hcurve = new THREE.CatmullRomCurve3(hpts);
+      const squiggle = new THREE.Mesh(new THREE.TubeGeometry(hcurve, 24, 0.035, 6, false), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }));
+      squiggle.position.set(vx + (hc - 1) * 0.55, 0.7 + hc * 0.28, vz + (hc % 2 ? 0.2 : -0.2));
+      squiggle.userData.phase = hc * 1.1 + vz + vx;
+      scene.add(tag(squiggle, "air", "heat — the breath of the stones"));
+      heatCurves.push(squiggle);
+    }
+
     const fixture = mesh(new THREE.CylinderGeometry(0.16, 0.22, 0.09, 12), new THREE.MeshStandardMaterial({ color: "#d9c9a8", emissive: airColor, emissiveIntensity: 0.2 }), vx + (vx < 0 ? 0.95 : -0.95), 0.05, vz);
     scene.add(tag(fixture, "air", "the vent light — it wakes with the air"));
     const uplight = new THREE.PointLight(airColor, 0, 11, 2);
@@ -731,9 +766,12 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
 
   const glass = new THREE.Group();
   glass.add(mesh(new THREE.CylinderGeometry(0.32, 0.26, 0.85, 14), new THREE.MeshStandardMaterial({ color: "#dff2f7", transparent: true, opacity: 0.22, roughness: 0.08 }), 0, 0.43, 0));
-  glass.add(mesh(new THREE.CylinderGeometry(0.26, 0.23, 0.42, 14), new THREE.MeshStandardMaterial({ color: "#58b0dd", transparent: true, opacity: 0.62, emissive: "#1f6f9e", emissiveIntensity: 0.18 }), 0, 0.21, 0));
+  const cupWater = mesh(new THREE.CylinderGeometry(0.26, 0.23, 0.42, 14), new THREE.MeshStandardMaterial({ color: "#58b0dd", transparent: true, opacity: 0.62, emissive: "#1f6f9e", emissiveIntensity: 0.18 }), 0, 0.21, 0);
+  glass.add(cupWater);
+  glass.add(mesh(new THREE.SphereGeometry(0.55, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0.45, 0)); // hit target
   glass.position.set(-8.1, 2.8, 6.6);
-  scene.add(tag(glass, "water", "a glass of water — small and complete"));
+  scene.add(tag(glass, "water", "a glass of water — click for half, empty, full"));
+  glass.traverse((c) => (c.userData.action = "glass-water"));
 
   // ============ FIRE PIT (between 5-8) + outside chair ============
   const firePit = new THREE.Group();
@@ -871,7 +909,12 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.9 }),
     0, 0.06, -6.4
   );
-  scene.add(tag(yogaMat, "space", "the yoga mat — silence, sun, breath"));
+  yogaMat.traverse((c) => (c.userData.action = "roll-mat"));
+  scene.add(tag(yogaMat, "space", "the yoga mat — click to roll it up"));
+  const matRollCyl = mesh(new THREE.CylinderGeometry(1, 1, 3.0, 14), new THREE.MeshStandardMaterial({ color: "#a84f38", roughness: 0.9 }), -4.4, 0.1, -6.4);
+  matRollCyl.rotation.x = Math.PI / 2;
+  matRollCyl.scale.setScalar(0.015);
+  scene.add(matRollCyl);
 
-  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams, waterWheel, lampFlame: wickFlame, lampGlow: wickGlow };
+  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams, waterWheel, lampFlame: wickFlame, lampGlow: wickGlow, heatCurves, yogaMat, matRollCyl, cupWater };
 }

@@ -539,10 +539,14 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   scene.add(new THREE.Points(starGeo, starMat));
   scene.userData.starMat = starMat;
   // the moon and its halo — night things
-  const moon = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 12), new THREE.MeshBasicMaterial({ color: "#e8eef8", transparent: true, opacity: 0, fog: false }));
+  const moon = new THREE.Mesh(new THREE.CircleGeometry(6, 24), new THREE.MeshBasicMaterial({ color: "#e8eef8", transparent: true, opacity: 0, fog: false }));
   moon.position.set(-32, 30, -120);
   scene.add(moon);
   scene.userData.moonMat = moon.material;
+  const moonShadow = new THREE.Mesh(new THREE.CircleGeometry(5.4, 24), new THREE.MeshBasicMaterial({ color: "#101a30", transparent: true, opacity: 0, fog: false }));
+  moonShadow.position.set(-29.6, 31.6, -119.4);
+  scene.add(moonShadow);
+  scene.userData.moonShadowMat = moonShadow.material;
   const moonGlow = new THREE.Mesh(new THREE.SphereGeometry(10.5, 16, 12), new THREE.MeshBasicMaterial({ color: "#b8cce8", transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
   moonGlow.position.copy(moon.position);
   scene.add(moonGlow);
