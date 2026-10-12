@@ -9,6 +9,32 @@ import "./style.css";
 const canvas = document.querySelector<HTMLCanvasElement>("#scene")!;
 const labelEl = document.querySelector<HTMLDivElement>("#label")!;
 
+// a small in-world popover before leaving the shrine
+let navConfirmEl: HTMLDivElement | null = null;
+function askNavigate(message: string, url: string): void {
+  if (!navConfirmEl) {
+    navConfirmEl = document.createElement("div");
+    navConfirmEl.style.cssText =
+      "position:fixed;left:50%;bottom:72px;transform:translateX(-50%);background:rgba(28,26,22,0.92);color:#f2efe8;padding:12px 16px;border-radius:12px;font:500 13px/1.4 system-ui,sans-serif;display:flex;gap:10px;align-items:center;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,0.35)";
+    document.body.appendChild(navConfirmEl);
+  }
+  navConfirmEl.innerHTML = "";
+  const msg = document.createElement("span");
+  msg.textContent = message;
+  const go = document.createElement("button");
+  go.textContent = "Go";
+  go.style.cssText = "background:#6f8464;color:#fff;border:0;padding:6px 14px;border-radius:8px;cursor:pointer;font:600 12px system-ui";
+  go.onclick = () => (window.location.href = url);
+  const stay = document.createElement("button");
+  stay.textContent = "Stay";
+  stay.style.cssText = "background:transparent;color:#d8d2c4;border:1px solid rgba(216,210,196,0.5);padding:6px 14px;border-radius:8px;cursor:pointer;font:600 12px system-ui";
+  stay.onclick = () => {
+    if (navConfirmEl) navConfirmEl.style.display = "none";
+  };
+  navConfirmEl.append(msg, go, stay);
+  navConfirmEl.style.display = "flex";
+}
+
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -206,11 +232,11 @@ canvas.addEventListener("click", () => {
       window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
       return;
     }
-    window.location.href = "https://pickleball.gqz.app"; // the ball takes you to the game
+    askNavigate("open pickleball.gqz.app?", "https://pickleball.gqz.app"); // the ball asks first
     return;
   }
   if (act === "open-gqz") {
-    window.location.href = "https://gqz.app";
+    askNavigate("open gqz.app?", "https://gqz.app");
     labelEl.textContent = "gqz.app";
     labelEl.style.opacity = "1";
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
@@ -403,7 +429,7 @@ function animate(): void {
     const seg = (bagOutT - 0.5) * 2;
     objects.bagPaddle.position.set(seg * 0.85, 2.15 - seg * 1.43, 0.02 + seg * 0.28);
     objects.bagPaddle.rotation.set(seg * 0.12, seg * -0.5, seg * -0.36);
-    objects.bagBall.position.set(seg * 1.42, 1.95 - seg * 1.82, 0.2 + seg * 1.78); // rolls to the projector wedge
+    objects.bagBall.position.set(seg * 1.14, 1.95 - seg * 1.7, 0.2 + seg * 2.2); // rolls to the projector wedge, above the floor
     objects.bagBall.rotation.set(seg * 2.2, seg * 1.4, 0);
   }
 

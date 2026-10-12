@@ -691,9 +691,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // proper armrests at the two outer ends
   couch.add(mesh(new THREE.BoxGeometry(1.75, 1.25, 0.7), fluffy, 7.22, 1.58, -1.45)); // arm at the new far end
   // a head cushion at the corner end of the right run
-  const headCushion = new THREE.Mesh(new RoundedBoxGeometry(0.4, 0.42, 1.65, 4, 0.2), fluffy);
-  headCushion.position.set(8.3, 2.6, 5.5);
-  headCushion.rotation.x = -0.08;
+  const headCushion = new THREE.Mesh(new RoundedBoxGeometry(0.44, 0.5, 1.9, 4, 0.22), fluffy);
+  headCushion.position.set(8.3, 2.32, 5.5); // sits ON cornerBackA's top — its crown meets the pillow line
+  headCushion.rotation.x = -0.06;
   headCushion.castShadow = true;
   headCushion.receiveShadow = true;
   couch.add(headCushion);
