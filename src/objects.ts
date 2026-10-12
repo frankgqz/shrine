@@ -332,7 +332,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // ---- the pooja collection (consecrated objects) ----
   const brassSoft = new THREE.MeshStandardMaterial({ color: "#d9a94f", roughness: 0.45, metalness: 0.55 });
   // crystals
-  for (const [cy, cz, cs, col] of [[2.76, -1.15, 0.24, "#b58ce0"], [2.66, -0.75, 0.18, "#8ce0d4"], [2.69, -0.35, 0.2, "#e0c98c"]] as Array<[number, number, number, string]>) {
+  for (const [cy, cz, cs, col] of [[0.58, -0.35, 0.24, "#b58ce0"], [0.48, -0.02, 0.18, "#8ce0d4"], [0.51, 0.32, 0.2, "#e0c98c"]] as Array<[number, number, number, string]>) {
     const crystal = mesh(new THREE.IcosahedronGeometry(cs, 0), new THREE.MeshStandardMaterial({ color: col, roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85 }), 0.3, cy, cz);
     crystal.scale.y = 1.7;
     shelf.add(crystal);
@@ -367,8 +367,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   shelf.add(tag(gudi, "space", "the gudi — consecrated, quietly alive"));
 
   // a small standing diya flame beside the gudi
-  shelf.add(mesh(new THREE.CylinderGeometry(0.14, 0.2, 0.12, 10), brassSoft, 0.05, 5.25, 0.6));
-  shelf.add(mesh(new THREE.ConeGeometry(0.07, 0.22, 6), new THREE.MeshStandardMaterial({ color: "#ffb03a", emissive: "#ff9420", emissiveIntensity: 2.2 }), 0.05, 5.45, 0.6));
+  shelf.add(mesh(new THREE.CylinderGeometry(0.14, 0.2, 0.12, 10), brassSoft, 0.05, 5.25, 0.3));
+  shelf.add(mesh(new THREE.ConeGeometry(0.07, 0.22, 6), new THREE.MeshStandardMaterial({ color: "#ffb03a", emissive: "#ff9420", emissiveIntensity: 2.2 }), 0.05, 5.45, 0.3));
 
   // more pooja items — a kalash, a mala, incense, more crystals, a water bowl
   const kalash = new THREE.Group();
@@ -399,18 +399,18 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
   // esoteric things — orb, singing bowl, an obelisk, a candle pair
   const esotericOrb = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 10), new THREE.MeshStandardMaterial({ color: "#5a4a8a", emissive: "#7a5fd0", emissiveIntensity: 0.9, transparent: true, opacity: 0.85 }));
-  esotericOrb.position.set(0.4, 1.32, 0.72);
+  esotericOrb.position.set(0.4, 1.32, 0.3);
   shelf.add(tag(esotericOrb, "space", "the orb — a held breath of violet"));
   const bowl = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), brassSoft);
   bowl.rotation.x = Math.PI;
-  bowl.position.set(0.4, 1.38, 0.28);
+  bowl.position.set(0.4, 1.38, -0.12);
   shelf.add(tag(bowl, "space", "the singing bowl — silence with a rim"));
   const obelisk = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.95, 4), new THREE.MeshStandardMaterial({ color: "#2e2438", roughness: 0.4, metalness: 0.2 }));
-  obelisk.position.set(0.4, 1.65, -0.25);
+  obelisk.position.set(0.4, 1.65, -0.55);
   shelf.add(tag(obelisk, "space", "the obelisk — a dark finger pointing"));
   for (const [cx2, ch] of [[-0.45, 0.62], [-0.32, 0.42]] as Array<[number, number]>) {
-    shelf.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, ch, 8), new THREE.MeshStandardMaterial({ color: "#e8dcc8", roughness: 0.7 }), cx2, 1.22 + ch / 2, 0.62));
-    shelf.add(mesh(new THREE.ConeGeometry(0.035, 0.12, 6), new THREE.MeshStandardMaterial({ color: "#ffb03a", emissive: "#ff9420", emissiveIntensity: 1.9 }), cx2, 1.22 + ch + 0.06, 0.62));
+    shelf.add(mesh(new THREE.CylinderGeometry(0.055, 0.055, ch, 8), new THREE.MeshStandardMaterial({ color: "#e8dcc8", roughness: 0.7 }), cx2, 1.22 + ch / 2, 0.3));
+    shelf.add(mesh(new THREE.ConeGeometry(0.035, 0.12, 6), new THREE.MeshStandardMaterial({ color: "#ffb03a", emissive: "#ff9420", emissiveIntensity: 1.9 }), cx2, 1.22 + ch + 0.06, 0.3));
   }
 
   // a water bowl — still water, catching the light
