@@ -528,11 +528,12 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
 
   const starGeo = new THREE.BufferGeometry();
   const starPts: number[] = [];
-  for (let i = 0; i < 420; i++) {
+  for (let i = 0; i < 520; i++) {
     const r = 120 + Math.random() * 30;
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.random() * Math.PI * 0.42;
-    starPts.push(r * Math.sin(phi) * Math.cos(theta), r * Math.cos(phi), r * Math.sin(phi) * Math.sin(theta));
+    const a = Math.random() * Math.PI * 2;
+    const y = 4 + Math.pow(Math.random(), 1.8) * 46; // a band along the horizon — the camera never looks up
+    const rr = Math.sqrt(Math.max(1, r * r - y * y));
+    starPts.push(Math.cos(a) * rr, y, Math.sin(a) * rr);
   }
   starGeo.setAttribute("position", new THREE.Float32BufferAttribute(starPts, 3));
   const starMat = new THREE.PointsMaterial({ color: "#fff7e0", size: 0.7, sizeAttenuation: true, transparent: true, opacity: 0, fog: false });

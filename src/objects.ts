@@ -233,7 +233,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
 
   // ============ WALL SHELVES above the couch (empty for now) ============
-  for (const [wy, wz] of [[3.4, 3.6], [4.8, 5.3]]) {
+  for (const [wy, wz] of [[3.4, 3.6], [4.8, 4.4]]) {
     const plank = mesh(new THREE.BoxGeometry(0.42, 0.12, 2.8), wood, 10.05, wy, wz);
     scene.add(tag(plank, "space", "a wall shelf — waiting"));
     for (const bz of [wz - 1.25, wz + 1.25]) {
@@ -285,7 +285,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const canvasPlane = mesh(new THREE.PlaneGeometry(3.5, 2.6), new THREE.MeshStandardMaterial({ map: paintingTex, roughness: 0.8 }), -0.08, 0, 0);
   canvasPlane.rotation.y = -Math.PI / 2;
   painting.add(canvasPlane);
-  painting.position.set(10.22, 5.6, 0.15);
+  painting.position.set(10.22, 5.6, 0.45);
   scene.add(tag(painting, "space", "the painting — a warm dusk held on cloth"));
 
   // ============ BOOKSHELF — right wall, between the glass and the couch ============
@@ -703,18 +703,20 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
       steamBeams.push(beam);
     }
 
-    // ♨️ heat squiggles — invisible at rest, strobing bottom-up when the air breathes
+    // ♨️ heat squiggles — the breath materializes bottom -> mid -> top -> rests
     for (let hc = 0; hc < 3; hc++) {
-      const hpts: THREE.Vector3[] = [];
-      for (let k = 0; k < 9; k++) {
-        hpts.push(new THREE.Vector3(Math.sin(k * 1.15 + hc * 1.7) * 0.18, k * 0.22, 0));
+      for (let seg = 0; seg < 4; seg++) {
+        const hpts: THREE.Vector3[] = [];
+        for (let k = seg * 2; k <= seg * 2 + 2; k++) {
+          hpts.push(new THREE.Vector3(Math.sin(k * 1.15 + hc * 1.7) * 0.18, k * 0.22, 0));
+        }
+        const hcurve = new THREE.CatmullRomCurve3(hpts);
+        const squiggle = new THREE.Mesh(new THREE.TubeGeometry(hcurve, 10, 0.03, 6, false), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }));
+        squiggle.position.set(vx + (hc - 1) * 0.42, 0.32 + hc * 0.2, vz + (hc % 2 ? 0.16 : -0.16));
+        squiggle.userData.phase = seg * 1.15 + hc * 0.22; // the wave climbs the curve
+        scene.add(tag(squiggle, "air", "heat — the breath of the stones"));
+        heatCurves.push(squiggle);
       }
-      const hcurve = new THREE.CatmullRomCurve3(hpts);
-      const squiggle = new THREE.Mesh(new THREE.TubeGeometry(hcurve, 24, 0.03, 6, false), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }));
-      squiggle.position.set(vx + (hc - 1) * 0.42, 0.32 + hc * 0.2, vz + (hc % 2 ? 0.16 : -0.16));
-      squiggle.userData.phase = hc * 1.6 + (vz + vx) * 0.08; // height-first: the strobe climbs
-      scene.add(tag(squiggle, "air", "heat — the breath of the stones"));
-      heatCurves.push(squiggle);
     }
 
     const fixture = mesh(new THREE.CylinderGeometry(0.16, 0.22, 0.09, 12), new THREE.MeshStandardMaterial({ color: "#d9c9a8", emissive: airColor, emissiveIntensity: 0.2 }), vx + (vx < 0 ? 0.95 : -0.95), 0.05, vz);
@@ -748,7 +750,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   nightSwitch.add(mesh(new THREE.BoxGeometry(0.5, 1.4, 1.0), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0, 0.15));
   const nightLever = mesh(new THREE.BoxGeometry(0.14, 0.34, 0.16), new THREE.MeshStandardMaterial({ color: "#f2efe8", roughness: 0.5 }), -0.09, 0.06, 0);
   nightSwitch.add(nightLever);
-  nightSwitch.position.set(10.18, 6.15, 6.9);
+  nightSwitch.position.set(10.18, 5.6, 6.9);
   nightSwitch.traverse((c) => {
     c.userData = { ...c.userData, element: "space", label: "the day/night switch — click to turn the sky", action: "toggle-night" };
   });
