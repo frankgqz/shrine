@@ -488,8 +488,18 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // the game inside: a paddle and a green ball — click the bag and they come out
   const bagPaddle = new THREE.Group();
   const paddleFace = new THREE.MeshStandardMaterial({ color: "#241f2e", roughness: 0.45 });
-  bagPaddle.add(mesh(new RoundedBoxGeometry(0.5, 0.64, 0.055, 4, 0.15), paddleFace, 0, 0.5, 0)); // the tall rounded face
-  bagPaddle.add(mesh(new RoundedBoxGeometry(0.15, 0.17, 0.05, 3, 0.045), paddleFace, 0, 0.1, 0)); // the flat throat tab
+  const faceShape = new THREE.Shape();
+  faceShape.moveTo(0, 0.35);
+  faceShape.bezierCurveTo(0.21, 0.35, 0.27, 0.27, 0.27, 0.12);   // the right shoulder
+  faceShape.bezierCurveTo(0.27, -0.02, 0.21, -0.15, 0.1, -0.23); // taper in toward the throat
+  faceShape.bezierCurveTo(0.07, -0.26, 0.05, -0.28, 0, -0.29);   // the narrow bottom
+  faceShape.bezierCurveTo(-0.05, -0.28, -0.07, -0.26, -0.1, -0.23);
+  faceShape.bezierCurveTo(-0.21, -0.15, -0.27, -0.02, -0.27, 0.12);
+  faceShape.bezierCurveTo(-0.27, 0.27, -0.21, 0.35, 0, 0.35);
+  const faceMesh = new THREE.Mesh(new THREE.ExtrudeGeometry(faceShape, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.018, bevelSize: 0.018, bevelSegments: 3 }), paddleFace);
+  faceMesh.position.set(0, 0.5, -0.025); // the almost-oval face
+  bagPaddle.add(faceMesh);
+  bagPaddle.add(mesh(new RoundedBoxGeometry(0.15, 0.17, 0.05, 3, 0.045), paddleFace, 0, 0.13, 0)); // the flat throat tab
   const gripWhite = new THREE.MeshStandardMaterial({ color: "#e8e4da", roughness: 0.65 });
   bagPaddle.add(mesh(new THREE.CylinderGeometry(0.05, 0.047, 0.34, 12), gripWhite, 0, -0.16, 0)); // the white grip
   for (let w = 0; w < 5; w++) {
