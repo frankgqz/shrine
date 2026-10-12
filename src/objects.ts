@@ -533,14 +533,14 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   for (let k3 = 0; k3 < 7; k3++) {
     piano.add(mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.025, 10), pianoBlack, -0.08 + k3 * 0.11, 0.812, -0.14));
   }
-  // the bench
-  piano.add(mesh(new RoundedBoxGeometry(0.52, 0.09, 0.32, 3, 0.03), pianoTrim, 0, 0.46, 0.72));
-  for (const bx of [-0.2, 0.2]) {
-    piano.add(mesh(new THREE.BoxGeometry(0.055, 0.44, 0.055), pianoTrim, bx, 0.22, 0.62));
-    piano.add(mesh(new THREE.BoxGeometry(0.055, 0.44, 0.055), pianoTrim, bx, 0.22, 0.82));
+  // the bench — re-proportioned so it stays a real seat at the bigger scale
+  piano.add(mesh(new RoundedBoxGeometry(0.52, 0.07, 0.26, 3, 0.025), pianoTrim, 0, 0.32, 0.52));
+  for (const bx of [-0.16, 0.16]) {
+    piano.add(mesh(new THREE.BoxGeometry(0.05, 0.31, 0.05), pianoTrim, bx, 0.155, 0.44));
+    piano.add(mesh(new THREE.BoxGeometry(0.05, 0.31, 0.05), pianoTrim, bx, 0.155, 0.6));
   }
-  piano.scale.setScalar(2.5); // real 88-key scale, not a toy
-  piano.position.set(-7.2, 0, -7.75);
+  piano.scale.setScalar(3.5); // the keyboard rides ABOVE the desk line
+  piano.position.set(-6.6, 0, -7.55);
   scene.add(tag(piano, "space", "the digital piano — a chord by the window"));
   piano.traverse((c) => (c.userData.action = "play-piano")); // AFTER the tag
 
@@ -629,7 +629,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bagBall.add(mesh(new THREE.SphereGeometry(0.3, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0, 0)); // hit target
   bagBall.position.set(0, 0.95, 0.02); // deep inside — invisible when packed
   bag.add(bagBall);
-  bag.position.set(-7.5, 0, -7.3); // under the piano Z-stand
+  bag.position.set(-8.35, 0, -7.3); // under the Z-stand, against the leg by the plant
   bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — click to take out the game"));
   bag.traverse((c) => (c.userData.action = "bag-game")); // AFTER the tag — tag() replaces userData
