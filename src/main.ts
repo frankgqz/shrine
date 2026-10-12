@@ -198,6 +198,14 @@ canvas.addEventListener("click", () => {
     return;
   }
   if (act === "open-pickleball") {
+    if (!bagOut) {
+      // still packed — this click opens the bag instead
+      bagOut = true;
+      labelEl.textContent = "the game comes out";
+      labelEl.style.opacity = "1";
+      window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
+      return;
+    }
     window.location.href = "https://pickleball.gqz.app"; // the ball takes you to the game
     return;
   }

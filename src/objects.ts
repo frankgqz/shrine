@@ -245,87 +245,141 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   psky.addColorStop(1, "#7a4a52");
   pctx.fillStyle = psky;
   pctx.fillRect(0, 0, 384, 288);
-  // painterly brush helper — the house is PAINTED now, not drawn
-  const brush = (x: number, y: number, w: number, h: number, col: string, alpha: number, rot: number) => {
-    pctx.save();
-    pctx.translate(x, y);
-    pctx.rotate(rot);
-    pctx.globalAlpha = alpha;
-    pctx.fillStyle = col;
-    pctx.fillRect(-w / 2, -h / 2, w, h);
-    pctx.restore();
-    pctx.globalAlpha = 1;
-  };
-  // sky strokes — visible brushwork
-  for (let i = 0; i < 70; i++) {
-    brush(Math.random() * 384, Math.random() * 165, 30 + Math.random() * 60, 7 + Math.random() * 8,
-      ["#f6d69c", "#eeb983", "#e8a06a", "#dd8f68", "#c97f6b"][i % 5], 0.28 + Math.random() * 0.25, (Math.random() - 0.5) * 0.12);
-  }
-  // the sun — a soft glowing wash
-  const psun = pctx.createRadialGradient(292, 82, 6, 292, 82, 64);
-  psun.addColorStop(0, "rgba(255,238,196,0.95)");
-  psun.addColorStop(1, "rgba(255,220,160,0)");
-  pctx.fillStyle = psun;
+  // ANIME house — clean shapes, cel color, ink outlines
+  const OL = "#4a2c1e"; // the outline
+  pctx.fillStyle = "#ffe9b8";
   pctx.beginPath();
-  pctx.arc(292, 82, 64, 0, Math.PI * 2);
+  pctx.arc(300, 66, 46, 0, Math.PI * 2);
   pctx.fill();
-  // the garden — long loose strokes
-  for (let i = 0; i < 60; i++) {
-    brush(Math.random() * 384, 212 + Math.random() * 76, 34 + Math.random() * 55, 9 + Math.random() * 9,
-      ["#7c9455", "#6c8448", "#8aa05e", "#5f7740"][i % 4], 0.3 + Math.random() * 0.28, (Math.random() - 0.5) * 0.16);
-  }
-  // the little house — slightly off-kilter, base first, then strokes
-  pctx.save();
-  pctx.translate(168, 152);
-  pctx.rotate(-0.02);
-  pctx.fillStyle = "#eddec0";
-  pctx.fillRect(-72, -22, 144, 68);
-  pctx.fillStyle = "#b25438";
+  pctx.fillStyle = "#fff4d8";
   pctx.beginPath();
-  pctx.moveTo(-88, -20);
-  pctx.lineTo(0, -74);
-  pctx.lineTo(88, -20);
+  pctx.arc(300, 66, 30, 0, Math.PI * 2);
+  pctx.fill();
+  const cloud = (cx: number, cy: number, s: number) => {
+    for (const [ox2, oy2, rr2] of [[0, 0, 0.5], [0.55, -0.22, 0.4], [1.02, 0, 0.34]] as Array<[number, number, number]>) {
+      pctx.fillStyle = OL;
+      pctx.beginPath();
+      pctx.arc(cx + ox2 * s, cy + oy2 * s, rr2 * s + 3, 0, Math.PI * 2);
+      pctx.fill();
+    }
+    for (const [ox2, oy2, rr2] of [[0, 0, 0.5], [0.55, -0.22, 0.4], [1.02, 0, 0.34]] as Array<[number, number, number]>) {
+      pctx.fillStyle = "#fffaf2";
+      pctx.beginPath();
+      pctx.arc(cx + ox2 * s, cy + oy2 * s, rr2 * s, 0, Math.PI * 2);
+      pctx.fill();
+    }
+  };
+  cloud(52, 84, 54);
+  cloud(208, 56, 40);
+  pctx.fillStyle = "#8fbf6a";
+  pctx.fillRect(0, 196, 384, 92);
+  pctx.fillStyle = "#7cad58";
+  pctx.fillRect(0, 196, 384, 12);
+  pctx.fillStyle = "#e8d5a8";
+  pctx.beginPath();
+  pctx.moveTo(146, 288);
+  pctx.lineTo(116, 288);
+  pctx.lineTo(158, 210);
+  pctx.lineTo(186, 210);
   pctx.closePath();
   pctx.fill();
-  for (let i = 0; i < 26; i++) {
-    brush(-66 + Math.random() * 132, -16 + Math.random() * 58, 16 + Math.random() * 22, 9 + Math.random() * 8,
-      ["#f4e7cf", "#ead9bb", "#f7eeda", "#e2cda9"][i % 4], 0.5 + Math.random() * 0.35, (Math.random() - 0.5) * 0.1);
-  }
-  for (let i = 0; i < 30; i++) {
-    const rx = -82 + Math.random() * 164;
-    brush(rx, -22 - (1 - Math.abs(rx) / 88) * 42 + Math.random() * 10, 22 + Math.random() * 18, 8 + Math.random() * 7,
-      ["#c96a48", "#a84c31", "#b9583a", "#97422c"][i % 4], 0.55 + Math.random() * 0.35, (Math.random() - 0.5) * 0.22);
-  }
-  pctx.restore();
-  brush(238, 92, 16, 36, "#8a4230", 0.9, -0.02); // the chimney
-  for (const wx of [132, 198]) {
-    const wg = pctx.createRadialGradient(wx, 150, 2, wx, 150, 30);
-    wg.addColorStop(0, "rgba(255,222,150,0.95)");
-    wg.addColorStop(1, "rgba(255,200,120,0)");
+  pctx.fillStyle = "rgba(80,50,30,0.16)";
+  pctx.beginPath();
+  pctx.ellipse(190, 216, 118, 12, 0, 0, Math.PI * 2);
+  pctx.fill();
+  pctx.lineWidth = 4;
+  pctx.strokeStyle = OL;
+  pctx.fillStyle = "#f7ecd8";
+  pctx.beginPath();
+  pctx.rect(112, 128, 150, 84);
+  pctx.fill();
+  pctx.stroke();
+  pctx.fillStyle = "#c9603f";
+  pctx.beginPath();
+  pctx.moveTo(94, 132);
+  pctx.quadraticCurveTo(187, 54, 280, 132);
+  pctx.closePath();
+  pctx.fill();
+  pctx.stroke();
+  pctx.fillStyle = "#ffd98a";
+  pctx.beginPath();
+  pctx.arc(187, 102, 15, 0, Math.PI * 2);
+  pctx.fill();
+  pctx.stroke();
+  pctx.lineWidth = 2.5;
+  pctx.beginPath();
+  pctx.moveTo(172, 102);
+  pctx.lineTo(202, 102);
+  pctx.moveTo(187, 87);
+  pctx.lineTo(187, 117);
+  pctx.stroke();
+  pctx.lineWidth = 4;
+  pctx.fillStyle = "#b0563a";
+  pctx.beginPath();
+  pctx.rect(236, 70, 26, 38);
+  pctx.fill();
+  pctx.stroke();
+  for (const wx of [140, 228]) {
+    const wg = pctx.createRadialGradient(wx, 168, 4, wx, 168, 34);
+    wg.addColorStop(0, "rgba(255,222,150,0.6)");
+    wg.addColorStop(1, "rgba(255,222,150,0)");
     pctx.fillStyle = wg;
-    pctx.fillRect(wx - 24, 128, 48, 46);
-    brush(wx, 150, 21, 24, "#ffd98a", 0.95, 0);
-    brush(wx, 150, 3, 24, "#e8c99a", 0.8, 0);
-    brush(wx, 150, 21, 3, "#e8c99a", 0.8, 0);
+    pctx.fillRect(wx - 32, 138, 64, 60);
+    pctx.fillStyle = "#ffd98a";
+    pctx.beginPath();
+    pctx.rect(wx - 21, 148, 42, 40);
+    pctx.fill();
+    pctx.stroke();
+    pctx.lineWidth = 2.5;
+    pctx.beginPath();
+    pctx.moveTo(wx, 148);
+    pctx.lineTo(wx, 188);
+    pctx.moveTo(wx - 21, 168);
+    pctx.lineTo(wx + 21, 168);
+    pctx.stroke();
+    pctx.lineWidth = 4;
   }
-  brush(166, 176, 27, 44, "#7a4a32", 0.92, -0.015); // the door
-  brush(166, 176, 20, 5, "#c98a5e", 0.6, -0.015);
-  for (let i = 0; i < 16; i++) {
-    brush(166 + (Math.random() - 0.5) * 32, 214 + i * 5, 16 + Math.random() * 12, 6, "#d9c2a0", 0.4 + Math.random() * 0.3, (Math.random() - 0.5) * 0.3);
+  pctx.fillStyle = "#8a5236";
+  pctx.beginPath();
+  pctx.moveTo(168, 212);
+  pctx.lineTo(168, 184);
+  pctx.arc(187, 184, 19, Math.PI, 0);
+  pctx.lineTo(206, 212);
+  pctx.closePath();
+  pctx.fill();
+  pctx.stroke();
+  pctx.fillStyle = "#ffd98a";
+  pctx.beginPath();
+  pctx.arc(199, 198, 3.2, 0, Math.PI * 2);
+  pctx.fill();
+  pctx.fillStyle = "#7a4a2c";
+  pctx.beginPath();
+  pctx.rect(322, 148, 16, 58);
+  pctx.fill();
+  pctx.stroke();
+  for (const [tx2, ty2, tr2, tc] of [[330, 116, 42, "#4e8a46"], [300, 140, 27, "#4e8a46"], [362, 140, 27, "#4e8a46"], [318, 108, 22, "#63a458"]] as Array<[number, number, number, string]>) {
+    pctx.fillStyle = tc;
+    pctx.beginPath();
+    pctx.arc(tx2, ty2, tr2, 0, Math.PI * 2);
+    pctx.fill();
+    pctx.stroke();
   }
-  brush(326, 172, 15, 60, "#6e4a32", 0.9, 0.06); // the tree
-  for (let i = 0; i < 26; i++) {
-    const ta = Math.random() * Math.PI * 2;
-    const tr = Math.random() * 31;
-    brush(326 + Math.cos(ta) * tr * 1.15, 132 + Math.sin(ta) * tr * 0.8, 26 + Math.random() * 20, 18 + Math.random() * 12,
-      ["#4e7a3e", "#5d8a48", "#416834", "#6c9a52"][i % 4], 0.4 + Math.random() * 0.35, (Math.random() - 0.5) * 0.5);
-  }
-  for (let f = 0; f < 16; f++) {
-    brush(20 + Math.random() * 340, 224 + Math.random() * 50, 9 + Math.random() * 7, 9 + Math.random() * 6,
-      ["#e88a7a", "#f2d27a", "#c98fbf", "#f0e6c8", "#e87a6a"][f % 5], 0.6 + Math.random() * 0.3, Math.random());
-  }
-  for (let g = 0; g < 260; g++) {
-    brush(Math.random() * 384, Math.random() * 288, 2.2, 2.2, g % 2 ? "#ffffff" : "#000000", 0.05, 0); // canvas grain
+  for (let f = 0; f < 9; f++) {
+    const fx = 30 + ((f * 41) % 330);
+    const fy = 232 + ((f * 23) % 46);
+    pctx.lineWidth = 2;
+    pctx.fillStyle = ["#f28a7a", "#f2d27a", "#e8e4da"][f % 3];
+    for (let pt = 0; pt < 5; pt++) {
+      const pa2 = (pt / 5) * Math.PI * 2;
+      pctx.beginPath();
+      pctx.arc(fx + Math.cos(pa2) * 6, fy + Math.sin(pa2) * 6, 5, 0, Math.PI * 2);
+      pctx.fill();
+    }
+    pctx.fillStyle = "#e8a23a";
+    pctx.beginPath();
+    pctx.arc(fx, fy, 4, 0, Math.PI * 2);
+    pctx.fill();
+    pctx.lineWidth = 4;
   }
   const paintingTex = new THREE.CanvasTexture(paintCanvas);
   paintingTex.colorSpace = THREE.SRGBColorSpace;
@@ -524,21 +578,21 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const faceShape = new THREE.Shape();
   faceShape.moveTo(0, 0.35);
   faceShape.bezierCurveTo(0.21, 0.35, 0.27, 0.27, 0.27, 0.12);   // the right shoulder
-  faceShape.bezierCurveTo(0.28, -0.04, 0.255, -0.18, 0.17, -0.26); // fuller toward the handle
-  faceShape.bezierCurveTo(0.12, -0.3, 0.06, -0.3, 0, -0.3);       // the wider bottom
-  faceShape.bezierCurveTo(-0.06, -0.3, -0.12, -0.3, -0.17, -0.26);
-  faceShape.bezierCurveTo(-0.255, -0.18, -0.28, -0.04, -0.27, 0.12);
+  faceShape.bezierCurveTo(0.29, -0.04, 0.27, -0.19, 0.2, -0.27); // stretched toward the handle
+  faceShape.bezierCurveTo(0.14, -0.32, 0.07, -0.32, 0, -0.32);   // the wide bottom, reaching down
+  faceShape.bezierCurveTo(-0.07, -0.32, -0.14, -0.32, -0.2, -0.27);
+  faceShape.bezierCurveTo(-0.27, -0.19, -0.29, -0.04, -0.27, 0.12);
   faceShape.bezierCurveTo(-0.27, 0.27, -0.21, 0.35, 0, 0.35);
   const faceMesh = new THREE.Mesh(new THREE.ExtrudeGeometry(faceShape, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.018, bevelSize: 0.018, bevelSegments: 3 }), paddleFace);
   faceMesh.position.set(0, 0.5, -0.025); // the almost-oval face
   bagPaddle.add(faceMesh);
-  bagPaddle.add(mesh(new RoundedBoxGeometry(0.15, 0.17, 0.05, 3, 0.045), paddleFace, 0, 0.13, 0)); // the flat throat tab
+  bagPaddle.add(mesh(new RoundedBoxGeometry(0.15, 0.12, 0.05, 3, 0.04), paddleFace, 0, 0.13, 0)); // the throat — short
   const gripWhite = new THREE.MeshStandardMaterial({ color: "#e8e4da", roughness: 0.65 });
-  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.05, 0.047, 0.34, 12), gripWhite, 0, -0.16, 0)); // the white grip
+  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.052, 0.048, 0.36, 12), gripWhite, 0, -0.04, 0)); // the white grip — meets the throat
   for (let w = 0; w < 5; w++) {
-    bagPaddle.add(mesh(new THREE.CylinderGeometry(0.056, 0.056, 0.018, 12), new THREE.MeshStandardMaterial({ color: "#d8d2c4", roughness: 0.7 }), 0, -0.03 - w * 0.065, 0)); // the wrap ridges
+    bagPaddle.add(mesh(new THREE.CylinderGeometry(0.0545, 0.0545, 0.016, 12), new THREE.MeshStandardMaterial({ color: "#dcd6c8", roughness: 0.7 }), 0, 0.075 - w * 0.06, 0)); // subtle wrap ridges
   }
-  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.058, 0.05, 0.05, 12), gripWhite, 0, -0.355, 0)); // the butt cap
+  bagPaddle.add(mesh(new THREE.CylinderGeometry(0.057, 0.05, 0.05, 12), gripWhite, 0, -0.245, 0)); // the butt cap
   bagPaddle.position.set(0, 0.55, 0.02); // tucked deep inside
   bag.add(bagPaddle);
   const bagBall = new THREE.Group();
@@ -546,9 +600,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   for (let hh = 0; hh < 9; hh++) {
     const ha = (hh / 9) * Math.PI * 2;
     const hy = ((hh % 3) - 1) * 0.45;
-    bagBall.add(mesh(new THREE.SphereGeometry(0.03, 6, 5), new THREE.MeshStandardMaterial({ color: "#4a5d1f", roughness: 0.85 }), Math.cos(ha) * 0.105 * Math.cos(hy), Math.sin(hy) * 0.105, Math.sin(ha) * 0.105 * Math.cos(hy))); // carved dimples
+    bagBall.add(mesh(new THREE.SphereGeometry(0.02, 6, 5), new THREE.MeshStandardMaterial({ color: "#7a9138", roughness: 0.85 }), Math.cos(ha) * 0.112 * Math.cos(hy), Math.sin(hy) * 0.112, Math.sin(ha) * 0.112 * Math.cos(hy))); // carved dimples
   }
-  bagBall.add(mesh(new THREE.SphereGeometry(0.36, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0, 0)); // hit target
+  bagBall.add(mesh(new THREE.SphereGeometry(0.3, 8, 6), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }), 0, 0, 0)); // hit target
   bagBall.position.set(0, 0.95, 0.02); // deep inside — invisible when packed
   bag.add(bagBall);
   bag.position.set(-8.65, 0, -7.55); // upright, right against the window — very close to the pot
@@ -611,11 +665,11 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   seat(3.75, 5.38, 7.7, 2.16); // the 1,2 side — the extended legroom lives here
   back(3.75, 6.65, 7.7, 0.55);
   // the corner — the two backrests meet; a corner cushion fills the nook
-  const cornerBackA = new THREE.Mesh(new RoundedBoxGeometry(0.45, 1.25, 1.9, 4, 0.12), fluffy);
+  const cornerBackA = new THREE.Mesh(new RoundedBoxGeometry(0.45, 1.05, 1.9, 4, 0.15), fluffy);
   cornerBackA.position.set(8.3, 1.75, 5.5);
   cornerBackA.castShadow = true; cornerBackA.receiveShadow = true;
   couch.add(cornerBackA);
-  const cornerBackB = new THREE.Mesh(new RoundedBoxGeometry(1.6, 1.25, 0.5, 4, 0.12), fluffy);
+  const cornerBackB = new THREE.Mesh(new RoundedBoxGeometry(1.6, 1.05, 0.5, 4, 0.15), fluffy);
   cornerBackB.position.set(7.35, 1.75, 6.65);
   cornerBackB.castShadow = true; cornerBackB.receiveShadow = true;
   couch.add(cornerBackB);
@@ -637,9 +691,9 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   // proper armrests at the two outer ends
   couch.add(mesh(new THREE.BoxGeometry(1.75, 1.25, 0.7), fluffy, 7.22, 1.58, -1.45)); // arm at the new far end
   // a head cushion at the corner end of the right run
-  const headCushion = new THREE.Mesh(new RoundedBoxGeometry(0.4, 0.42, 1.2, 4, 0.2), fluffy);
-  headCushion.position.set(8.3, 2.6, 4.58);
-  headCushion.rotation.x = -0.1;
+  const headCushion = new THREE.Mesh(new RoundedBoxGeometry(0.4, 0.42, 1.65, 4, 0.2), fluffy);
+  headCushion.position.set(8.3, 2.6, 5.5);
+  headCushion.rotation.x = -0.08;
   headCushion.castShadow = true;
   headCushion.receiveShadow = true;
   couch.add(headCushion);
