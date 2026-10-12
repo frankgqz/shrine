@@ -388,7 +388,8 @@ function animate(): void {
     hm.color.set(ventColor);
     const strobe = 0.5 + 0.5 * Math.sin(t * 1.7 - ((s.userData.phase as number) ?? 0));
     const rise = 0.35 + (((s.userData.segIdx as number) ?? 3) as number) * 0.22; // low -> high
-    hm.opacity = ventOn ? (0.015 + strobe * 0.075) * rise : 0; // 0 -> very very low
+    hm.opacity = ventOn ? 0.028 * rise : 0; // hold low — no more whole-squiggle pulse
+    s.scale.y = 1 + strobe * 0.16; // motion instead of blinking // 0 -> very very low
   });
 
   const shimmerT = scene.userData.shimmerTex as THREE.CanvasTexture | undefined;
@@ -396,6 +397,16 @@ function animate(): void {
 
   const cloudM = scene.userData.cloudMat as THREE.MeshStandardMaterial | undefined;
   if (cloudM) cloudM.opacity = 0.85 - nightMix * 0.62;
+
+  // heat motes rise from the vents, swell, and fade at the top
+  objects.heatMotes.forEach((mo) => {
+    const mm = mo.material as THREE.MeshBasicMaterial;
+    mm.color.set(ventColor);
+    const cyc = (t * 0.3 + ((mo.userData.phase as number) ?? 0)) % 1;
+    mo.position.y = 0.45 + cyc * ((mo.userData.drift as number) ?? 1.6);
+    mm.opacity = ventOn ? Math.sin(Math.PI * cyc) * 0.17 : 0;
+    mo.scale.setScalar(0.7 + cyc * 1.5);
+  });
 
   // gentle vertex ripple on the water bodies (not the lake)
   const ripples = (scene.userData.ripples ?? []) as Array<{ mesh: THREE.Mesh; base: Float32Array; amp: number; freq: number; speed: number }>;

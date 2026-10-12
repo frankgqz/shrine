@@ -533,7 +533,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
   for (let i = 0; i < 9; i++) {
     const h = 8 + Math.random() * 9;
     const m = new THREE.Mesh(new THREE.ConeGeometry(14 + Math.random() * 10, h, 5), farMountainMat);
-    m.position.set(-85 + i * 20 + Math.random() * 7, h / 2 - 8, -135 - Math.random() * 20);
+    m.position.set(-85 + i * 20 + Math.random() * 7, h / 2 - 2.8, -135 - Math.random() * 20);
     scene.add(m);
   }
   // near range with snow caps
@@ -541,7 +541,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     const h = 7 + Math.random() * 10;
     const r = 12 + Math.random() * 9;
     const m = new THREE.Mesh(new THREE.ConeGeometry(r, h, 5), mountainMat);
-    m.position.set(-55 + i * 18 + Math.random() * 6, h / 2 - 7, -105 - Math.random() * 25);
+    m.position.set(-55 + i * 18 + Math.random() * 6, h / 2 - 1.6, -105 - Math.random() * 25);
     scene.add(m);
     // snow matched to the cone taper — it hugs the peak (no hats)
     const cap = new THREE.Mesh(new THREE.ConeGeometry(r * 0.25, h * 0.25, 5), snowMat);
@@ -562,11 +562,11 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
     new THREE.MeshStandardMaterial({ color: "#5b93b8", roughness: 0.25, metalness: 0.1 })
   );
   lake.rotation.x = -Math.PI / 2;
-  lake.position.set(0, -8.5, -95);
+  lake.position.set(0, -1.7, -95);
   scene.add(lake);
   const lakeGlow = new THREE.Mesh(new THREE.PlaneGeometry(280, 34), new THREE.MeshBasicMaterial({ color: "#cfe4ef", transparent: true, opacity: 0.32, depthWrite: false }));
   lakeGlow.rotation.x = -Math.PI / 2;
-  lakeGlow.position.set(0, -8.35, -138);
+  lakeGlow.position.set(0, -1.55, -138);
   scene.add(lakeGlow);
 
   const cloudMat = new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 1, transparent: true, opacity: 0.85 });

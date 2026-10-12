@@ -49,6 +49,7 @@ export interface SceneObjects {
   lampFlame: THREE.Mesh;
   lampGlow: THREE.Mesh;
   heatCurves: THREE.Mesh[];
+  heatMotes: THREE.Mesh[];
   yogaMat: THREE.Mesh;
   matRollCyl: THREE.Mesh;
   cupWater: THREE.Mesh;
@@ -338,20 +339,20 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
   shelf.add(mesh(new THREE.BoxGeometry(1.5, 5.3, 0.12), wood, 0, 3.65, 0.75)); // one divider
   // only a FEW books — the shelf is mostly sacred things
-  for (const [by, bh, bz, n] of [[1.62, 1.1, -1.35, 3], [1.62, 1.1, -0.78, 2], [1.75, 1.1, 1.22, 2]] as Array<[number, number, number, number]>) {
+  // books lying flat on the very bottom (feet) shelf
+  for (const [bz, n] of [[-1.3, 3], [-0.72, 2], [1.18, 2]] as Array<[number, number]>) {
     for (let b = 0; b < n; b++) {
-      const h = bh * (0.62 + Math.random() * 0.3);
       shelf.add(mesh(
-        new THREE.BoxGeometry(0.42, h, 0.15 + Math.random() * 0.1),
+        new THREE.BoxGeometry(0.42, 0.14 + Math.random() * 0.08, 0.55),
         new THREE.MeshStandardMaterial({ color: ["#8a4b32", "#4b6a82", "#7a6a3c", "#5c4a66", "#9c6b45"][b % 5], roughness: 0.85 }),
-        0.05, by - bh / 2 + h / 2 + 0.06, bz + b * 0.27
+        0.05, 0.28 + b * 0.2, bz
       ));
     }
   }
   // ---- the pooja collection (consecrated objects) ----
   const brassSoft = new THREE.MeshStandardMaterial({ color: "#d9a94f", roughness: 0.45, metalness: 0.55 });
   // crystals
-  for (const [cy, cz, cs, col] of [[3.98, 1.38, 0.24, "#b58ce0"], [4.02, 1.05, 0.18, "#8ce0d4"], [4.0, 1.5, 0.2, "#e0c98c"]] as Array<[number, number, number, string]>) {
+  for (const [cy, cz, cs, col] of [[4.21, 1.42, 0.24, "#b58ce0"], [4.11, 1.22, 0.18, "#8ce0d4"], [4.14, 1.52, 0.2, "#e0c98c"]] as Array<[number, number, number, string]>) {
     const crystal = mesh(new THREE.IcosahedronGeometry(cs, 0), new THREE.MeshStandardMaterial({ color: col, roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85 }), 0.35, cy, cz);
     crystal.scale.y = 1.7;
     shelf.add(crystal);
@@ -681,6 +682,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   const ventFins: THREE.Mesh[] = [];
   const steamBeams: THREE.Mesh[] = [];
   const heatCurves: THREE.Mesh[] = [];
+  const heatMotes: THREE.Mesh[] = [];
   // a soft cloud puff texture — this is what makes steam look like steam
   const steamCanvas = document.createElement("canvas");
   steamCanvas.width = 64;
@@ -756,6 +758,13 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
         scene.add(tag(squiggle, "air", "heat — the breath of the stones"));
         heatCurves.push(squiggle);
       }
+    }
+    for (let hm2 = 0; hm2 < 3; hm2++) {
+      const mote = mesh(new THREE.SphereGeometry(0.075, 8, 6), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }), vx + (Math.random() - 0.5) * 0.5, 0.5, vz + (Math.random() - 0.5) * 0.5);
+      mote.userData.phase = Math.random();
+      mote.userData.drift = 1.5 + Math.random() * 1.0;
+      scene.add(tag(mote, "air", "heat motes — the breath of the stones"));
+      heatMotes.push(mote);
     }
 
     const fixture = mesh(new THREE.CylinderGeometry(0.16, 0.22, 0.09, 12), new THREE.MeshStandardMaterial({ color: "#d9c9a8", emissive: airColor, emissiveIntensity: 0.2 }), vx + (vx < 0 ? 0.95 : -0.95), 0.05, vz);
@@ -961,5 +970,5 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   matRollCyl.scale.setScalar(0.015);
   scene.add(matRollCyl);
 
-  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams, waterWheel, lampFlame: wickFlame, lampGlow: wickGlow, heatCurves, yogaMat, matRollCyl, cupWater };
+  return { fire, lamp: lampLight, fireCone, water, glassPanels, floorLights, wisps, screenCloth, lensGlow, floatRocks, portalVeils, lightRay, ventFins, monScreens, steamBeams, waterWheel, lampFlame: wickFlame, lampGlow: wickGlow, heatCurves, heatMotes, yogaMat, matRollCyl, cupWater };
 }
