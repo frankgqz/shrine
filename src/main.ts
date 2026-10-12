@@ -378,13 +378,13 @@ function animate(): void {
   objects.heatCurves.forEach((s, i) => {
     const hm = s.material as THREE.MeshBasicMaterial;
     hm.color.set(ventColor);
-    const strobe = 0.5 + 0.5 * Math.sin(t * 3 - i * 0.9);
-    hm.opacity = ventOn ? 0.12 + strobe * 0.4 : 0;
+    const strobe = 0.5 + 0.5 * Math.sin(t * 2.2 - ((s.userData.phase as number) ?? 0));
+    hm.opacity = ventOn ? 0.015 + strobe * 0.075 : 0; // 0 -> very very low
   });
 
   // celestial life: sun sinks, moon + stars rise
   const starM = scene.userData.starMat as THREE.PointsMaterial | undefined;
-  if (starM) starM.opacity = nightMix * 0.95;
+  if (starM) starM.opacity = nightMix;
   const moonM = scene.userData.moonMat as THREE.MeshBasicMaterial | undefined;
   if (moonM) moonM.opacity = nightMix * 0.92;
   const moonGM = scene.userData.moonGlowMat as THREE.MeshBasicMaterial | undefined;

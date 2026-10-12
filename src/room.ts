@@ -528,7 +528,7 @@ export function buildRoom(scene: THREE.Scene): THREE.Mesh {
 
   const starGeo = new THREE.BufferGeometry();
   const starPts: number[] = [];
-  for (let i = 0; i < 160; i++) {
+  for (let i = 0; i < 420; i++) {
     const r = 120 + Math.random() * 30;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.random() * Math.PI * 0.42;

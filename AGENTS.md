@@ -109,6 +109,10 @@ distant world = sun, twin ranges w/ snow, lake, clouds, stars.
   mild jitter = boulders. Granite colors #8a8279/#948c82/#7d7770.
 - Sofa cushions: check which dimension splits along the run — a swapped
   width/depth made 5.5-unit slabs jut past the backrest.
+- `tag()` in objects.ts REPLACES `obj.userData` wholesale (and spreads
+  element+label onto descendants) — any `userData.action` set BEFORE the
+  tag is silently wiped. Set actions AFTER tagging. (The yoga mat's dead
+  click was exactly this.)
 - Random-scatter placement needs explicit clamps per concern: window line,
   fire clearance, deck footprint (rocks violated all three at some point).
 

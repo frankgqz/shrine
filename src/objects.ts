@@ -704,12 +704,12 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     for (let hc = 0; hc < 3; hc++) {
       const hpts: THREE.Vector3[] = [];
       for (let k = 0; k < 9; k++) {
-        hpts.push(new THREE.Vector3(Math.sin(k * 1.15 + hc * 1.7) * 0.22, k * 0.3, 0));
+        hpts.push(new THREE.Vector3(Math.sin(k * 1.15 + hc * 1.7) * 0.18, k * 0.22, 0));
       }
       const hcurve = new THREE.CatmullRomCurve3(hpts);
-      const squiggle = new THREE.Mesh(new THREE.TubeGeometry(hcurve, 24, 0.035, 6, false), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }));
-      squiggle.position.set(vx + (hc - 1) * 0.55, 0.7 + hc * 0.28, vz + (hc % 2 ? 0.2 : -0.2));
-      squiggle.userData.phase = hc * 1.1 + vz + vx;
+      const squiggle = new THREE.Mesh(new THREE.TubeGeometry(hcurve, 24, 0.03, 6, false), new THREE.MeshBasicMaterial({ color: airColor, transparent: true, opacity: 0, depthWrite: false, fog: false }));
+      squiggle.position.set(vx + (hc - 1) * 0.42, 0.32 + hc * 0.2, vz + (hc % 2 ? 0.16 : -0.16));
+      squiggle.userData.phase = hc * 1.6 + (vz + vx) * 0.08; // height-first: the strobe climbs
       scene.add(tag(squiggle, "air", "heat — the breath of the stones"));
       heatCurves.push(squiggle);
     }
@@ -909,8 +909,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
     new THREE.MeshStandardMaterial({ color: "#b4593f", roughness: 0.9 }),
     0, 0.06, -6.4
   );
-  yogaMat.traverse((c) => (c.userData.action = "roll-mat"));
   scene.add(tag(yogaMat, "space", "the yoga mat — click to roll it up"));
+  yogaMat.traverse((c) => (c.userData.action = "roll-mat")); // after the tag — tag() replaces userData
   const matRollCyl = mesh(new THREE.CylinderGeometry(1, 1, 3.0, 14), new THREE.MeshStandardMaterial({ color: "#a84f38", roughness: 0.9 }), -4.4, 0.1, -6.4);
   matRollCyl.rotation.x = Math.PI / 2;
   matRollCyl.scale.setScalar(0.015);
