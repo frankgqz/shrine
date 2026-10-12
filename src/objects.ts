@@ -448,25 +448,25 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   bagShape.lineTo(Math.cos(Math.PI - phi) * r2, y2 + Math.sin(Math.PI - phi) * r2);
   bagShape.absarc(0, y2, r2, Math.PI - phi, phi, true); // over the small top — CLOCKWISE (the short way over 90°)
   bagShape.closePath();
-  const bagBody = new THREE.Mesh(new THREE.ExtrudeGeometry(bagShape, { depth: 0.42, bevelEnabled: true, bevelThickness: 0.09, bevelSize: 0.09, bevelSegments: 4 }), bagBlack);
-  bagBody.position.z = -0.3;
+  const bagBody = new THREE.Mesh(new THREE.ExtrudeGeometry(bagShape, { depth: 0.36, bevelEnabled: true, bevelThickness: 0.09, bevelSize: 0.09, bevelSegments: 4 }), bagBlack);
+  bagBody.position.z = -0.27;
   bagBody.castShadow = true;
   bag.add(bagBody);
   // the main zip follows the silhouette EDGE all the way round (like the real bag)
   // it rides the bevel curve: the outline at z 0.14 (the flat face is at 0.21, the edge turns at 0.12)
   const zipEdge: THREE.Vector3[] = [];
   for (const pt of bagShape.getPoints(64)) {
-    zipEdge.push(new THREE.Vector3(pt.x, pt.y, 0.14));
+    zipEdge.push(new THREE.Vector3(pt.x, pt.y, 0.11));
   }
-  bag.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(zipEdge, true), 90, 0.026, 6, true), bagTrim));
+  bag.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(zipEdge, true), 90, 0.03, 6, true), bagTrim));
   // two sliders near the top of the zip
   for (const sxx of [-0.1, 0.13]) {
-    bag.add(mesh(new THREE.BoxGeometry(0.05, 0.13, 0.05), bagTrim, sxx, 1.48, 0.16));
+    bag.add(mesh(new THREE.BoxGeometry(0.05, 0.13, 0.05), bagTrim, sxx, 1.48, 0.13));
   }
   // side detail — a short side zip + pull on each flank
   for (const side of [-1, 1]) {
-    bag.add(mesh(new THREE.BoxGeometry(0.045, 0.46, 0.045), bagTrim, side * 0.475, 0.66, 0));
-    bag.add(mesh(new THREE.BoxGeometry(0.06, 0.11, 0.04), bagTrim, side * 0.475, 0.42, 0));
+    bag.add(mesh(new THREE.BoxGeometry(0.05, 0.52, 0.05), bagTrim, side * 0.505, 0.66, 0));
+    bag.add(mesh(new THREE.BoxGeometry(0.07, 0.12, 0.05), bagTrim, side * 0.505, 0.36, 0));
   }
   // the flat webbing handle on the crown
   for (const hx of [-0.13, 0.13]) {
@@ -474,16 +474,16 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
   bag.add(mesh(new THREE.BoxGeometry(0.38, 0.08, 0.055), bagTrim, 0, 1.79, 0)); // the grip
   // a label tab ON the face (the flat face sits at z 0.21)
-  bag.add(mesh(new RoundedBoxGeometry(0.3, 0.12, 0.05, 3, 0.025), bagTrim, 0.05, 1.12, 0.2));
+  bag.add(mesh(new RoundedBoxGeometry(0.3, 0.12, 0.05, 3, 0.025), bagTrim, 0.05, 1.12, 0.175));
   // the diagonal front seam — drawn inside the flat face so it sits ON the bag
   const seamPts = [
-    new THREE.Vector3(-0.26, 0.42, 0.2),
-    new THREE.Vector3(-0.02, 0.6, 0.21),
-    new THREE.Vector3(0.16, 0.78, 0.205),
-    new THREE.Vector3(0.24, 0.95, 0.19)
+    new THREE.Vector3(-0.26, 0.42, 0.175),
+    new THREE.Vector3(-0.02, 0.6, 0.185),
+    new THREE.Vector3(0.16, 0.78, 0.18),
+    new THREE.Vector3(0.24, 0.95, 0.165)
   ];
   bag.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(seamPts), 24, 0.017, 6, false), bagTrim));
-  bag.position.set(-6.6, 0, -7.78); // upright, right against the window
+  bag.position.set(-7.75, 0, -7.7); // upright, right against the window
   bag.rotation.set(0.08, 0.35, 0); // leaning back a touch on the glass
   scene.add(tag(bag, "space", "the pickleball bag — a game waits inside"));
 
