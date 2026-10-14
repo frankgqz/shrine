@@ -64,6 +64,8 @@ const waterSheet = buildRoom(scene);
 // ---- the speakers play Frank's track (click them) ----
 const song = new Audio("/audio/song.mp4");
 song.loop = true;
+const pianoSong = new Audio("/audio/first-love-432.mp4"); // the piano plays Frank's 432 track
+pianoSong.loop = true;
 const objects = buildObjects(scene);
 
 // ---- the monitors: black screens with code scrolling on them ----
@@ -212,6 +214,7 @@ canvas.addEventListener("click", () => {
   }
   if (act === "toggle-music") {
     if (song.paused) {
+      pianoSong.pause();
       song.volume = 0.55;
       void song.play();
       labelEl.textContent = "the speakers — Pandora, turning";
@@ -224,7 +227,15 @@ canvas.addEventListener("click", () => {
     return;
   }
   if (act === "play-piano") {
-    labelEl.textContent = "a soft chord fills the room";
+    if (pianoSong.paused) {
+      song.pause();
+      pianoSong.volume = 0.6;
+      void pianoSong.play();
+      labelEl.textContent = "First Love drifts through the room";
+    } else {
+      pianoSong.pause();
+      labelEl.textContent = "the piano falls quiet";
+    }
     labelEl.style.opacity = "1";
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
     return;
