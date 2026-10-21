@@ -581,8 +581,19 @@ function animate(): void {
   lfMat.emissiveIntensity = 1.4 + lampFlicker * 0.9;
 
   const target = pick();
-  if (target !== hovered) {
-    hovered = target;
+  // tooltip policy (Frank 2026-10-21): only INTERACTABLES (userData.action) and
+  // the five element representatives (userData.rep) speak on hover — every
+  // other tagged object is quiet scenery now.
+  let tip: THREE.Object3D | null = null;
+  if (target) {
+    let n: THREE.Object3D | null = target;
+    while (n) {
+      if (n.userData?.action || n.userData?.rep) { tip = n; break; }
+      n = n.parent;
+    }
+  }
+  if (tip !== hovered) {
+    hovered = tip;
     if (hovered) {
       const { label } = hovered.userData as { label: string };
       labelEl.textContent = label;

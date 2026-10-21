@@ -874,6 +874,8 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
   glassWall.position.set(0, 0, -8.4);
   glassWall.userData = { element: "air", label: "the sliding glass — click to open to the balcony" };
+  glassWall.userData = { element: "air", label: "the sliding glass — click to open to the balcony" };
+  glassWall.userData.rep = true; // tooltip keeper — air's representative (the open windows)
   glassWall.traverse((c) => {
     c.userData = { ...c.userData, element: "air", label: "the sliding glass — click a pane to open" };
   });
@@ -1003,6 +1005,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   );
   plungePool.position.set(-7, -8.6, -14.6);
   scene.add(tag(plungePool, "water", "the plunge pool — where the fall lands"));
+  plungePool.userData.rep = true; // tooltip keeper — water's representative
 
   // (the stray standing water body is gone — the fountain tray holds the water now)
 
@@ -1039,6 +1042,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   }
   firePit.position.set(-1.6, 0.35, -11.6); // no big base circle — the fire sits on the ground
   scene.add(tag(firePit, "fire", "the fire pit — warmth under the sky"));
+  firePit.userData.rep = true; // tooltip keeper — fire's representative
 
   const fire = new THREE.PointLight("#ff7a2a", 22, 22, 2);
   fire.position.set(-1.6, 2.0, -11.6);
@@ -1081,6 +1085,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   garden.add(mesh(new THREE.DodecahedronGeometry(0.32, 0), stone, -1.9, 0.4, -1.1));
   garden.position.set(-5.4, 0, -9.8);
   scene.add(tag(garden, "earth", "earth — soil, rocks, growing things"));
+  garden.userData.rep = true; // tooltip keeper — earth's representative
 
   // trees near the bookshelf corner (slot 7-8 side)
   for (const [tx, tz, ts] of [[9.2, -10.1, 1.15], [7.5, -11.8, 0.95], [9.8, -13.2, 0.8]] as Array<[number, number, number]>) {
@@ -1135,6 +1140,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   portal.position.set(9.55, 3.1, -4.985); // inside the shelf's open bay (moved with it)
   portal.rotation.y = -Math.PI / 2; // faces the room
   scene.add(tag(portal, "space", "the portal — a way to another reality"));
+  portal.userData.rep = true; // tooltip keeper — space's representative
   const veilD = new THREE.Mesh(
     new THREE.CircleGeometry(1.22, 36),
     new THREE.MeshBasicMaterial({ color: "#0e081c", transparent: true, opacity: 0.08, depthWrite: false, side: THREE.DoubleSide })

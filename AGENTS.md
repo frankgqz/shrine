@@ -78,7 +78,11 @@ in code comments (e.g. "lantern at top-5").
 - Water wheel on the coffee-table fountain turns (water-driven look — the
   wheel is tucked against the rocks deliberately).
 - Keys: G slot grid, L day/night, 1/2/3 composed views.
-- Everything else: hover shows the element label.
+- Everything else: QUIET on hover (tooltip policy 2026-10-21: hover
+  labels only on interactables + the five element representatives = the
+  brief's larger features: garden (earth) / plunge pool (water) / fire
+  pit (fire) / sliding glass (air) / portal (space)). Clicks on quiet
+  objects still note the element.
 
 - The pickleball bag: click slides out the paddle + green ball (two-phase);
   the BALL then goes to pickleball.gqz.app (gated — while packed, clicking
