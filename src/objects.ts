@@ -105,6 +105,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   portrait.rotation.y = Math.PI / 2;
   computer.add(portrait);
   monScreens.push(portrait);
+  portrait.userData = { element: "space", label: "the screens — the work, out in the world", action: "open-site" };
   computer.add(mesh(new THREE.BoxGeometry(0.42, 0.16, 1.0), metal, -1.2, 2.9, 1.55));
   // right: landscape monitor — flush against the portrait, a little lower
   computer.add(mesh(new THREE.BoxGeometry(0.12, 2.15, 3.55), metal, -1.2, 4.85, -1.25));
@@ -116,6 +117,7 @@ export function buildObjects(scene: THREE.Scene): SceneObjects {
   screen.rotation.y = Math.PI / 2;
   computer.add(screen);
   monScreens.push(screen);
+  screen.userData = { element: "space", label: "the screens — the work, out in the world", action: "open-site" };
   computer.add(mesh(new THREE.BoxGeometry(0.42, 0.16, 1.1), metal, -1.2, 2.9, -1.25));
   computer.add(mesh(new THREE.BoxGeometry(0.14, 1.5, 0.14), metal, -1.2, 3.65, -1.25));
   // keyboard + mouse on its right (toward -Z from the sitter)

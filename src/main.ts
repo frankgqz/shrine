@@ -259,6 +259,13 @@ canvas.addEventListener("click", () => {
     window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
     return;
   }
+  if (act === "open-site") {
+    askNavigate("open frankg.com.au?", "https://frankg.com.au"); // the screens ask first, like the ball
+    labelEl.textContent = "frankg.com.au";
+    labelEl.style.opacity = "1";
+    window.setTimeout(() => (labelEl.style.opacity = "0"), 1600);
+    return;
+  }
   if (act === "bag-game") {
     bagOut = !bagOut;
     labelEl.textContent = bagOut ? "the game comes out" : "the game goes away";

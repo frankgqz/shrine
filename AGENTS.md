@@ -86,9 +86,10 @@ in code comments (e.g. "lantern at top-5").
 
 - The pickleball bag: click slides out the paddle + green ball (two-phase);
   the BALL then goes to pickleball.gqz.app (gated — while packed, clicking
-  the ball opens the bag instead). The piano: click = a chord label. The
-  painting: click = gqz.app. BOTH outward links show a centered Go/Stay
-  popover first (askNavigate in main.ts).
+  the ball opens the bag instead). The piano: click = play/pause First Love
+  (Frank's 432). The painting: click = gqz.app. The monitors (both screens):
+  click = frankg.com.au. Outward links all show a centered Go/Stay popover
+  first (askNavigate in main.ts).
 - Yoga mat: click rolls it up (toward the desk side). Glass of water: click
   cycles half/empty/full.
 
@@ -144,3 +145,10 @@ mullions, distant world = sun, twin ranges w/ snow, lake, clouds, stars.
 -> Vercel git builds lagged 2026-10-13: escape hatch = `npx vercel deploy
    --prod` from the project folder (bypasses the webhook). Theme font =
    Bellota; bubble = Shantell Sans (theme/AGENTS.md has the walk).
+
+## Unfiled residue (from 2026-10-12b gravel — filed 2026-10-25, fix status UNVERIFIED)
+   open-ask list: bookshelf shelves · brown floorboards · luxury chair ·
+   dual monitors · yoga mat · cliff naturalism
+   geometry collisions: couch-on-vents x approx 8.15 · glass-through-wall
+   -10.7 vs -10.5 · crowded entrance
+?  which of these are still live? verify at the next photo pass
